@@ -8,6 +8,7 @@ import useAuth from '@/hooks/useAuth'
 import { cleanupOffcanvas, remountLoginOffcanvas } from '@/utils/offcanvas'
 import { LOCAL_STORAGE_KEYS, type RegionSeed } from '@/utils/storage/initLocalData'
 import { getLocalData, getLocalItem, setLocalItem } from '@/utils/storage/localStorageUtils'
+import { normalizeAvatarUrl } from '@/utils/storage/avatarUrl'
 import {
 	mapFormToStoredUser,
 	sanitizeNameField,
@@ -49,7 +50,7 @@ const createInitialValues = (user?: StoredUser | null): UserFormValues => {
 		password: '',
 		confirmPassword: '',
 		termsAccepted: true,
-		avatarUrl: user?.avatarUrl ?? defaultProfileImage,
+		avatarUrl: normalizeAvatarUrl(user?.avatarUrl),
 		codigoDescuento: user?.codigoDescuento ?? '',
 	}
 }
@@ -77,7 +78,7 @@ const calculateAge = (isoDate?: string) => {
 const ProfilePage = () => {
 	const navigate = useNavigate()
 	const { logout, refreshUser } = useAuth()
-	const [avatarUrl, setAvatarUrl] = useState<string>(defaultProfileImage)
+	const [avatarUrl, setAvatarUrl] = useState<string>(normalizeAvatarUrl())
 	const [regions, setRegions] = useState<RegionSeed[]>([])
 	const [currentUser, setCurrentUser] = useState<StoredUser | null>(null)
 	const [values, setValues] = useState<UserFormValues>(createInitialValues())
@@ -170,9 +171,14 @@ const ProfilePage = () => {
 			return
 		}
 
-		setCurrentUser(stored)
-		setAvatarUrl(stored.avatarUrl ?? defaultProfileImage)
-		setValues(createInitialValues(stored))
+		const normalizedUser: StoredUser = {
+			...stored,
+			avatarUrl: normalizeAvatarUrl(stored.avatarUrl),
+		}
+		setLocalItem<StoredUser>(LOCAL_STORAGE_KEYS.activeUser, normalizedUser)
+		setCurrentUser(normalizedUser)
+		setAvatarUrl(normalizedUser.avatarUrl ?? defaultProfileImage)
+		setValues(createInitialValues(normalizedUser))
 		setErrors({})
 		setTouched({})
 	}, [])
@@ -298,7 +304,7 @@ const ProfilePage = () => {
 		saveUserRecord(record)
 		setLocalItem(LOCAL_STORAGE_KEYS.activeUser, record)
 		setCurrentUser(record)
-		setAvatarUrl(record.avatarUrl ?? defaultProfileImage)
+		setAvatarUrl(normalizeAvatarUrl(record.avatarUrl))
 		setValues(createInitialValues(record))
 		setErrors({})
 		setTouched({})

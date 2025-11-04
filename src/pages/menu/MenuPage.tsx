@@ -24,26 +24,18 @@ const ORDER_OPTIONS: { value: OrderOption; label: string }[] = [
 
 const isBrowser = typeof window !== 'undefined'
 
-const catalogImages = import.meta.glob('@/assets/images/catalog/**/*', {
-	import: 'default',
-	eager: true,
-}) as Record<string, string>
+const fallbackCatalogImage = 'https://res.cloudinary.com/dx83p4455/image/upload/v1762263019/generica_yx70av.png'
 
-const catalogImageMap = Object.entries(catalogImages).reduce<Record<string, string>>((accumulator, [path, src]) => {
-	const key = path.split('/').pop()
-	if (key) {
-		accumulator[key] = src
+const formatImagePath = (relativePath?: string | null) => {
+	if (!relativePath) {
+		return fallbackCatalogImage
 	}
-	return accumulator
-}, {})
 
-const formatImagePath = (relativePath: string) => {
-	const fileName = relativePath.split('/').pop()
-	if (fileName && catalogImageMap[fileName]) {
-		return catalogImageMap[fileName]
+	if (/^https?:\/\//i.test(relativePath)) {
+		return relativePath
 	}
-	const normalized = relativePath.replace(/^img\//, 'images/').replace('catalogo', 'catalog')
-	return new URL(`@/assets/${normalized}`, import.meta.url).href
+
+	return fallbackCatalogImage
 }
 
 const formatPrice = (value: number) =>

@@ -27,52 +27,58 @@ type FeedbackState = {
 	tone: 'success' | 'danger' | 'info'
 }
 
-const catalogImages = import.meta.glob('@/assets/images/catalog/**/*', {
-	import: 'default',
-	eager: true,
-}) as Record<string, string>
+const fallbackCatalogImage = 'https://res.cloudinary.com/dx83p4455/image/upload/v1762263019/generica_yx70av.png'
 
-const catalogImageMap = Object.entries(catalogImages).reduce<Record<string, string>>((accumulator, [path, src]) => {
-	const key = path.split('/').pop()
-	if (key) {
-		accumulator[key] = src
+const formatImagePath = (relativePath?: string | null) => {
+	if (!relativePath) {
+		return fallbackCatalogImage
 	}
-	return accumulator
-}, {})
 
-const formatImagePath = (relativePath: string) => {
-	const fileName = relativePath.split('/').pop()
-	if (fileName && catalogImageMap[fileName]) {
-		return catalogImageMap[fileName]
+	if (/^https?:\/\//i.test(relativePath)) {
+		return relativePath
 	}
-	const normalized = relativePath.replace(/^img\//, 'images/').replace('catalogo', 'catalog')
-	return new URL(`@/assets/${normalized}`, import.meta.url).href
+
+	return fallbackCatalogImage
 }
 
-const detailImages = import.meta.glob('@/assets/images/catalog_detail/**/*', {
-	import: 'default',
-	eager: true,
-}) as Record<string, string>
-
-const detailImageMap = Object.entries(detailImages).reduce<Record<string, string[]>>((accumulator, [path, src]) => {
-	const fileName = path.split('/').pop()
-	if (!fileName) return accumulator
-	const base = fileName.replace(/\.[^/.]+$/, '')
-	const slug = base.replace(/_\d.*$/, '')
-	if (!accumulator[slug]) {
-		accumulator[slug] = []
+const createCloudinaryVariants = (source: string) => {
+	const trimmed = source.trim()
+	if (!/^https?:\/\//i.test(trimmed)) {
+		return []
 	}
-	accumulator[slug].push(src)
-	return accumulator
-}, {})
 
-const toSlug = (value: string) =>
-	value
-		.normalize('NFD')
-		.replace(/[\u0300-\u036f]/g, '')
-		.toLowerCase()
-		.replace(/[^a-z0-9]+/g, '_')
-		.replace(/^_+|_+$/g, '')
+	const splitIndex = trimmed.indexOf('/upload/')
+	if (splitIndex === -1) {
+		return []
+	}
+
+	const prefix = trimmed.slice(0, splitIndex)
+	const suffix = trimmed.slice(splitIndex + '/upload/'.length)
+	const transformations = [
+		'c_fill,w_700,h_525,g_auto,q_auto:good',
+		'c_fill,w_700,h_525,g_auto,q_auto:good,e_saturation:40',
+		'c_crop,w_700,h_525,g_auto,q_auto:good',
+	]
+
+	return transformations.map((transformation) => `${prefix}/upload/${transformation}/${suffix}`)
+}
+
+const getDetailGallery = (producto?: Producto | null) => {
+	if (!producto) {
+		return []
+	}
+
+	const enriched = producto as Producto & { imagenes_detalle?: unknown }
+	const gallery = enriched.imagenes_detalle
+	if (!Array.isArray(gallery)) {
+		const base = typeof producto.imagen_producto === 'string' ? producto.imagen_producto : ''
+		return base ? createCloudinaryVariants(base) : []
+	}
+
+	return gallery
+		.map((url) => (typeof url === 'string' ? url.trim() : ''))
+		.filter((url) => /^https?:\/\//i.test(url))
+}
 
 const formatPrice = (value: number) =>
 	value.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 })
@@ -241,9 +247,8 @@ const MenuDetailsPage = () => {
 
 	const galleryImages = useMemo(() => {
 		if (!producto) return []
-		const slug = toSlug(producto.nombre_producto)
-		const detailList = [...(detailImageMap[slug] ?? [])].sort()
 		const main = formatImagePath(producto.imagen_producto)
+		const detailList = getDetailGallery(producto).map((url) => formatImagePath(url))
 		const unique = new Set<string>([main, ...detailList])
 		return Array.from(unique)
 	}, [producto])

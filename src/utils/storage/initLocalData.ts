@@ -6,6 +6,7 @@ import type { StoredUser, UserRoleName } from '@/types/user'
 
 import { getLocalData, setLocalData } from './localStorageUtils'
 import { ensureHashedPassword } from '@/utils/security/password'
+import { normalizeAvatarUrl } from '@/utils/storage/avatarUrl'
 
 const isBrowser = typeof window !== 'undefined'
 
@@ -84,7 +85,7 @@ export const initLocalData = (force = false) => {
 						...rest,
 						tipoUsuario: tipoUsuario as UserRoleName,
 						run: combinedRun,
-						avatarUrl: avatarUrl ?? defaultProfileImage,
+						avatarUrl: normalizeAvatarUrl(avatarUrl, defaultProfileImage),
 						password: ensureHashedPassword(password ?? ''),
 					}
 				},
@@ -94,10 +95,12 @@ export const initLocalData = (force = false) => {
 			const sanitizedUsuarios = usuarios.map((user) => ({
 				...user,
 				password: ensureHashedPassword(user.password ?? ''),
+				avatarUrl: normalizeAvatarUrl(user.avatarUrl, defaultProfileImage),
 			}))
-			const hasChanges = sanitizedUsuarios.some(
-				(user, index) => user.password !== usuarios[index]?.password,
-			)
+			const hasChanges = sanitizedUsuarios.some((user, index) => {
+				const original = usuarios[index]
+				return user.password !== original?.password || user.avatarUrl !== original?.avatarUrl
+			})
 			if (hasChanges) {
 				setLocalData<StoredUser>(LOCAL_STORAGE_KEYS.usuarios, sanitizedUsuarios)
 			}

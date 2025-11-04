@@ -4,7 +4,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import { Button, Input } from '@/components/common'
 import { logoImage } from '@/assets'
-import heroImage from '@/assets/images/carrusel/diversidad_pasteles.jpg'
 import { LOCAL_STORAGE_KEYS, type RegionSeed } from '@/utils/storage/initLocalData'
 import { getLocalData, setLocalItem } from '@/utils/storage/localStorageUtils'
 import {
@@ -17,6 +16,8 @@ import {
 import type { UserFormValues } from '@/utils/validations/userValidations'
 import type { ValidationErrors } from '@/utils/validations/types'
 import useAuth from '@/hooks/useAuth'
+
+const HERO_IMAGE = 'https://res.cloudinary.com/dx83p4455/image/upload/v1762263516/diversidad_pasteles_ttxbx1.jpg'
 
 const RegisterUserPage = () => {
 	const location = useLocation()
@@ -258,7 +259,7 @@ const RegisterUserPage = () => {
 			<section
 				className="position-relative overflow-hidden text-white"
 				style={{
-					backgroundImage: `linear-gradient(135deg, rgba(39, 12, 63, 0.75), rgba(233, 30, 99, 0.55)), url(${heroImage})`,
+					backgroundImage: `linear-gradient(135deg, rgba(39, 12, 63, 0.75), rgba(233, 30, 99, 0.55)), url(${HERO_IMAGE})`,
 					backgroundSize: 'cover',
 					backgroundPosition: 'center',
 					backgroundRepeat: 'no-repeat',

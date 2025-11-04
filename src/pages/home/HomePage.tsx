@@ -24,25 +24,25 @@ interface CarouselItem {
 const carouselData: CarouselItem[] = [
 	{
 		id: 'menu',
-		image: new URL('@/assets/images/carrusel/carrusel_carta.jpg', import.meta.url).href,
+		image: 'https://res.cloudinary.com/dx83p4455/image/upload/v1762263515/carrusel_carta_oznheh.jpg',
 		alt: 'Torta con frutas',
 		caption: { type: 'internal', ctaLabel: 'Ver carta', to: '/menu' },
 	},
 	{
 		id: 'about',
-		image: new URL('@/assets/images/carrusel/carrusel_nosotros.jpg', import.meta.url).href,
+		image: 'https://res.cloudinary.com/dx83p4455/image/upload/v1762263515/carrusel_carta_oznheh.jpg',
 		alt: 'Vitrina de pastelería',
 		caption: { type: 'internal', ctaLabel: 'Conócenos', to: '/about' },
 	},
 	{
 		id: 'blog',
-		image: new URL('@/assets/images/carrusel/carrusel_blog.jpg', import.meta.url).href,
+		image: 'https://res.cloudinary.com/dx83p4455/image/upload/v1762263515/carrusel_blog_knmeix.jpg',
 		alt: 'Persona usando laptop',
 		caption: { type: 'internal', ctaLabel: 'Visita nuestro blog', to: '/blog' },
 	},
 	{
 		id: 'social',
-		image: new URL('@/assets/images/carrusel/diversidad_pasteles.jpg', import.meta.url).href,
+		image: 'https://res.cloudinary.com/dx83p4455/image/upload/v1762263516/diversidad_pasteles_ttxbx1.jpg',
 		alt: 'Vitrina con variedad de pasteles',
 		overlay: {
 			title: 'TRIVIA MIL SABORES',
@@ -59,30 +59,19 @@ const carouselData: CarouselItem[] = [
 
 const carouselId = 'homeCarousel'
 
-const catalogImages = import.meta.glob('@/assets/images/catalog/**/*', {
-	import: 'default',
-	eager: true,
-}) as Record<string, string>
+const fallbackCategoryImage = 'https://res.cloudinary.com/dx83p4455/image/upload/v1762263019/generica_yx70av.png'
 
-const catalogImageMap = Object.entries(catalogImages).reduce<Record<string, string>>((accumulator, [path, src]) => {
-	const key = path.split('/').pop()
-	if (key) {
-		accumulator[key] = src
-	}
-	return accumulator
-}, {})
-
-const formatImagePath = (relativePath: string) => {
-	const fileName = relativePath.split('/').pop()
-	if (fileName && catalogImageMap[fileName]) {
-		return catalogImageMap[fileName]
+const formatImagePath = (relativePath: string | undefined) => {
+	if (!relativePath) {
+		return fallbackCategoryImage
 	}
 
-	const normalized = relativePath.replace(/^img\//, 'images/').replace('catalogo', 'catalog')
-	return new URL(`@/assets/${normalized}`, import.meta.url).href
+	if (/^https?:\/\//i.test(relativePath)) {
+		return relativePath
+	}
+
+	return fallbackCategoryImage
 }
-
-const fallbackCategoryImage = new URL('@/assets/images/generica.png', import.meta.url).href
 
 const HomePage = () => {
 
