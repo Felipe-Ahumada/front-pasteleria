@@ -1,178 +1,154 @@
-import type { FormEvent } from 'react'
+// components/menu/MenuFilters.tsx
+import type { ChangeEvent } from "react";
+import type { FilterValues } from "@/hooks/menu/useMenuFilters";
 
-import { Button } from '@/components/common'
-import menuData from '@/data/menu_datos.json'
-type Producto = (typeof menuData)['categorias'][number]['productos'][number]
-import type { FilterValues } from '@/utils/validations/filtersValidations'
-import type { ValidationErrors } from '@/utils/validations/types'
+export type OrderOption = "name-asc" | "name-desc" | "price-asc" | "price-desc";
 
-export type OrderOption = 'name-asc' | 'name-desc' | 'price-asc' | 'price-desc'
+export interface MenuFiltersProps {
+  categories: { id_categoria: number; nombre_categoria: string }[];
+  productOptions: { codigo_producto: string; nombre_producto: string }[];
 
-type Category = {
-	id_categoria: number
-	nombre_categoria: string
-}
+  orderOptions: { value: OrderOption; label: string }[];
 
+  selectedCategory: number | null;
+  selectedProductCode: string | null;
 
-export type MenuFiltersProps = {
-	categories: Category[]
-	productOptions: Array<Pick<Producto, 'codigo_producto' | 'nombre_producto'>>
-	orderOptions: { value: OrderOption; label: string }[]
-	selectedCategory: 'all' | number
-	selectedProductCode: 'all' | Producto['codigo_producto']
-	minPrice: string
-	maxPrice: string
-	sortOrder: OrderOption
-	errors: ValidationErrors<FilterValues>
-	onCategoryChange: (value: 'all' | number) => void
-	onProductChange: (value: 'all' | Producto['codigo_producto']) => void
-	onMinPriceChange: (value: string) => void
-	onMaxPriceChange: (value: string) => void
-	onSortChange: (value: OrderOption) => void
-	onReset: () => void
+  minPrice: number | "";
+  maxPrice: number | "";
+
+  sortOrder: OrderOption;
+  errors: Partial<Record<keyof FilterValues, string>>;
+
+  onCategoryChange: (value: number | null) => void;
+  onProductChange: (value: string | null) => void;
+  onMinPriceChange: (value: number | "") => void;
+  onMaxPriceChange: (value: number | "") => void;
+  onSortChange: (value: OrderOption) => void;
+
+  onReset: () => void;
 }
 
 const MenuFilters = ({
-	categories,
-	productOptions,
-	orderOptions,
-	selectedCategory,
-	selectedProductCode,
-	minPrice,
-	maxPrice,
-	sortOrder,
-	errors,
-	onCategoryChange,
-	onProductChange,
-	onMinPriceChange,
-	onMaxPriceChange,
-	onSortChange,
-	onReset,
+  categories,
+  productOptions,
+  orderOptions,
+
+  selectedCategory,
+  selectedProductCode,
+  minPrice,
+  maxPrice,
+  sortOrder,
+  errors,
+
+  onCategoryChange,
+  onProductChange,
+  onMinPriceChange,
+  onMaxPriceChange,
+  onSortChange,
+  onReset,
 }: MenuFiltersProps) => {
-	const blockNonDigitInput = (event: FormEvent<HTMLInputElement>) => {
-		const inputEvent = event.nativeEvent as InputEvent
-		const inputType = inputEvent.inputType ?? ''
+  return (
+    <div className="card card-soft shadow-soft mb-4 p-3">
+      <div className="row g-3">
+        {/* Categorías */}
+        <div className="col-md-3">
+          <label className="form-label fw-semibold">Categoría</label>
+          <select
+            className="form-select"
+            value={selectedCategory ?? ""}
+            onChange={(e) =>
+              onCategoryChange(e.target.value ? Number(e.target.value) : null)
+            }
+          >
+            <option value="">Todas</option>
+            {categories.map((c) => (
+              <option key={c.id_categoria} value={c.id_categoria}>
+                {c.nombre_categoria}
+              </option>
+            ))}
+          </select>
+        </div>
 
-		if (inputType.startsWith('delete') || inputType === 'insertReplacementText') {
-			return
-		}
+        {/* Productos */}
+        <div className="col-md-3">
+          <label className="form-label fw-semibold">Producto</label>
+          <select
+            className="form-select"
+            value={selectedProductCode ?? ""}
+            onChange={(e) =>
+              onProductChange(e.target.value || null)
+            }
+          >
+            <option value="">Todos</option>
+            {productOptions.map((p) => (
+              <option key={p.codigo_producto} value={p.codigo_producto}>
+                {p.nombre_producto}
+              </option>
+            ))}
+          </select>
+        </div>
 
-		const insertedValue = inputEvent.data ?? ''
+        {/* Precio mínimo */}
+        <div className="col-md-2">
+          <label className="form-label fw-semibold">Precio mínimo</label>
+          <input
+            type="number"
+            min={0}
+            className={`form-control ${errors.minPrice ? "is-invalid" : ""}`}
+            value={minPrice}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              const v = e.target.value;
+              onMinPriceChange(v === "" ? "" : Number(v));
+            }}
+          />
+          {errors.minPrice && (
+            <div className="invalid-feedback">{errors.minPrice}</div>
+          )}
+        </div>
 
-		if (insertedValue.length === 0) {
-			return
-		}
+        {/* Precio máximo */}
+        <div className="col-md-2">
+          <label className="form-label fw-semibold">Precio máximo</label>
+          <input
+            type="number"
+            min={0}
+            className={`form-control ${errors.maxPrice ? "is-invalid" : ""}`}
+            value={maxPrice}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              const v = e.target.value;
+              onMaxPriceChange(v === "" ? "" : Number(v));
+            }}
+          />
+          {errors.maxPrice && (
+            <div className="invalid-feedback">{errors.maxPrice}</div>
+          )}
+        </div>
 
-		if (!/^[0-9]+$/.test(insertedValue)) {
-			event.preventDefault()
-		}
-	}
+        {/* Orden */}
+        <div className="col-md-2">
+          <label className="form-label fw-semibold">Ordenar por</label>
+          <select
+            className="form-select"
+            value={sortOrder}
+            onChange={(e) => onSortChange(e.target.value as OrderOption)}
+          >
+            {orderOptions.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
 
-	return (
-		<div className="menu-toolbar shadow-soft mb-4">
-			<div className="row g-3 align-items-end">
-				<div className="col-12 col-lg-2">
-					<label className="form-label fw-semibold" htmlFor="categoryFilter">
-						Categoría
-					</label>
-					<select
-						id="categoryFilter"
-						className="form-select"
-						value={selectedCategory === 'all' ? 'all' : String(selectedCategory)}
-						onChange={(event) => {
-							const { value } = event.target
-							onCategoryChange(value === 'all' ? 'all' : Number(value))
-						}}
-					>
-						<option value="all">Todas</option>
-						{categories.map((categoria) => (
-							<option key={categoria.id_categoria} value={categoria.id_categoria}>
-								{categoria.nombre_categoria}
-							</option>
-						))}
-					</select>
-				</div>
-				<div className="col-12 col-lg-2">
-					<label className="form-label fw-semibold" htmlFor="productFilter">
-						Producto
-					</label>
-					<select
-						id="productFilter"
-						className="form-select"
-						value={selectedProductCode === 'all' ? 'all' : selectedProductCode}
-						onChange={(event) => {
-							const { value } = event.target
-							onProductChange(value === 'all' ? 'all' : (value as Producto['codigo_producto']))
-						}}
-						disabled={productOptions.length === 0}
-					>
-						<option value="all">Todos</option>
-						{productOptions.map((item) => (
-							<option key={item.codigo_producto} value={item.codigo_producto}>
-								{item.nombre_producto}
-							</option>
-						))}
-					</select>
-				</div>
-				<div className="col-6 col-lg-2">
-					<label className="form-label fw-semibold" htmlFor="priceMin">
-						Precio mín.
-					</label>
-					<input
-						type="text"
-						inputMode="numeric"
-						pattern="[0-9]*"
-						id="priceMin"
-						className={`form-control${errors.precioMin ? ' is-invalid' : ''}`}
-						placeholder="0"
-						value={minPrice}
-						onBeforeInput={blockNonDigitInput}
-						onChange={(event) => onMinPriceChange(event.target.value)}
-					/>
-					{errors.precioMin ? <div className="invalid-feedback d-block">{errors.precioMin}</div> : null}
-				</div>
-				<div className="col-6 col-lg-2">
-					<label className="form-label fw-semibold" htmlFor="priceMax">
-						Precio máx.
-					</label>
-					<input
-						type="text"
-						inputMode="numeric"
-						pattern="[0-9]*"
-						id="priceMax"
-						className={`form-control${errors.precioMax ? ' is-invalid' : ''}`}
-						placeholder="∞"
-						value={maxPrice}
-						onBeforeInput={blockNonDigitInput}
-						onChange={(event) => onMaxPriceChange(event.target.value)}
-					/>
-					{errors.precioMax ? <div className="invalid-feedback d-block">{errors.precioMax}</div> : null}
-				</div>
-				<div className="col-12 col-lg-2">
-					<label className="form-label fw-semibold" htmlFor="orderSelect">
-						Ordenar
-					</label>
-					<select
-						id="orderSelect"
-						className="form-select"
-						value={sortOrder}
-						onChange={(event) => onSortChange(event.target.value as OrderOption)}
-					>
-						{orderOptions.map((option) => (
-							<option key={option.value} value={option.value}>
-								{option.label}
-							</option>
-						))}
-					</select>
-				</div>
-				<div className="col-12 col-lg-2 d-flex align-items-end justify-content-center justify-content-lg-start">
-					<Button type="button" variant="mint" className="w-100" onClick={onReset}>
-						Limpiar
-					</Button>
-				</div>
-			</div>
-		</div>
-	)
-}
+      {/* Botón reset */}
+      <div className="text-end mt-3">
+        <button className="btn btn-mint" onClick={onReset}>
+          Limpiar filtros
+        </button>
+      </div>
+    </div>
+  );
+};
 
-export default MenuFilters
+export default MenuFilters;

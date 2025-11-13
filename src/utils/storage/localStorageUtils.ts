@@ -1,60 +1,81 @@
-const isBrowser = typeof window !== 'undefined'
+// utils/storage/localStorageUtils.ts
 
+const isBrowser = typeof window !== "undefined";
+
+/** Parseo seguro */
 const safeParse = <T>(value: string | null, fallback: T): T => {
-	if (!value) {
-		return fallback
-	}
+  if (!value) return fallback;
 
-	try {
-		return JSON.parse(value) as T
-	} catch (error) {
-		console.warn('No fue posible leer los datos desde localStorage', error)
-		return fallback
-	}
-}
+  try {
+    return JSON.parse(value) as T;
+  } catch (error) {
+    console.warn("No fue posible leer datos de localStorage:", error);
+    return fallback;
+  }
+};
 
+/** Leer JSON tipado */
+export const readJSON = <T>(key: string, fallback: T): T => {
+  if (!isBrowser) return fallback;
+
+  const raw = window.localStorage.getItem(key);
+  return safeParse<T>(raw, fallback);
+};
+
+/** Guardar JSON tipado */
+export const writeJSON = (key: string, value: unknown): void => {
+  if (!isBrowser) return;
+
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  } catch (error) {
+    console.warn("No fue posible guardar datos en localStorage:", error);
+  }
+};
+
+/** Eliminar */
+export const removeJSON = (key: string): void => {
+  if (!isBrowser) return;
+  window.localStorage.removeItem(key);
+};
+
+/** Leer array garantizado */
+export const readArray = <T>(key: string): T[] => {
+  return readJSON<T[]>(key, []);
+};
+
+/** Agregar elemento a un array */
+export const pushToArray = <T>(key: string, item: T): void => {
+  const arr = readArray<T>(key);
+  arr.push(item);
+  writeJSON(key, arr);
+};
+
+/* -------------------------------------------------------------
+ * ALIAS DE COMPATIBILIDAD (NO BORRAR - NECESARIOS PARA TU APP)
+ * ------------------------------------------------------------- */
+
+/** LEGACY: getLocalData */
 export const getLocalData = <T>(key: string): T[] => {
-	if (!isBrowser) {
-		return []
-	}
+  return readArray<T>(key);
+};
 
-	return safeParse<T[]>(window.localStorage.getItem(key), [])
-}
-
+/** LEGACY: setLocalData */
 export const setLocalData = <T>(key: string, data: T[]): void => {
-	if (!isBrowser) {
-		return
-	}
+  writeJSON(key, data);
+};
 
-	window.localStorage.setItem(key, JSON.stringify(data))
-}
-
-export const appendLocalData = <T>(key: string, item: T): void => {
-	const data = getLocalData<T>(key)
-	data.push(item)
-	setLocalData(key, data)
-}
-
+/** LEGACY: getLocalItem (devuelve un objeto o null) */
 export const getLocalItem = <T>(key: string): T | null => {
-	if (!isBrowser) {
-		return null
-	}
+  return readJSON<T | null>(key, null);
+};
 
-	return safeParse<T | null>(window.localStorage.getItem(key), null)
-}
+/** LEGACY: setLocalItem */
+export const setLocalItem = <T>(key: string, value: T): void => {
+  writeJSON(key, value);
+};
 
-export const setLocalItem = <T>(key: string, item: T): void => {
-	if (!isBrowser) {
-		return
-	}
-
-	window.localStorage.setItem(key, JSON.stringify(item))
-}
-
+/** LEGACY: removeLocalItem */
 export const removeLocalItem = (key: string): void => {
-	if (!isBrowser) {
-		return
-	}
-
-	window.localStorage.removeItem(key)
-}
+  removeJSON(key);
+};
