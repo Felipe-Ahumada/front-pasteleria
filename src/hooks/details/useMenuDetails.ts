@@ -16,8 +16,10 @@ export function useMenuDetails() {
   const { productCode } = useParams<{ productCode: string }>();
   const code = (productCode ?? "").toUpperCase();
 
+  // Todos los productos desde el service (cacheado)
   const all: Producto[] = useMemo(() => menuService.getCached(), []);
 
+  // Producto activo
   const producto = useMemo(
     () => all.find((p) => p.id.toUpperCase() === code),
     [all, code]
@@ -25,17 +27,27 @@ export function useMenuDetails() {
 
   const categoria = producto?.categoria ?? null;
 
-  const quantity = useDetailQuantity(producto);
-  const message = useDetailMessage(producto);
-  const gallery = useProductGallery(producto);
-  const feedback = useCardFeedback();
-  const recommended = useDetailRecommend(producto, all);
-
+  // Carrito + stock restante
   const cart = useDetailCart(producto);
-
   const stockRestante = cart.getRemainingStock();
   const isOutOfStock = stockRestante <= 0;
 
+  // CANTIDAD (corregido → ahora depende del stockRestante)
+  const quantity = useDetailQuantity(stockRestante);
+
+  // MENSAJE
+  const message = useDetailMessage(producto);
+
+  // GALERÍA
+  const gallery = useProductGallery(producto);
+
+  // FEEDBACK
+  const feedback = useCardFeedback();
+
+  // RECOMENDADOS
+  const recommended = useDetailRecommend(producto, all);
+
+  // AÑADIR AL CARRITO
   const addToCart = () => {
     if (!producto || isOutOfStock) return;
 
@@ -50,6 +62,7 @@ export function useMenuDetails() {
       return;
     }
 
+    // Respeta stock restante
     cart.addToCart(cantidad, msg);
 
     feedback.scheduleFeedback({
@@ -57,6 +70,7 @@ export function useMenuDetails() {
       tone: "success",
     });
 
+    // Reset de cantidad y mensaje
     quantity.resetQuantity();
     message.resetMessage();
   };
@@ -66,26 +80,32 @@ export function useMenuDetails() {
     categoria,
     recommended,
 
+    /** Cantidad */
     quantity: quantity.quantity,
     maxQuantity: quantity.maxQuantity,
     handleQuantityChange: quantity.handleQuantityChange,
     handleQuantityBlur: quantity.handleQuantityBlur,
     resetQuantity: quantity.resetQuantity,
 
+    /** Mensaje */
     mensaje: message.mensaje,
     handleMessageChange: message.handleMessageChange,
     resetMessage: message.resetMessage,
 
+    /** Galería */
     gallery: gallery.gallery,
     primaryImage: gallery.primaryImage,
     selectedImage: gallery.selectedImage,
     setSelectedImage: gallery.setSelectedImage,
 
+    /** Feedback */
     feedback: feedback.feedback,
     scheduleFeedback: feedback.scheduleFeedback,
 
+    /** Carrito */
     addToCart,
 
+    /** Stock */
     stockRestante,
     isOutOfStock,
   };

@@ -13,6 +13,7 @@ import {
 } from "@/hooks/menu/useMenuFilters";
 
 import { useMenuShare } from "@/hooks/menu/useMenuShare";
+import { menuService } from "@/service/menuService";
 
 /* ===========================================================
    IMÁGENES DEL CATÁLOGO
@@ -65,7 +66,7 @@ const allProducts: EnrichedProduct[] = menuData.categorias.flatMap(
       descripción_producto: p.descripción_producto,
       categoriaId: categoria.id_categoria,
       categoriaNombre: categoria.nombre_categoria,
-      stock: p.stock, // ← requerido y seguro
+      stock: p.stock,
     }))
 );
 
@@ -102,7 +103,7 @@ const MenuPage = () => {
   const totalProductos = filteredProducts.length;
 
   /* ================= HOOK DEL CARRITO ================= */
-  const { addItem } = useCart();
+  const { addItem, items } = useCart();
 
   /* ================= SHARING ================= */
   const { handleShare } = useMenuShare();
@@ -126,9 +127,24 @@ const MenuPage = () => {
     }, 3000);
   };
 
+  /* Helper: cuántas unidades de este producto hay en el carrito (todas las variantes) */
+  const getCantidadEnCarrito = (codigo: string) =>
+    items
+      .filter((i) => i.codigo === codigo)
+      .reduce((acc, i) => acc + i.cantidad, 0);
+
   /* ================= AÑADIR AL CARRITO ================= */
   const handleAddToCart = (item: EnrichedProduct) => {
-    if (item.stock <= 0) {
+    // Stock real desde menuService
+    const productos = menuService.getCached();
+    const real = productos.find((p) => p.id === item.codigo_producto);
+    const stockReal = real?.stock ?? 0;
+
+    // Ya no solo stockReal: usamos stock restante
+    const enCarrito = getCantidadEnCarrito(item.codigo_producto);
+    const disponible = stockReal - enCarrito;
+
+    if (disponible <= 0) {
       scheduleCardFeedback(item.codigo_producto, {
         text: "Sin stock disponible",
         tone: "danger",
@@ -136,6 +152,7 @@ const MenuPage = () => {
       return;
     }
 
+    // Ahora sí es válido agregar (hay al menos 1 disponible)
     addItem({
       codigo: item.codigo_producto,
       nombre: item.nombre_producto,
@@ -220,79 +237,115 @@ const MenuPage = () => {
           </div>
         ) : (
           <div className="row g-4">
-            {filteredProducts.map((item) => (
-              <div className="col-12 col-md-6 col-lg-4" key={item.codigo_producto}>
-                <div className="card card-soft shadow-soft h-100 product-card">
-                  <Link
-                    to={`/menu/${item.codigo_producto}`}
-                    className="ratio ratio-4x3"
-                  >
-                    <img
-                      src={formatImagePath(item.imagen_producto)}
-                      alt={item.nombre_producto}
-                      className="w-100 h-100 object-fit-cover"
-                      loading="lazy"
-                    />
-                  </Link>
+            {filteredProducts.map((item) => {
+              // Stock real
+              const productos = menuService.getCached();
+              const real = productos.find(
+                (p) => p.id === item.codigo_producto
+              );
+              const stockReal = real?.stock ?? 0;
 
-                  <div className="card-body d-flex flex-column text-center gap-2">
-                    <p className="text-uppercase small text-muted mb-1">
-                      {item.categoriaNombre}
-                    </p>
+              // Stock restante considerando lo que ya está en el carrito
+              const enCarrito = getCantidadEnCarrito(item.codigo_producto);
+              const disponible = stockReal - enCarrito;
 
-                    <h3 className="h5 mb-0">{item.nombre_producto}</h3>
+              return (
+                <div
+                  className="col-12 col-md-6 col-lg-4"
+                  key={item.codigo_producto}
+                >
+                  <div className="card card-soft shadow-soft h-100 product-card">
+                    <Link
+                      to={`/menu/${item.codigo_producto}`}
+                      className="ratio ratio-4x3"
+                    >
+                      <img
+                        src={formatImagePath(item.imagen_producto)}
+                        alt={item.nombre_producto}
+                        className="w-100 h-100 object-fit-cover"
+                        loading="lazy"
+                      />
+                    </Link>
 
-                    <p className="fw-semibold mb-0">
-                      {formatPrice(item.precio_producto)}
-                    </p>
+                    <div className="card-body d-flex flex-column text-center gap-2">
+                      <p className="text-uppercase small text-muted mb-1">
+                        {item.categoriaNombre}
+                      </p>
 
-                    <p className="text-muted flex-grow-1">
-                      {item.descripción_producto}
-                    </p>
+                      <h3 className="h5 mb-0">{item.nombre_producto}</h3>
 
-                    <div className="d-grid gap-2">
-                      <Button
-                        as="link"
-                        to={`/menu/${item.codigo_producto}`}
-                        variant="strawberry"
-                        block
-                      >
-                        Ver detalle y personalizar
-                      </Button>
+                      <p className="fw-semibold mb-0">
+                        {formatPrice(item.precio_producto)}
+                      </p>
 
-                      <Button
-                        variant="mint"
-                        block
-                        onClick={() => handleAddToCart(item)}
-                      >
-                        <i className="bi bi-cart-plus" /> Añadir al carrito
-                      </Button>
+                      <p className="text-muted flex-grow-1">
+                        {item.descripción_producto}
+                      </p>
 
-                      <Button
-                        variant="mint"
-                        block
-                        onClick={() => handleShare(item)}
-                      >
-                        <i className="bi bi-share" /> Compartir
-                      </Button>
-
-                      {cardFeedbacks[item.codigo_producto] && (
-                        <div
-                          className={`small ${
-                            cardFeedbacks[item.codigo_producto]?.tone ===
-                            "danger"
-                              ? "text-danger"
-                              : "text-success"
-                          }`}
+                      <div className="d-grid gap-2">
+                        <Button
+                          as="link"
+                          to={`/menu/${item.codigo_producto}`}
+                          variant="strawberry"
+                          block
                         >
-                          {cardFeedbacks[item.codigo_producto]?.text}
-                        </div>
-                      )}
+                          Ver detalle y personalizar
+                        </Button>
+
+                        {/* BOTÓN AÑADIR / SIN STOCK RESTANTE */}
+                        <Button
+                          variant="mint"
+                          block
+                          disabled={disponible <= 0}
+                          onClick={() => handleAddToCart(item)}
+                          className={disponible <= 0 ? "opacity-75" : ""}
+                        >
+                          {disponible <= 0 ? (
+                            <>
+                              <i className="bi bi-x-circle" /> Sin stock
+                              disponible
+                            </>
+                          ) : (
+                            <>
+                              <i className="bi bi-cart-plus" /> Añadir al
+                              carrito
+                            </>
+                          )}
+                        </Button>
+
+                        {/* MENSAJE DE STOCK */}
+                        {disponible <= 0 && (
+                          <p className="small text-danger mb-0">
+                            No hay stock disponible para este producto.
+                          </p>
+                        )}
+
+                        <Button
+                          variant="mint"
+                          block
+                          onClick={() => handleShare(item)}
+                        >
+                          <i className="bi bi-share" /> Compartir
+                        </Button>
+
+                        {cardFeedbacks[item.codigo_producto] && (
+                          <div
+                            className={`small ${
+                              cardFeedbacks[item.codigo_producto]?.tone ===
+                              "danger"
+                                ? "text-danger"
+                                : "text-success"
+                            }`}
+                          >
+                            {cardFeedbacks[item.codigo_producto]?.text}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
