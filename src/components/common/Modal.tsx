@@ -1,78 +1,73 @@
-import type { ReactNode } from 'react'
+import { useEffect } from "react";
+import type { ReactNode } from "react";
+import cx from "@/utils/cx";
+import "./modal.css";
 
-import cx from '@/utils/cx'
-
-type ModalSize = 'sm' | 'lg' | 'xl'
-
-interface ModalProps {
-	id: string
-	children: ReactNode
-	title?: ReactNode
-	footer?: ReactNode
-	size?: ModalSize
-	centered?: boolean
-	scrollable?: boolean
-	staticBackdrop?: boolean
-	className?: string
-	showCloseButton?: boolean
+export interface ModalProps {
+  open: boolean;
+  onClose: () => void;
+  children: ReactNode;
+  title?: ReactNode;
+  footer?: ReactNode;
+  className?: string;
+  showCloseButton?: boolean;
 }
 
 const Modal = ({
-	id,
-	children,
-	title,
-	footer,
-	size,
-	centered,
-	scrollable,
-	staticBackdrop,
-	className,
-	showCloseButton = true,
+  open,
+  onClose,
+  children,
+  title,
+  footer,
+  className,
+  showCloseButton = true,
 }: ModalProps) => {
-	const labelledBy = title ? `${id}-label` : undefined
-	const dialogClass = cx(
-		'modal-dialog',
-		size ? `modal-${size}` : null,
-		centered ? 'modal-dialog-centered' : null,
-		scrollable ? 'modal-dialog-scrollable' : null,
-	)
-	const contentClass = cx('modal-content', className)
 
-	return (
-		<div
-			className="modal fade"
-			id={id}
-			tabIndex={-1}
-			aria-labelledby={labelledBy}
-			aria-hidden="true"
-			data-bs-backdrop={staticBackdrop ? 'static' : undefined}
-			data-bs-keyboard={staticBackdrop ? 'false' : undefined}
-		>
-			<div className={dialogClass}>
-				<div className={contentClass}>
-					{title || showCloseButton ? (
-						<div className="modal-header">
-							{title ? (
-								<h5 className="modal-title" id={labelledBy}>
-									{title}
-								</h5>
-							) : null}
-							{showCloseButton ? (
-								<button
-									type="button"
-									className="btn-close"
-									data-bs-dismiss="modal"
-									aria-label="Close"
-								/>
-							) : null}
-						</div>
-					) : null}
-					<div className="modal-body">{children}</div>
-					{footer ? <div className="modal-footer">{footer}</div> : null}
-				</div>
-			</div>
-		</div>
-	)
-}
+  // Bloqueo de scroll + ESC
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
 
-export default Modal
+    if (open) {
+      document.body.style.overflow = "hidden";
+      window.addEventListener("keydown", handler);
+    } else {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handler);
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handler);
+    };
+  }, [open, onClose]);
+
+  if (!open) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div
+        className={cx("modal-panel", className)}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {(title || showCloseButton) && (
+          <div className="modal-header">
+            {title && <h5 className="modal-title">{title}</h5>}
+            {showCloseButton && (
+              <button className="modal-close" onClick={onClose}>
+                ×
+              </button>
+            )}
+          </div>
+        )}
+
+        <div className="modal-body">{children}</div>
+
+        {footer && <div className="modal-footer">{footer}</div>}
+      </div>
+    </div>
+  );
+};
+
+export default Modal;

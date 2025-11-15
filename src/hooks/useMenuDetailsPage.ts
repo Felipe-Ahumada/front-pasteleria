@@ -20,7 +20,7 @@ export const useMenuDetailsPage = () => {
 
   useEffect(() => {
     const load = async () => {
-      const all = await menuService.getAll();
+      const all = menuService.getCached();
       const found = all.find((p) => p.id.toLowerCase() === productCode?.toLowerCase());
       setProducto(found ?? null);
 

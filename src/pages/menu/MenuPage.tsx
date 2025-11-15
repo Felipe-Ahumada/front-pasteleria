@@ -56,19 +56,24 @@ const formatPrice = (value: number) =>
    PROCESAR DATOS
 =========================================================== */
 
-const allProducts: EnrichedProduct[] = menuData.categorias.flatMap(
-  (categoria) =>
-    categoria.productos.map((p) => ({
-      codigo_producto: p.codigo_producto,
-      nombre_producto: p.nombre_producto,
-      precio_producto: p.precio_producto,
-      imagen_producto: p.imagen_producto,
-      descripción_producto: p.descripción_producto,
-      categoriaId: categoria.id_categoria,
-      categoriaNombre: categoria.nombre_categoria,
-      stock: p.stock,
-    }))
-);
+const allProducts: EnrichedProduct[] = menuService.getCached().map((p) => ({
+  codigo_producto: p.id,
+  nombre_producto: p.nombre,
+  precio_producto: p.precio,
+  imagen_producto: p.imagen,
+  descripción_producto: p.descripcion,
+  
+  // Convertimos la categoría en ID numérico consistente
+  categoriaId: Math.abs(
+    Array.from(p.categoria)
+      .reduce((acc, char) => acc + char.charCodeAt(0), 0)
+  ),
+
+  categoriaNombre: p.categoria,
+  stock: p.stock,
+}));
+
+
 
 /* ===========================================================
    COMPONENTE PRINCIPAL

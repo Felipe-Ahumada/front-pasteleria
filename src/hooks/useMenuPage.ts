@@ -47,7 +47,8 @@ export function useMenuPage() {
 
     const load = async () => {
       try {
-        const data = await menuService.getAll();
+        const data = menuService.getCached();
+
         if (active) {
           setProductos(data);
           setLoading(false);
