@@ -5,6 +5,7 @@ import { Modal, Button, Input } from "@/components/common";
 import { CATEGORIAS } from "@/utils/categories";
 import { validateProduct } from "@/utils/validations/productValidations";
 import { generateProductCode } from "@/utils/code/generateProductCode";
+import { defaultProductImage } from "@/assets";
 
 interface Props {
   open: boolean;
@@ -49,7 +50,7 @@ const ProductFormModal = ({ open, onClose, producto, onSaved }: Props) => {
         stock: 0,
         categoria: categoriaInicial,
         stock_critico: 3,
-        imagen: "/src/assets/images/generica.png",
+        imagen: defaultProductImage,
         imagenes_detalle: [],
       });
     }

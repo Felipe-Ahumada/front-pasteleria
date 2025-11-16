@@ -20,28 +20,37 @@ export interface CarouselItem {
 
 const carouselId = "homeCarousel";
 
+const CAROUSEL_IMAGES = {
+  menu: "https://res.cloudinary.com/dx83p4455/image/upload/v1762263515/carrusel_carta_oznheh.jpg",
+  about:
+    "https://res.cloudinary.com/dx83p4455/image/upload/v1762263484/diversos_productos_cautgn.jpg",
+  blog: "https://res.cloudinary.com/dx83p4455/image/upload/v1762263515/carrusel_blog_knmeix.jpg",
+  social:
+    "https://res.cloudinary.com/dx83p4455/image/upload/v1762263516/diversidad_pasteles_ttxbx1.jpg",
+} as const;
+
 const carouselData: CarouselItem[] = [
   {
     id: "menu",
-    image: new URL("@/assets/images/carrusel/carrusel_carta.jpg", import.meta.url).href,
+    image: CAROUSEL_IMAGES.menu,
     alt: "Torta con frutas",
     caption: { type: "internal", ctaLabel: "Ver carta", to: "/menu" },
   },
   {
     id: "about",
-    image: new URL("@/assets/images/carrusel/carrusel_nosotros.jpg", import.meta.url).href,
+    image: CAROUSEL_IMAGES.about,
     alt: "Vitrina de pastelería",
     caption: { type: "internal", ctaLabel: "Conócenos", to: "/about" },
   },
   {
     id: "blog",
-    image: new URL("@/assets/images/carrusel/carrusel_blog.jpg", import.meta.url).href,
+    image: CAROUSEL_IMAGES.blog,
     alt: "Persona usando laptop",
     caption: { type: "internal", ctaLabel: "Visita nuestro blog", to: "/blog" },
   },
   {
     id: "social",
-    image: new URL("@/assets/images/carrusel/diversidad_pasteles.jpg", import.meta.url).href,
+    image: CAROUSEL_IMAGES.social,
     alt: "Vitrina con variedad de pasteles",
     overlay: {
       title: "TRIVIA MIL SABORES",

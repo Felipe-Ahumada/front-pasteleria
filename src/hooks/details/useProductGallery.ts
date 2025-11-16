@@ -22,8 +22,12 @@ export function useProductGallery(producto?: Producto) {
     // Slug basado en "nombre"
     const slug = toSlug(producto.nombre);
 
-    // Imágenes extras
-    const extras = detailImageMap[slug] ?? [];
+    // Imágenes extras desde el producto + catálogo estático
+    const extrasFromProduct = (producto.imagenes_detalle ?? []).map(
+      formatImagePath
+    );
+    const extrasFromAssets = detailImageMap[slug] ?? [];
+    const extras = [...extrasFromProduct, ...extrasFromAssets];
 
     // Imagen principal normalizada
     const main = formatImagePath(producto.imagen);

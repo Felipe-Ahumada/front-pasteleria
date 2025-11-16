@@ -14,37 +14,7 @@ import {
 
 import { useMenuShare } from "@/hooks/menu/useMenuShare";
 import { menuService } from "@/service/menuService";
-
-/* ===========================================================
-   IMÁGENES DEL CATÁLOGO
-=========================================================== */
-const catalogImages = import.meta.glob("@/assets/images/catalog/**/*", {
-  import: "default",
-  eager: true,
-}) as Record<string, string>;
-
-const catalogImageMap = Object.entries(catalogImages).reduce<
-  Record<string, string>
->((acc, [path, src]) => {
-  const fileName = path.split("/").pop();
-  if (fileName) acc[fileName] = src;
-  return acc;
-}, {});
-
-const formatImagePath = (relativePath: string) => {
-  const fileName = relativePath.split("/").pop();
-
-  if (fileName && catalogImageMap[fileName]) {
-    return catalogImageMap[fileName];
-  }
-
-  const normalized = relativePath
-    .replace(/^img\//, "images/")
-    .replace("catalogo", "catalog");
-
-  return new URL(`@/assets/${normalized}`, import.meta.url).href;
-};
-
+import { formatImagePath } from "@/utils/storage/imageHelpers";
 const formatPrice = (value: number) =>
   value.toLocaleString("es-CL", {
     style: "currency",

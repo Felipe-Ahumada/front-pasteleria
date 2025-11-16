@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
 import "./admin.css";
+import { logoImage } from "@/assets";
 
 const AdminLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -11,7 +12,7 @@ const AdminLayout = () => {
       <aside className="admin-sidebar">
         <div className="admin-brand">
           <img
-            src="/src/assets/images/logo_tienda.png"
+            src={logoImage}
             alt="Mil Sabores"
             className="admin-logo"
           />

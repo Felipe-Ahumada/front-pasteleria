@@ -1,4 +1,10 @@
 import menuData from "@/data/menu_datos.json";
+import {
+  detailImageMap,
+  fallbackProductImage,
+  formatImagePath,
+  toSlug,
+} from "@/utils/storage/imageHelpers";
 
 /* ===========================================================
    TIPOS BASE DEL JSON
@@ -9,6 +15,7 @@ export interface ProductoJSON {
   precio_producto: number;
   descripción_producto: string;
   imagen_producto: string;
+  imagenes_detalle?: string[];
   stock: number;
   stock_critico: number;
 }
@@ -38,63 +45,20 @@ export interface Producto {
   stock: number;
   stock_critico?: number;
 }
+const FALLBACK_IMAGE = fallbackProductImage;
 
-/* ===========================================================
-   MAPEO DE IMÁGENES LOCALES
-=========================================================== */
-const MAIN_IMAGES = import.meta.glob("/src/assets/images/catalog/*", {
-  import: "default",
-  eager: true,
-}) as Record<string, string>;
+const mergeDetailImages = (
+  slug: string,
+  raw?: string[]
+): string[] => {
+  const fromJson = (raw ?? []).map(formatImagePath).filter(Boolean);
+  const fromAssets = detailImageMap[slug] ?? [];
 
-const DETAIL_IMAGES = import.meta.glob("/src/assets/images/catalog_detail/*", {
-  import: "default",
-  eager: true,
-}) as Record<string, string>;
+  const combined = [...fromJson, ...fromAssets];
+  const unique = Array.from(new Set(combined.filter(Boolean)));
 
-/* -----------------------------------------------------------
-   image: "img/catalogo/torta_x.jpg" → "torta_x.jpg"
------------------------------------------------------------ */
-const resolveMainImage = (relative: string): string => {
-  const clean = relative.replace("img/catalogo/", ""); // FIX CLAVE
-
-  const match = Object.entries(MAIN_IMAGES).find(([path]) =>
-    path.endsWith(clean)
-  );
-
-  return (
-    match?.[1] ??
-    new URL("/src/assets/images/generica.png", import.meta.url).href
-  );
+  return unique;
 };
-
-/* -----------------------------------------------------------
-   Construir mapa de imágenes de detalle agrupadas
------------------------------------------------------------ */
-const buildDetailMap = (): Record<string, string[]> => {
-  const map: Record<string, string[]> = {};
-
-  for (const [path, src] of Object.entries(DETAIL_IMAGES)) {
-    const file = path.split("/").pop() ?? "";
-    const base = file.replace(/\.[^/.]+$/, "");
-    const slug = base.replace(/_\d+$/, "");
-
-    if (!map[slug]) map[slug] = [];
-    map[slug].push(src);
-  }
-  return map;
-};
-
-const DETAIL_MAP = buildDetailMap();
-
-/* Utilidad para normalizar nombres */
-const toSlug = (value: string) =>
-  value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "_")
-    .replace(/^_+|_+$/g, "");
 
 /* ===========================================================
    NORMALIZACIÓN JSON → PRODUCTOS
@@ -105,17 +69,16 @@ const mapJsonToProductos = (data: MenuJSON): Producto[] => {
   for (const categoria of data.categorias) {
     for (const p of categoria.productos) {
       const slug = toSlug(p.nombre_producto);
+      const imagenPrincipal = formatImagePath(p.imagen_producto);
+      const imagenesDetalle = mergeDetailImages(slug, p.imagenes_detalle);
 
       result.push({
         id: p.codigo_producto,
         nombre: p.nombre_producto,
         descripcion: p.descripción_producto,
         precio: p.precio_producto,
-
-        // ← FIX: mapeo correcto de imágenes locales
-        imagen: resolveMainImage(p.imagen_producto),
-
-        imagenes_detalle: DETAIL_MAP[slug] ?? [],
+        imagen: imagenPrincipal || FALLBACK_IMAGE,
+        imagenes_detalle: imagenesDetalle,
         categoria: categoria.nombre_categoria,
         stock: p.stock,
         stock_critico: p.stock_critico,

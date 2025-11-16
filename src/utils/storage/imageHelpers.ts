@@ -1,3 +1,5 @@
+import { defaultProductImage } from "@/assets";
+
 /**
  * UTILIDADES DE IMÁGENES
  * ======================
@@ -6,6 +8,9 @@
  *  - assets/images/catalog_detail
  *  - rutas JSON "img/catalogo/archivo.jpg"
  */
+
+const REMOTE_IMAGE_PATTERN = /^https?:\/\//i;
+const FALLBACK_IMAGE = defaultProductImage;
 
 //
 // 1. SLUG NORMALIZADO
@@ -65,34 +70,46 @@ export const detailImageMap = Object.entries(detailImages).reduce<
   return acc;
 }, {});
 
+const resolveCatalogImage = (fileName?: string | null) => {
+  if (!fileName) return null;
+  return catalogImageMap[fileName] ?? null;
+};
+
+const normalizeRelativePath = (value: string) =>
+  value
+    .replace(/^\s+|\s+$/g, "")
+    .replace(/^@?\//, "")
+    .replace(/^(\.\/)+/, "")
+    .replace(/^img\//i, "images/")
+    .replace(/catalogo/gi, "catalog");
+
 //
 // 4. NORMALIZADOR DE RUTAS PRINCIPALES
-//    JSON trae rutas tipo: img/catalogo/torta.jpg
+//    Acepta rutas absolutas remotas o relativas locales
 //
 export const formatImagePath = (rawPath: string): string => {
-  if (!rawPath) {
-    return new URL("/src/assets/images/generica.png", import.meta.url).href;
+  if (!rawPath) return FALLBACK_IMAGE;
+
+  const trimmed = rawPath.trim();
+
+  if (REMOTE_IMAGE_PATTERN.test(trimmed)) {
+    return trimmed;
   }
 
-  // Extraer archivo final
-  const file = rawPath.split("/").pop();
-  if (!file) {
-    return new URL("/src/assets/images/generica.png", import.meta.url).href;
+  const directFile = trimmed.split("/").pop();
+  const directMatch = resolveCatalogImage(directFile);
+  if (directMatch) {
+    return directMatch;
   }
 
-  // Ver si existe en catálogo real
-  if (catalogImageMap[file]) {
-    return catalogImageMap[file];
+  const normalizedPath = normalizeRelativePath(trimmed);
+  const normalizedFile = normalizedPath.split("/").pop();
+  const normalizedMatch = resolveCatalogImage(normalizedFile);
+  if (normalizedMatch) {
+    return normalizedMatch;
   }
 
-  // Intento secundario: convertir old → new
-  const normalized = rawPath
-    .replace(/^img\//, "images/") // img/ → images/
-    .replace("catalogo", "catalog"); // catalogo → catalog
-
-  try {
-    return new URL(`/src/assets/${normalized}`, import.meta.url).href;
-  } catch {
-    return new URL("/src/assets/images/generica.png", import.meta.url).href;
-  }
+  return FALLBACK_IMAGE;
 };
+
+export const fallbackProductImage = FALLBACK_IMAGE;
