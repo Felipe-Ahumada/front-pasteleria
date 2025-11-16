@@ -28,8 +28,8 @@ const PrivacyPage = lazy(() => import("@/pages/legal/PrivacyPage"));
 const TermsPage = lazy(() => import("@/pages/legal/TermsPage"));
 const ResetPasswordPage = lazy(() => import("@/pages/auth/ResetPasswordPage"));
 const CheckoutPage = lazy(() => import("@/pages/checkout/CheckoutPage"));
-const OrderSuccessPage = lazy(
-  () => import("@/pages/checkout/OrderSuccessPage")
+const OrderSuccessPage = lazy(() =>
+  import("@/pages/checkout/OrderSuccessPage")
 );
 
 // 🆕 Páginas de pedidos
@@ -43,6 +43,7 @@ const UsersPage = lazy(() => import("@/pages/admin/users/UsersPage"));
 
 const BlogCreatePage = lazy(() => import("@/pages/blog/BlogCreatePage"));
 const BlogAdminPage = lazy(() => import("@/pages/admin/blog/BlogAdminPage"));
+
 
 const basename = (import.meta.env.BASE_URL ?? "/").replace(/\/*$/, "") || "/";
 
@@ -58,45 +59,18 @@ const router = createBrowserRouter(
         { path: "menu", element: <MenuPage /> },
         { path: "menu/:productCode", element: <MenuDetailsPage /> },
         { path: "blog", element: <BlogPage /> },
-        {
-          path: "blog/create",
-          element: (
-            <ProtectedRoute>
-              <BlogCreatePage />
-            </ProtectedRoute>
-          ),
-        },
+        { path: "blog/create", element: <ProtectedRoute><BlogCreatePage /></ProtectedRoute> },
+
 
         // 🛒 Carrito
         { path: "cart", element: <CartPage /> },
 
         // 👤 Perfil
-        {
-          path: "profile",
-          element: (
-            <ProtectedRoute>
-              <ProfilePage />
-            </ProtectedRoute>
-          ),
-        },
+        { path: "profile", element: <ProtectedRoute><ProfilePage /></ProtectedRoute> },
 
         // 📝 Pedidos
-        {
-          path: "orders",
-          element: (
-            <ProtectedRoute>
-              <MyOrdersPage />
-            </ProtectedRoute>
-          ),
-        },
-        {
-          path: "orders/:id",
-          element: (
-            <ProtectedRoute>
-              <OrderDetailPage />
-            </ProtectedRoute>
-          ),
-        },
+        { path: "orders", element: <ProtectedRoute><MyOrdersPage /></ProtectedRoute> },
+        { path: "orders/:id", element: <ProtectedRoute><OrderDetailPage /></ProtectedRoute> },
 
         // 🧾 Legal
         { path: "privacy", element: <PrivacyPage /> },
@@ -106,22 +80,8 @@ const router = createBrowserRouter(
         { path: "reset-password", element: <ResetPasswordPage /> },
 
         // 💳 Compra
-        {
-          path: "checkout",
-          element: (
-            <ProtectedRoute>
-              <CheckoutPage />
-            </ProtectedRoute>
-          ),
-        },
-        {
-          path: "order-success",
-          element: (
-            <ProtectedRoute>
-              <OrderSuccessPage />
-            </ProtectedRoute>
-          ),
-        },
+        { path: "checkout", element: <ProtectedRoute><CheckoutPage /></ProtectedRoute> },
+        { path: "order-success", element: <ProtectedRoute><OrderSuccessPage /></ProtectedRoute> },
       ],
     },
 
@@ -140,7 +100,8 @@ const router = createBrowserRouter(
         { path: "orders", element: <div>Gestión de Pedidos</div> },
         { path: "comments", element: <div>Comentarios</div> },
         { path: "reports", element: <div>Reportes</div> },
-        { path: "blogs", element: <BlogAdminPage /> }, // ← ESTA ES LA CORRECTA
+        { path: "blogs", element: <div>Blogs</div> },
+        { path: "blogs", element: <BlogAdminPage /> }
       ],
     },
 

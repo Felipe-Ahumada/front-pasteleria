@@ -352,26 +352,3 @@ small, .text-muted { color: var(--ink-muted) !important; }
 .breadcrumb a.breadcrumb-link--pink {
     color: var(--title-main) !important;
 }
-
-.btn-create-blog {
-  background: #f7c7d3; /* rosado pastel */
-  color: #8a3b57 !important;
-  padding: 0.6rem 1.2rem;
-  border-radius: 25px;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  font-size: 0.95rem;
-}
-
-.btn-create-blog:hover {
-  background: #f4b8c7;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-}
-
-.btn-create-blog:active {
-  transform: translateY(0);
-  box-shadow: none;
-}

@@ -1,13 +1,12 @@
 import { Link } from "react-router-dom";
 import { useBlogs } from "@/context/blog/useBlogs";
 import useAuth from "@/hooks/useAuth";
-import type { BlogPost } from "@/types/blog";
 
 const BlogPage = () => {
-  const { blogs } = useBlogs();
+  const { posts } = useBlogs();
   const { user } = useAuth();
 
-  const approved = blogs.filter((b: BlogPost) => b.status === "aprobado");
+  const approved = posts.filter(p => p.status === "aprobado");
 
   return (
     <section className="container py-5">
@@ -15,12 +14,8 @@ const BlogPage = () => {
         <h1 className="section-title">Blog</h1>
 
         {user ? (
-          <Link
-            to="/blog/create"
-            className="btn-create-blog text-decoration-none"
-          >
-            <i className="bi bi-pencil-square me-2"></i>
-            Crear Blog
+          <Link to="/blog/create" className="btn btn-mint">
+            + Crear Blog
           </Link>
         ) : null}
       </div>
@@ -29,21 +24,21 @@ const BlogPage = () => {
         <p>Aún no hay blogs publicados.</p>
       ) : (
         <div className="row g-4">
-          {approved.map((post: BlogPost) => (
-            <div key={post.id} className="col-12 col-md-6 col-lg-4">
+          {approved.map(p => (
+            <div key={p.id} className="col-12 col-md-6 col-lg-4">
               <div className="card h-100 shadow-sm">
-                {post.portada && (
+                {p.coverImage ? (
                   <img
-                    src={post.portada}
+                    src={p.coverImage}
                     className="card-img-top"
                     style={{ height: "200px", objectFit: "cover" }}
                   />
-                )}
+                ) : null}
 
                 <div className="card-body">
-                  <h5 className="card-title">{post.titulo}</h5>
-                  <p className="text-muted">{post.descripcion}</p>
-                  <p className="small">Por {post.autorNombre}</p>
+                  <h5 className="card-title">{p.title}</h5>
+                  <p className="text-muted">{p.description}</p>
+                  <p className="small">Por {p.authorName}</p>
                 </div>
               </div>
             </div>
