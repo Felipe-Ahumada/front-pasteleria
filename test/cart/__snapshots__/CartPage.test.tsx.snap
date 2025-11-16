@@ -1,0 +1,29 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CartPage – Snapshot > coincide con la UI esperada 1`] = `
+<DocumentFragment>
+  <section
+    class="container py-5 text-center"
+  >
+    <h1
+      class="section-title mb-3"
+    >
+      Carrito de compras
+    </h1>
+    <p
+      class="mb-4"
+    >
+      Aún no tienes productos en tu carrito.
+      <br />
+      ¡Explora nuestra carta y agrega tus favoritos!
+    </p>
+    <a
+      class="btn btn-pastel btn-mint"
+      data-discover="true"
+      href="/menu"
+    >
+      Ir a la carta
+    </a>
+  </section>
+</DocumentFragment>
+`;

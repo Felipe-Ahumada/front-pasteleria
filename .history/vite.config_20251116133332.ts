@@ -14,8 +14,6 @@ export default defineConfig(({ command }) => ({
   // -------------- VITEST -----------------
   test: {
     environment: 'jsdom',
-    globals: true,
-    setupFiles: './test/setup.ts',   // 👈 NECESARIO
-    css: false                       // opcional: acelera tests
+    globals: true
   },
 }))

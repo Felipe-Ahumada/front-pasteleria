@@ -1,4 +1,5 @@
-import { useState, useCallback, useMemo, type ReactNode } from "react";
+// context/cart/CartProvider.tsx
+import { useState, useCallback, useMemo } from "react";
 import { CartContext, type CartItem } from "./CartContext";
 
 import {
@@ -15,7 +16,7 @@ import { calculateUserDiscounts } from "@/utils/discounts/userDiscounts";
 import type { StoredUser } from "@/types/user";
 
 interface Props {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
 export const CartProvider = ({ children }: Props) => {
@@ -24,8 +25,8 @@ export const CartProvider = ({ children }: Props) => {
 
   /** Usuario completo desde localStorage (StoredUser) */
   const storedUser: StoredUser | null = authUser
-    ? getLocalItem<StoredUser>(LOCAL_STORAGE_KEYS.activeUser)
-    : null;
+  ? (getLocalItem<StoredUser>(LOCAL_STORAGE_KEYS.activeUser) ?? null)
+  : null;
 
   /* -------------------------------
       SYNC ESTADO + LOCAL STORAGE
@@ -48,10 +49,11 @@ export const CartProvider = ({ children }: Props) => {
       SUMA TOTAL DE CANTIDADES
   -------------------------------- */
   const sumCantidadProducto = useCallback(
-    (codigo: string, itemsLista: CartItem[]) =>
-      itemsLista
+    (codigo: string, itemsLista: CartItem[]) => {
+      return itemsLista
         .filter((i) => i.codigo === codigo)
-        .reduce((acc, i) => acc + i.cantidad, 0),
+        .reduce((acc, i) => acc + i.cantidad, 0);
+    },
     []
   );
 
@@ -63,7 +65,7 @@ export const CartProvider = ({ children }: Props) => {
       const stockReal = getStockFor(item.codigo);
       if (stockReal <= 0) return;
 
-      const msgNorm = (item.mensaje ?? "").trim().toLowerCase();
+      const normalizedMsg = (item.mensaje ?? "").trim().toLowerCase();
       const updated = [...items];
 
       const totalActual = sumCantidadProducto(item.codigo, items);
@@ -78,7 +80,7 @@ export const CartProvider = ({ children }: Props) => {
       const idx = updated.findIndex(
         (i) =>
           i.codigo === item.codigo &&
-          (i.mensaje ?? "").trim().toLowerCase() === msgNorm
+          (i.mensaje ?? "").trim().toLowerCase() === normalizedMsg
       );
 
       if (idx >= 0) {
@@ -103,13 +105,13 @@ export const CartProvider = ({ children }: Props) => {
       const stockReal = getStockFor(codigo);
       if (stockReal <= 0) return;
 
-      const msgNorm = (mensaje ?? "").trim().toLowerCase();
+      const normalizedMsg = (mensaje ?? "").trim().toLowerCase();
       const updated = [...items];
 
       const totalOtras = updated
         .filter((i) => {
-          const m = (i.mensaje ?? "").trim().toLowerCase();
-          return i.codigo === codigo && m !== msgNorm;
+          const msg = (i.mensaje ?? "").trim().toLowerCase();
+          return i.codigo === codigo && msg !== normalizedMsg;
         })
         .reduce((acc, i) => acc + i.cantidad, 0);
 
@@ -120,8 +122,8 @@ export const CartProvider = ({ children }: Props) => {
       if (nuevaCantidad > max) nuevaCantidad = max;
 
       const result = updated.map((i) => {
-        const m = (i.mensaje ?? "").trim().toLowerCase();
-        if (i.codigo === codigo && m === msgNorm) {
+        const msg = (i.mensaje ?? "").trim().toLowerCase();
+        if (i.codigo === codigo && msg === normalizedMsg) {
           return { ...i, cantidad: nuevaCantidad };
         }
         return i;
@@ -137,11 +139,11 @@ export const CartProvider = ({ children }: Props) => {
   -------------------------------- */
   const removeItem = useCallback(
     (codigo: string, mensaje?: string | null) => {
-      const msgNorm = (mensaje ?? "").trim().toLowerCase();
+      const normalizedMsg = (mensaje ?? "").trim().toLowerCase();
 
       const updated = items.filter((i) => {
-        const m = (i.mensaje ?? "").trim().toLowerCase();
-        return !(i.codigo === codigo && m === msgNorm);
+        const msg = (i.mensaje ?? "").trim().toLowerCase();
+        return !(i.codigo === codigo && msg === normalizedMsg);
       });
 
       sync(updated);
@@ -171,10 +173,9 @@ export const CartProvider = ({ children }: Props) => {
     return {
       subtotal,
       totalCantidad: items.reduce((a, i) => a + i.cantidad, 0),
-      totalPrecio: subtotal, // precio real antes de descuentos
+      totalPrecio: discounts.finalPrice,
       discountAmount: discounts.totalDiscount,
       discountDescription: discounts.description,
-      totalPagar: discounts.finalPrice, // precio final con descuento
     };
   }, [items, storedUser]);
 

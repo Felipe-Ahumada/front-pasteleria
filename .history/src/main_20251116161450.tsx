@@ -16,13 +16,13 @@ initLocalData();
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <AuthProvider>
-      <ThemeProvider>
-        <CartProvider>
-          <OrderProvider>
+      <CartProvider>
+        <OrderProvider>
+          <ThemeProvider>
             <AppRouter />
-          </OrderProvider>
-        </CartProvider>
-      </ThemeProvider>
+          </ThemeProvider>
+        </OrderProvider>
+      </CartProvider>
     </AuthProvider>
   </StrictMode>
 );

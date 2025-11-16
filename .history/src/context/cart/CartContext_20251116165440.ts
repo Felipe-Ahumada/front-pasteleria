@@ -13,7 +13,7 @@ export type CartTotals = {
   totalCantidad: number;
   subtotal: number;
   discountAmount: number;
-  discountDescription: string[];
+  discountDescription: string | null;
   totalPrecio: number;
   totalPagar: number; 
 };
@@ -23,9 +23,8 @@ export type CartContextType = {
   totals: CartTotals;
   addItem: (item: CartItem) => void;
   removeItem: (codigo: string, mensaje?: string | null) => void;
-  updateQuantity: (codigo: string, mensaje: string | null, cantidad: number) => void;
+  updateQuantity: (codigo: string | null, mensaje: string | null, cantidad: number) => void;
   clear: () => void;
 };
-
 
 export const CartContext = createContext<CartContextType | null>(null);

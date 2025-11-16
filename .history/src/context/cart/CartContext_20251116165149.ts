@@ -1,3 +1,4 @@
+// context/cart/CartContext.ts
 import { createContext } from "react";
 
 export type CartItem = {
@@ -13,10 +14,11 @@ export type CartTotals = {
   totalCantidad: number;
   subtotal: number;
   discountAmount: number;
-  discountDescription: string[];
+  discountDescription: string | null;
   totalPrecio: number;
-  totalPagar: number; 
+  totalPagar: number;
 };
+
 
 export type CartContextType = {
   items: CartItem[];
@@ -26,6 +28,5 @@ export type CartContextType = {
   updateQuantity: (codigo: string, mensaje: string | null, cantidad: number) => void;
   clear: () => void;
 };
-
 
 export const CartContext = createContext<CartContextType | null>(null);

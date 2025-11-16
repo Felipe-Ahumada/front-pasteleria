@@ -13,7 +13,7 @@ export type CartTotals = {
   totalCantidad: number;
   subtotal: number;
   discountAmount: number;
-  discountDescription: string[];
+  discountDescription: string | null;
   totalPrecio: number;
   totalPagar: number; 
 };
