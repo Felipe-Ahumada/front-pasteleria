@@ -79,7 +79,3 @@ export const setLocalItem = <T>(key: string, value: T): void => {
 export const removeLocalItem = (key: string): void => {
   removeJSON(key);
 };
-/** LEGACY: appendLocalData (alias de pushToArray) */
-export const appendLocalData = <T>(key: string, item: T): void => {
-  pushToArray(key, item);
-};

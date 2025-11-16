@@ -27,10 +27,9 @@ const PrivacyPage = lazy(() => import("@/pages/legal/PrivacyPage"));
 const TermsPage = lazy(() => import("@/pages/legal/TermsPage"));
 const ResetPasswordPage = lazy(() => import("@/pages/auth/ResetPasswordPage"));
 
-// Páginas admin
+// Admin pages
 const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
 const ProductsPage = lazy(() => import("@/pages/admin/products/ProductsPage"));
-const UsersPage = lazy(() => import("@/pages/admin/users/UsersPage")); // ✅ IMPORTANTE
 
 const basename = (import.meta.env.BASE_URL ?? "/").replace(/\/*$/, "") || "/";
 
@@ -65,8 +64,8 @@ const router = createBrowserRouter(
       children: [
         { index: true, element: <AdminDashboard /> },
         { path: "products", element: <ProductsPage /> },
-        { path: "users", element: <UsersPage /> },  // ✅ AHORA SÍ FUNCIONA
         { path: "orders", element: <div>Gestión de Pedidos</div> },
+        { path: "users", element: <div>Gestión de Usuarios</div> },
         { path: "comments", element: <div>Comentarios</div> },
         { path: "reports", element: <div>Reportes</div> },
         { path: "blogs", element: <div>Blogs</div> },

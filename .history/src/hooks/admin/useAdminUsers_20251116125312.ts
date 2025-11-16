@@ -1,4 +1,3 @@
-// hooks/admin/useAdminUsers.ts
 import { useState, useEffect, useMemo } from "react";
 import { userService, type Usuario } from "@/service/userService";
 
@@ -6,6 +5,7 @@ export const useAdminUsers = () => {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // 🔍 Campo de búsqueda
   const [search, setSearch] = useState("");
 
   const load = () => {
@@ -32,22 +32,25 @@ export const useAdminUsers = () => {
     load();
   };
 
+  // ================================================================
+  // 📌 FILTRADO MEMOIZADO
+  // ================================================================
   const filteredUsers = useMemo(() => {
     if (!search.trim()) return usuarios;
 
-    const s = search.toLowerCase();
+    const lower = search.toLowerCase();
 
-    return usuarios.filter((u) =>
-      [
-        u.nombre.toLowerCase(),
-        u.apellidos.toLowerCase(),
-        u.correo.toLowerCase(),
-        u.tipoUsuario.toLowerCase(),
-        u.regionNombre.toLowerCase(),
-        u.comuna.toLowerCase(),
-        `${u.run}-${u.dv}`.toLowerCase(),
-      ].some((field) => field.includes(s))
-    );
+    return usuarios.filter((u) => {
+      return (
+        u.nombre.toLowerCase().includes(lower) ||
+        u.apellidos.toLowerCase().includes(lower) ||
+        u.correo.toLowerCase().includes(lower) ||
+        u.tipoUsuario.toLowerCase().includes(lower) ||
+        u.regionNombre.toLowerCase().includes(lower) ||
+        u.comuna.toLowerCase().includes(lower) ||
+        `${u.run}-${u.dv}`.toLowerCase().includes(lower)
+      );
+    });
   }, [search, usuarios]);
 
   return {

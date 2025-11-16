@@ -1,7 +1,8 @@
+// service/menuService.ts
 import menuData from "@/data/menu_datos.json";
 
 /* ===========================================================
-   TIPOS BASE DEL JSON
+   TIPOS BASE (JSON ORIGINAL)
 =========================================================== */
 export interface ProductoJSON {
   codigo_producto: string;
@@ -40,7 +41,7 @@ export interface Producto {
 }
 
 /* ===========================================================
-   MAPEO DE IMÁGENES LOCALES
+   IMÁGENES PRE-CARGADAS
 =========================================================== */
 const MAIN_IMAGES = import.meta.glob("/src/assets/images/catalog/*", {
   import: "default",
@@ -52,25 +53,19 @@ const DETAIL_IMAGES = import.meta.glob("/src/assets/images/catalog_detail/*", {
   eager: true,
 }) as Record<string, string>;
 
-/* -----------------------------------------------------------
-   image: "img/catalogo/torta_x.jpg" → "torta_x.jpg"
------------------------------------------------------------ */
-const resolveMainImage = (relative: string): string => {
-  const clean = relative.replace("img/catalogo/", ""); // FIX CLAVE
-
+const normalizeMainImage = (relative: string): string => {
+  const file = relative.split("/").pop() ?? "";
   const match = Object.entries(MAIN_IMAGES).find(([path]) =>
-    path.endsWith(clean)
+    path.endsWith(file)
   );
-
-  return (
-    match?.[1] ??
-    new URL("/src/assets/images/generica.png", import.meta.url).href
-  );
+  return match
+    ? match[1]
+    : new URL("/src/assets/images/generica.png", import.meta.url).href;
 };
 
-/* -----------------------------------------------------------
-   Construir mapa de imágenes de detalle agrupadas
------------------------------------------------------------ */
+/* ===========================================================
+   MAPA DE IMÁGENES DE DETALLE (agrupadas por slug)
+=========================================================== */
 const buildDetailMap = (): Record<string, string[]> => {
   const map: Record<string, string[]> = {};
 
@@ -82,12 +77,12 @@ const buildDetailMap = (): Record<string, string[]> => {
     if (!map[slug]) map[slug] = [];
     map[slug].push(src);
   }
+
   return map;
 };
 
 const DETAIL_MAP = buildDetailMap();
 
-/* Utilidad para normalizar nombres */
 const toSlug = (value: string) =>
   value
     .normalize("NFD")
@@ -97,7 +92,7 @@ const toSlug = (value: string) =>
     .replace(/^_+|_+$/g, "");
 
 /* ===========================================================
-   NORMALIZACIÓN JSON → PRODUCTOS
+   JSON → NORMALIZACIÓN
 =========================================================== */
 const mapJsonToProductos = (data: MenuJSON): Producto[] => {
   const result: Producto[] = [];
@@ -111,10 +106,7 @@ const mapJsonToProductos = (data: MenuJSON): Producto[] => {
         nombre: p.nombre_producto,
         descripcion: p.descripción_producto,
         precio: p.precio_producto,
-
-        // ← FIX: mapeo correcto de imágenes locales
-        imagen: resolveMainImage(p.imagen_producto),
-
+        imagen: normalizeMainImage(p.imagen_producto),
         imagenes_detalle: DETAIL_MAP[slug] ?? [],
         categoria: categoria.nombre_categoria,
         stock: p.stock,
@@ -127,7 +119,7 @@ const mapJsonToProductos = (data: MenuJSON): Producto[] => {
 };
 
 /* ===========================================================
-   CACHE LOCAL
+   LOCAL STORAGE (CACHE)
 =========================================================== */
 const CACHE_KEY = "menu_cache_v1";
 
@@ -140,15 +132,21 @@ const loadCache = (): Producto[] | null => {
 };
 
 /* ===========================================================
-   SERVICE FINAL
+   SERVICE FINAL — CRUD COMPLETO
 =========================================================== */
 export const menuService = {
-  getAll(): Producto[] {
+  /* ------------------------------
+     GET ALL (recarga JSON completo)
+  ------------------------------- */
+  async getAll(): Promise<Producto[]> {
     const productos = mapJsonToProductos(menuData as MenuJSON);
     saveCache(productos);
     return productos;
   },
 
+  /* ------------------------------
+     GET CACHED (rápido)
+  ------------------------------- */
   getCached(): Producto[] {
     const cached = loadCache();
     if (cached) return cached;
@@ -158,22 +156,34 @@ export const menuService = {
     return productos;
   },
 
-  getById(id: string): Producto | undefined {
+  /* ------------------------------
+     GET BY ID
+  ------------------------------- */
+  async getById(id: string): Promise<Producto | undefined> {
     const productos = this.getCached();
     return productos.find((p) => p.id === id);
   },
 
+  /* ------------------------------
+     CREATE (Producto)
+  ------------------------------- */
   create(producto: Producto): void {
     const productos = this.getCached();
-    if (productos.some((p) => p.id === producto.id))
+
+    if (productos.some((p) => p.id === producto.id)) {
       throw new Error("Ya existe un producto con este ID");
+    }
 
     const nuevos = [...productos, producto];
     saveCache(nuevos);
   },
 
+  /* ------------------------------
+     UPDATE (ID, DATA)
+  ------------------------------- */
   update(id: string, data: Producto): void {
     const productos = this.getCached();
+
     const index = productos.findIndex((p) => p.id === id);
     if (index === -1) throw new Error("Producto no encontrado");
 
@@ -181,12 +191,19 @@ export const menuService = {
     saveCache(productos);
   },
 
+  /* ------------------------------
+     DELETE (ID)
+  ------------------------------- */
   delete(id: string): void {
     const productos = this.getCached();
+
     const nuevos = productos.filter((p) => p.id !== id);
     saveCache(nuevos);
   },
 
+  /* ------------------------------
+     CLEAR CACHE
+  ------------------------------- */
   clearCache() {
     localStorage.removeItem(CACHE_KEY);
   },
