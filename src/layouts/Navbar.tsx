@@ -50,6 +50,10 @@ const Navbar = () => {
 	const { pathname } = useLocation()
 	const { isAuthenticated, user } = useAuth()
 
+	const shouldShowAdminPanel =
+		Boolean(isAuthenticated) &&
+		(user?.role === 'superadmin' || user?.role === 'admin' || user?.role === 'seller')
+
 	const profileLabel = (() => {
 		if (!user) {
 			return 'Mi perfil'
@@ -166,6 +170,22 @@ const Navbar = () => {
 								)}
 							</li>
 						))}
+						{shouldShowAdminPanel ? (
+							<li className="nav-item ms-2">
+								<Button
+									as="link"
+									to="/"
+									size="sm"
+									variant="strawberry"
+									className="d-flex align-items-center gap-2 px-3"
+									title="Panel Administración"
+									aria-label="Ir al Panel de Administración"
+								>
+									<i className="bi bi-speedometer2" aria-hidden />
+									<span>Panel Administración</span>
+								</Button>
+							</li>
+						) : null}
 						<li className="nav-item ms-2">
 							{isAuthenticated ? (
 								<Button
@@ -204,6 +224,9 @@ const Navbar = () => {
 							isAuthenticated
 								? { type: 'profile', label: profileLabel, to: '/profile' as const }
 								: { type: 'login', label: 'Iniciar sesión' }
+						}
+						adminAction={
+							shouldShowAdminPanel ? { type: 'admin', label: 'Panel Administración', to: '/' } : undefined
 						}
 					/>
 				</div>

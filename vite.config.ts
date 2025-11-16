@@ -10,4 +10,10 @@ export default defineConfig(({ command }) => ({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+
+  // -------------- VITEST -----------------
+  test: {
+    environment: 'jsdom',
+    globals: true
+  },
 }))

@@ -17,6 +17,7 @@ type MobileNavProps = {
 				label: string
 				to: string
 		  }
+	adminAction?: { type: 'admin'; label: string; to: string }
 }
 
 const renderMobileButton = (
@@ -69,13 +70,28 @@ const renderMobileButton = (
 	)
 }
 
-const MobileNav = ({ primaryLinks, secondaryLinks, currentPath, onNavigate, authAction }: MobileNavProps) => (
+const MobileNav = ({ primaryLinks, secondaryLinks, currentPath, onNavigate, authAction, adminAction }: MobileNavProps) => (
 	<div className="d-lg-none w-100">
 		<div className="d-grid gap-2 mt-3">
 			{primaryLinks.map((link, index) => renderMobileButton(link, index, currentPath, onNavigate))}
 			{secondaryLinks.map((link, index) =>
 				renderMobileButton(link, index + primaryLinks.length, currentPath, onNavigate),
 			)}
+			{adminAction ? (
+				<Button
+					as="link"
+					to={adminAction.to}
+					block
+					variant="strawberry"
+					onClick={onNavigate}
+					className="d-flex align-items-center justify-content-center gap-2"
+					title="Panel Administración"
+					aria-label="Ir al Panel de Administración"
+				>
+					<i className="bi bi-speedometer2" aria-hidden />
+					<span>{adminAction.label}</span>
+				</Button>
+			) : null}
 			{authAction.type === 'login' ? (
 				<Button
 					type="button"

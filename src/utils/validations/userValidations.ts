@@ -1,4 +1,5 @@
 import { defaultProfileImage } from '@/assets'
+import { normalizeAvatarUrl } from '@/utils/storage/avatarUrl'
 import type { StoredUser, UserRoleName } from '@/types/user'
 import { LOCAL_STORAGE_KEYS, type RegionSeed } from '@/utils/storage/initLocalData'
 import { getLocalData, setLocalData } from '@/utils/storage/localStorageUtils'
@@ -305,7 +306,7 @@ export const mapFormToStoredUser = (values: UserFormValues, current?: StoredUser
 		? ensureHashedPassword(rawPassword)
 		: ensureHashedPassword(existingPassword)
 	const identifier = values.id ?? current?.id ?? generateUserId()
-	const avatar = values.avatarUrl?.trim() || current?.avatarUrl || defaultProfileImage
+	const avatar = normalizeAvatarUrl(values.avatarUrl ?? current?.avatarUrl, defaultProfileImage)
 	const role: UserRoleName = current?.tipoUsuario ?? 'Cliente'
 	const discountCode = values.codigoDescuento?.trim().toUpperCase() || current?.codigoDescuento
 
