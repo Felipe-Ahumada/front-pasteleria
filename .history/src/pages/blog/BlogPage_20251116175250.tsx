@@ -14,7 +14,7 @@ const BlogPage = () => {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1 className="section-title">Blog</h1>
 
-        {user && (
+        {user ? (
           <Link
             to="/blog/create"
             className="btn-create-blog text-decoration-none"
@@ -22,7 +22,7 @@ const BlogPage = () => {
             <i className="bi bi-pencil-square me-2"></i>
             Crear Blog
           </Link>
-        )}
+        ) : null}
       </div>
 
       {approved.length === 0 ? (
@@ -31,26 +31,21 @@ const BlogPage = () => {
         <div className="row g-4">
           {approved.map((post: BlogPost) => (
             <div key={post.id} className="col-12 col-md-6 col-lg-4">
-              <Link
-                to={`/blog/${post.id}`}
-                className="text-decoration-none text-dark"
-              >
-                <div className="card h-100 shadow-sm">
-                  {post.portada && (
-                    <img
-                      src={post.portada}
-                      className="card-img-top"
-                      style={{ height: "200px", objectFit: "cover" }}
-                    />
-                  )}
+              <div className="card h-100 shadow-sm">
+                {post.portada && (
+                  <img
+                    src={post.portada}
+                    className="card-img-top"
+                    style={{ height: "200px", objectFit: "cover" }}
+                  />
+                )}
 
-                  <div className="card-body">
-                    <h5 className="card-title">{post.titulo}</h5>
-                    <p className="text-muted">{post.descripcion}</p>
-                    <p className="small">Por {post.autorNombre}</p>
-                  </div>
+                <div className="card-body">
+                  <h5 className="card-title">{post.titulo}</h5>
+                  <p className="text-muted">{post.descripcion}</p>
+                  <p className="small">Por {post.autorNombre}</p>
                 </div>
-              </Link>
+              </div>
             </div>
           ))}
         </div>

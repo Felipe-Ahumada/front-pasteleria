@@ -214,10 +214,6 @@ pre {
     background-color: rgba(191, 226, 213, 0.92);
 }
 
-.promo-title {
-    color: #000;
-}
-
 .menu-toolbar {
     border-radius: var(--radius-lg);
     padding: 1.5rem;
