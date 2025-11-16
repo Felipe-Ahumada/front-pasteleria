@@ -10,8 +10,7 @@ const CartPage = () => {
       <section className="container py-5 text-center">
         <h1 className="section-title mb-3">Carrito de compras</h1>
         <p className="mb-4">
-          Aún no tienes productos en tu carrito.
-          <br />
+          Aún no tienes productos en tu carrito.  
           ¡Explora nuestra carta y agrega tus favoritos!
         </p>
 
@@ -55,6 +54,7 @@ const CartPage = () => {
                       Código: <code>{item.codigo}</code>
                     </p>
 
+                    {/* Mensaje personalizado */}
                     <p className="mb-2 small text-muted">
                       <strong>Mensaje:</strong>{" "}
                       {hasMessage ? (
@@ -66,10 +66,12 @@ const CartPage = () => {
                       )}
                     </p>
 
+                    {/* Precio */}
                     <p className="mb-2 fw-semibold">
                       {formatPrice(item.precio)} c/u
                     </p>
 
+                    {/* Cantidad */}
                     <div className="d-flex align-items-center gap-2">
                       <input
                         type="number"
@@ -78,26 +80,21 @@ const CartPage = () => {
                         style={{ width: "90px" }}
                         value={item.cantidad}
                         onChange={(e) =>
-                          updateQuantity(
-                            item.codigo,
-                            item.mensaje ?? null,
-                            Number(e.target.value)
-                          )
+                          updateQuantity(item.codigo, item.mensaje ?? null, Number(e.target.value))
                         }
                       />
 
                       <Button
                         size="sm"
                         variant="strawberry"
-                        onClick={() =>
-                          removeItem(item.codigo, item.mensaje ?? null)
-                        }
+                        onClick={() => removeItem(item.codigo, item.mensaje ?? null)}
                       >
                         Eliminar
                       </Button>
                     </div>
                   </div>
 
+                  {/* Total parcial */}
                   <div className="text-end">
                     <p className="fw-bold mb-0">
                       {formatPrice(item.precio * item.cantidad)}
@@ -115,32 +112,9 @@ const CartPage = () => {
             <h3 className="h5 mb-3">Resumen</h3>
 
             <div className="d-flex justify-content-between mb-2">
-              <span>Subtotal:</span>
-              <strong>{formatPrice(totals.subtotal)}</strong>
+              <span>Total productos:</span>
+              <strong>{totals.totalCantidad}</strong>
             </div>
-
-            {totals.discountAmount > 0 && (
-              <div className="mb-3">
-                <p className="fw-semibold text-success mb-1">
-                  Descuentos aplicados:
-                </p>
-
-                <ul className="small text-success ps-3">
-                  {totals.discountDescription.map((d, i) => (
-                    <li key={i}>{d}</li>
-                  ))}
-                </ul>
-
-                <div className="d-flex justify-content-between">
-                  <span>Total descuento:</span>
-                  <strong className="text-success">
-                    - {formatPrice(totals.discountAmount)}
-                  </strong>
-                </div>
-              </div>
-            )}
-
-            <hr />
 
             <div className="d-flex justify-content-between mb-3">
               <span>Total a pagar:</span>

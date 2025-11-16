@@ -1,19 +1,12 @@
 // context/cart/CartProvider.tsx
 import { useState, useCallback, useMemo } from "react";
 import { CartContext, type CartItem } from "./CartContext";
-
 import {
   getCart,
   setCart,
   clearCart as clearStorage,
 } from "@/utils/storage/cartStorage";
-
 import { menuService } from "@/service/menuService";
-import useAuth from "@/hooks/useAuth";
-import { getLocalItem } from "@/utils/storage/localStorageUtils";
-import { LOCAL_STORAGE_KEYS } from "@/utils/storage/initLocalData";
-import { calculateUserDiscounts } from "@/utils/discounts/userDiscounts";
-import type { StoredUser } from "@/types/user";
 
 interface Props {
   children: React.ReactNode;
@@ -21,33 +14,21 @@ interface Props {
 
 export const CartProvider = ({ children }: Props) => {
   const [items, setItems] = useState<CartItem[]>(() => getCart());
-  const { user: authUser } = useAuth();
 
-  /** Usuario completo desde localStorage (StoredUser) */
-  const storedUser: StoredUser | null = authUser
-  ? (getLocalItem<StoredUser>(LOCAL_STORAGE_KEYS.activeUser) ?? null)
-  : null;
-
-  /* -------------------------------
-      SYNC ESTADO + LOCAL STORAGE
-  -------------------------------- */
+  /** Sincroniza estado + localStorage */
   const sync = useCallback((newItems: CartItem[]) => {
     setItems(newItems);
     setCart(newItems);
   }, []);
 
-  /* -------------------------------
-      OBTENER STOCK REAL
-  -------------------------------- */
+  /** Obtiene el stock real desde el menú */
   const getStockFor = useCallback((codigo: string): number => {
     const productos = menuService.getCached();
     const p = productos.find((prod) => prod.id === codigo);
     return p?.stock ?? 0;
   }, []);
 
-  /* -------------------------------
-      SUMA TOTAL DE CANTIDADES
-  -------------------------------- */
+  /** Suma total de cantidades del producto (todas las variantes) */
   const sumCantidadProducto = useCallback(
     (codigo: string, itemsLista: CartItem[]) => {
       return itemsLista
@@ -57,9 +38,9 @@ export const CartProvider = ({ children }: Props) => {
     []
   );
 
-  /* -------------------------------
-      ADD ITEM (respeta stock real)
-  -------------------------------- */
+  /* ===========================================================
+     ADD ITEM (validación de stock global incluida)
+  ============================================================ */
   const addItem = useCallback(
     (item: CartItem) => {
       const stockReal = getStockFor(item.codigo);
@@ -69,24 +50,25 @@ export const CartProvider = ({ children }: Props) => {
       const updated = [...items];
 
       const totalActual = sumCantidadProducto(item.codigo, items);
-      const totalLuego = totalActual + item.cantidad;
+      const totalDespuesAgregar = totalActual + item.cantidad;
 
-      if (totalLuego > stockReal) {
+      // Si supera stock global → ajustar
+      if (totalDespuesAgregar > stockReal) {
         const disponible = stockReal - totalActual;
         if (disponible <= 0) return;
         item = { ...item, cantidad: disponible };
       }
 
-      const idx = updated.findIndex(
+      const existingIndex = updated.findIndex(
         (i) =>
           i.codigo === item.codigo &&
           (i.mensaje ?? "").trim().toLowerCase() === normalizedMsg
       );
 
-      if (idx >= 0) {
-        updated[idx] = {
-          ...updated[idx],
-          cantidad: updated[idx].cantidad + item.cantidad,
+      if (existingIndex >= 0) {
+        updated[existingIndex] = {
+          ...updated[existingIndex],
+          cantidad: updated[existingIndex].cantidad + item.cantidad,
         };
       } else {
         updated.push(item);
@@ -97,9 +79,9 @@ export const CartProvider = ({ children }: Props) => {
     [items, sync, getStockFor, sumCantidadProducto]
   );
 
-  /* -------------------------------
-      UPDATE QUANTITY
-  -------------------------------- */
+  /* ===========================================================
+     UPDATE QUANTITY (validación global)
+  ============================================================ */
   const updateQuantity = useCallback(
     (codigo: string, mensaje: string | null, cantidad: number) => {
       const stockReal = getStockFor(codigo);
@@ -108,6 +90,7 @@ export const CartProvider = ({ children }: Props) => {
       const normalizedMsg = (mensaje ?? "").trim().toLowerCase();
       const updated = [...items];
 
+      // Suma de cantidades de otras variantes del mismo producto
       const totalOtras = updated
         .filter((i) => {
           const msg = (i.mensaje ?? "").trim().toLowerCase();
@@ -115,13 +98,14 @@ export const CartProvider = ({ children }: Props) => {
         })
         .reduce((acc, i) => acc + i.cantidad, 0);
 
-      const max = stockReal - totalOtras;
+      const maxParaEstaVariante = stockReal - totalOtras;
 
       let nuevaCantidad = cantidad;
       if (nuevaCantidad < 1) nuevaCantidad = 1;
-      if (nuevaCantidad > max) nuevaCantidad = max;
+      if (nuevaCantidad > maxParaEstaVariante)
+        nuevaCantidad = maxParaEstaVariante;
 
-      const result = updated.map((i) => {
+      const finalItems = updated.map((i) => {
         const msg = (i.mensaje ?? "").trim().toLowerCase();
         if (i.codigo === codigo && msg === normalizedMsg) {
           return { ...i, cantidad: nuevaCantidad };
@@ -129,14 +113,14 @@ export const CartProvider = ({ children }: Props) => {
         return i;
       });
 
-      sync(result);
+      sync(finalItems);
     },
     [items, sync, getStockFor]
   );
 
-  /* -------------------------------
-      REMOVE ITEM
-  -------------------------------- */
+  /* ===========================================================
+     REMOVE ITEM
+  ============================================================ */
   const removeItem = useCallback(
     (codigo: string, mensaje?: string | null) => {
       const normalizedMsg = (mensaje ?? "").trim().toLowerCase();
@@ -151,33 +135,27 @@ export const CartProvider = ({ children }: Props) => {
     [items, sync]
   );
 
-  /* -------------------------------
-      CLEAR CART
-  -------------------------------- */
+  /* ===========================================================
+     CLEAR CART
+  ============================================================ */
   const clear = useCallback(() => {
     sync([]);
     clearStorage();
   }, [sync]);
 
-  /* -------------------------------
-      CALCULAR TOTALES + DESCUENTOS
-  -------------------------------- */
-  const totals = useMemo(() => {
-    const subtotal = items.reduce(
-      (acc, i) => acc + i.precio * i.cantidad,
-      0
-    );
-
-    const discounts = calculateUserDiscounts(storedUser, items, subtotal);
-
-    return {
-      subtotal,
-      totalCantidad: items.reduce((a, i) => a + i.cantidad, 0),
-      totalPrecio: discounts.finalPrice,
-      discountAmount: discounts.totalDiscount,
-      discountDescription: discounts.description,
-    };
-  }, [items, storedUser]);
+  /* ===========================================================
+     TOTALS
+  ============================================================ */
+  const totals = useMemo(
+    () => ({
+      totalCantidad: items.reduce((acc, i) => acc + i.cantidad, 0),
+      totalPrecio: items.reduce(
+        (acc, i) => acc + i.precio * i.cantidad,
+        0
+      ),
+    }),
+    [items]
+  );
 
   return (
     <CartContext.Provider
