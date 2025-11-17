@@ -17,6 +17,9 @@ const UsersPage = () => {
     updateUser,
     blockUser,
     unblockUser,
+    exportCSV,
+    exportExcel,
+    exportPDF,
   } = useAdminUsers();
 
   const [selected, setSelected] = useState<Usuario | null>(null);
@@ -84,7 +87,19 @@ const UsersPage = () => {
         </Button>
       </header>
 
-      <div className="d-flex justify-content-between align-items-center mb-3 gap-2">
+      <div className="d-flex flex-wrap gap-2 mb-3">
+        <Button variant="mint" onClick={exportCSV}>
+          <i className="bi bi-filetype-csv" /> Exportar CSV
+        </Button>
+        <Button variant="mint" onClick={exportExcel}>
+          <i className="bi bi-file-earmark-excel-fill" /> Exportar Excel
+        </Button>
+        <Button variant="strawberry" onClick={exportPDF}>
+          <i className="bi bi-file-earmark-pdf-fill" /> Exportar PDF
+        </Button>
+      </div>
+
+      <div className="d-flex justify-content-between align-items-center mb-3 gap-2 flex-wrap">
         <div className="flex-grow-1">
           <Input
             label="Buscar"
