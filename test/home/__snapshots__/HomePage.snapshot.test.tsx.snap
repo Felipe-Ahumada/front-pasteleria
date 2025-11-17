@@ -59,7 +59,7 @@ exports[`HomePage – Snapshot > coincide con la UI esperada 1`] = `
           <img
             alt="Torta con frutas"
             class="d-block w-100"
-            src="http://localhost:3000/src/assets/images/carrusel/carrusel_carta.jpg"
+            src="https://res.cloudinary.com/dx83p4455/image/upload/v1762263515/carrusel_carta_oznheh.jpg"
           />
           <div
             class="carousel-caption"
@@ -82,7 +82,7 @@ exports[`HomePage – Snapshot > coincide con la UI esperada 1`] = `
           <img
             alt="Vitrina de pastelería"
             class="d-block w-100"
-            src="http://localhost:3000/src/assets/images/carrusel/carrusel_nosotros.jpg"
+            src="https://res.cloudinary.com/dx83p4455/image/upload/v1762263484/diversos_productos_cautgn.jpg"
           />
           <div
             class="carousel-caption"
@@ -105,7 +105,7 @@ exports[`HomePage – Snapshot > coincide con la UI esperada 1`] = `
           <img
             alt="Persona usando laptop"
             class="d-block w-100"
-            src="http://localhost:3000/src/assets/images/carrusel/carrusel_blog.jpg"
+            src="https://res.cloudinary.com/dx83p4455/image/upload/v1762263515/carrusel_blog_knmeix.jpg"
           />
           <div
             class="carousel-caption"
@@ -128,7 +128,7 @@ exports[`HomePage – Snapshot > coincide con la UI esperada 1`] = `
           <img
             alt="Vitrina con variedad de pasteles"
             class="d-block w-100"
-            src="http://localhost:3000/src/assets/images/carrusel/diversidad_pasteles.jpg"
+            src="https://res.cloudinary.com/dx83p4455/image/upload/v1762263516/diversidad_pasteles_ttxbx1.jpg"
           />
           <div
             class="position-absolute top-50 start-50 translate-middle text-center w-100 px-3"

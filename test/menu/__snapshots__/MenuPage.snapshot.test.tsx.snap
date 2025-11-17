@@ -285,7 +285,7 @@ exports[`MenuPage – Snapshot > debe coincidir con la UI esperada 1`] = `
                 alt="Brownie Sin Gluten"
                 class="w-100 h-100 object-fit-cover"
                 loading="lazy"
-                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+                src="https://res.cloudinary.com/dx83p4455/image/upload/v1762263538/brownie_sin_gluten_o70nfg.jpg"
               />
             </a>
             <div
@@ -356,7 +356,7 @@ exports[`MenuPage – Snapshot > debe coincidir con la UI esperada 1`] = `
                 alt="Cheesecake Sin Azúcar"
                 class="w-100 h-100 object-fit-cover"
                 loading="lazy"
-                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+                src="https://res.cloudinary.com/dx83p4455/image/upload/v1762263539/cheesecake_sin_azucar_p4hmpc.jpg"
               />
             </a>
             <div
@@ -427,7 +427,7 @@ exports[`MenuPage – Snapshot > debe coincidir con la UI esperada 1`] = `
                 alt="Empanada de Manzana"
                 class="w-100 h-100 object-fit-cover"
                 loading="lazy"
-                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+                src="https://res.cloudinary.com/dx83p4455/image/upload/v1762263539/empanada_de_manzana_c2on4y.jpg"
               />
             </a>
             <div
@@ -498,7 +498,7 @@ exports[`MenuPage – Snapshot > debe coincidir con la UI esperada 1`] = `
                 alt="Galletas Veganas de Avena"
                 class="w-100 h-100 object-fit-cover"
                 loading="lazy"
-                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+                src="https://res.cloudinary.com/dx83p4455/image/upload/v1762263540/galletas_veganas_de_avena_glxurj.jpg"
               />
             </a>
             <div
@@ -569,7 +569,7 @@ exports[`MenuPage – Snapshot > debe coincidir con la UI esperada 1`] = `
                 alt="Mousse de Chocolate"
                 class="w-100 h-100 object-fit-cover"
                 loading="lazy"
-                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+                src="https://res.cloudinary.com/dx83p4455/image/upload/v1762263540/mousse_de_chocolate_mmx3pa.jpg"
               />
             </a>
             <div
@@ -640,7 +640,7 @@ exports[`MenuPage – Snapshot > debe coincidir con la UI esperada 1`] = `
                 alt="Pan Sin Gluten"
                 class="w-100 h-100 object-fit-cover"
                 loading="lazy"
-                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+                src="https://res.cloudinary.com/dx83p4455/image/upload/v1762263541/pan_sin_gluten_tkcfsz.jpg"
               />
             </a>
             <div
@@ -711,7 +711,7 @@ exports[`MenuPage – Snapshot > debe coincidir con la UI esperada 1`] = `
                 alt="Tarta de Santiago"
                 class="w-100 h-100 object-fit-cover"
                 loading="lazy"
-                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+                src="https://res.cloudinary.com/dx83p4455/image/upload/v1762263542/tarta_de_santiago_vkbbf6.jpg"
               />
             </a>
             <div
@@ -782,7 +782,7 @@ exports[`MenuPage – Snapshot > debe coincidir con la UI esperada 1`] = `
                 alt="Tiramisú Clásico"
                 class="w-100 h-100 object-fit-cover"
                 loading="lazy"
-                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+                src="https://res.cloudinary.com/dx83p4455/image/upload/v1762263543/tiramisu_clasico_xwsx1r.jpg"
               />
             </a>
             <div
@@ -853,7 +853,7 @@ exports[`MenuPage – Snapshot > debe coincidir con la UI esperada 1`] = `
                 alt="Torta Circular de Manjar"
                 class="w-100 h-100 object-fit-cover"
                 loading="lazy"
-                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+                src="https://res.cloudinary.com/dx83p4455/image/upload/v1762263543/torta_circular_de_manjar_hkd8vm.jpg"
               />
             </a>
             <div
@@ -924,7 +924,7 @@ exports[`MenuPage – Snapshot > debe coincidir con la UI esperada 1`] = `
                 alt="Torta Circular de Vainilla"
                 class="w-100 h-100 object-fit-cover"
                 loading="lazy"
-                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+                src="https://res.cloudinary.com/dx83p4455/image/upload/v1762263544/torta_circular_de_vainilla_ofxqru.jpg"
               />
             </a>
             <div
@@ -995,7 +995,7 @@ exports[`MenuPage – Snapshot > debe coincidir con la UI esperada 1`] = `
                 alt="Torta Cuadrada de Chocolate"
                 class="w-100 h-100 object-fit-cover"
                 loading="lazy"
-                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+                src="https://res.cloudinary.com/dx83p4455/image/upload/v1762263545/torta_cuadrada_de_chocolate_ljjmpj.jpg"
               />
             </a>
             <div
@@ -1066,7 +1066,7 @@ exports[`MenuPage – Snapshot > debe coincidir con la UI esperada 1`] = `
                 alt="Torta Cuadrada de Frutas"
                 class="w-100 h-100 object-fit-cover"
                 loading="lazy"
-                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+                src="https://res.cloudinary.com/dx83p4455/image/upload/v1762263546/torta_cuadrada_de_frutas_gyiqvv.jpg"
               />
             </a>
             <div
@@ -1137,7 +1137,7 @@ exports[`MenuPage – Snapshot > debe coincidir con la UI esperada 1`] = `
                 alt="Torta Especial de Boda"
                 class="w-100 h-100 object-fit-cover"
                 loading="lazy"
-                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+                src="https://res.cloudinary.com/dx83p4455/image/upload/v1762263546/torta_especial_de_boda_xzocwr.jpg"
               />
             </a>
             <div
@@ -1208,7 +1208,7 @@ exports[`MenuPage – Snapshot > debe coincidir con la UI esperada 1`] = `
                 alt="Torta Especial de Cumpleaños"
                 class="w-100 h-100 object-fit-cover"
                 loading="lazy"
-                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+                src="https://res.cloudinary.com/dx83p4455/image/upload/v1762263547/torta_especial_de_cumpleanos_drxjqa.jpg"
               />
             </a>
             <div
@@ -1279,7 +1279,7 @@ exports[`MenuPage – Snapshot > debe coincidir con la UI esperada 1`] = `
                 alt="Torta Sin Azúcar de Naranja"
                 class="w-100 h-100 object-fit-cover"
                 loading="lazy"
-                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+                src="https://res.cloudinary.com/dx83p4455/image/upload/v1762263549/torta_sin_azucar_de_naranja_metjjn.jpg"
               />
             </a>
             <div
@@ -1350,7 +1350,7 @@ exports[`MenuPage – Snapshot > debe coincidir con la UI esperada 1`] = `
                 alt="Torta Vegana de Chocolate"
                 class="w-100 h-100 object-fit-cover"
                 loading="lazy"
-                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+                src="https://res.cloudinary.com/dx83p4455/image/upload/v1762263550/torta_vegana_de_chocolate_ybcpgf.jpg"
               />
             </a>
             <div
