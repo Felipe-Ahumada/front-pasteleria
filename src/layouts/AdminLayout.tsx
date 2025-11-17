@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import "./admin.css";
 import { logoImage } from "@/assets";
 import useAuth from "@/hooks/useAuth";
@@ -23,6 +23,10 @@ const AdminLayout = () => {
     logout();
     navigate("/", { replace: true });
   }, [logout, navigate]);
+
+  const handleReturnToStore = useCallback(() => {
+    navigate("/");
+  }, [navigate]);
 
   const role = user?.role ?? "customer";
 
@@ -105,17 +109,27 @@ const AdminLayout = () => {
           {visibleNavItems.map(({ roles: _roles, ...item }) => (
             <NavItem key={item.to} {...item} />
           ))}
+
+          <div className="admin-nav-actions">
+            <button
+              type="button"
+              className="admin-link admin-nav-action"
+              onClick={handleReturnToStore}
+            >
+              <i className="bi bi-shop" />
+              <span>Volver a tienda</span>
+            </button>
+
+            <button
+              type="button"
+              className="admin-link admin-nav-action admin-nav-action--danger"
+              onClick={handleLogout}
+            >
+              <i className="bi bi-box-arrow-right" />
+              <span>Cerrar sesión</span>
+            </button>
+          </div>
         </nav>
-
-        <div className="admin-footer">
-          <Link to="/" className="admin-return">
-            ← Volver a tienda
-          </Link>
-
-          <button type="button" className="admin-logout" onClick={handleLogout}>
-            Cerrar sesión
-          </button>
-        </div>
       </aside>
 
       {/* CONTENT AREA */}
