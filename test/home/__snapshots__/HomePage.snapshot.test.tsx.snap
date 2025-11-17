@@ -1,0 +1,223 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`HomePage – Snapshot > coincide con la UI esperada 1`] = `
+<DocumentFragment>
+  <section
+    aria-label="Carrusel principal"
+    class="hero-carousel"
+  >
+    <div
+      aria-live="polite"
+      class="carousel slide pointer-event"
+      data-bs-interval="5000"
+      data-bs-pause="hover"
+      data-bs-ride="carousel"
+      id="homeCarousel"
+    >
+      <div
+        class="carousel-indicators"
+      >
+        <button
+          aria-current="true"
+          aria-label="Slide 1"
+          class="active"
+          data-bs-slide-to="0"
+          data-bs-target="#homeCarousel"
+          type="button"
+        />
+        <button
+          aria-label="Slide 2"
+          class=""
+          data-bs-slide-to="1"
+          data-bs-target="#homeCarousel"
+          type="button"
+        />
+        <button
+          aria-label="Slide 3"
+          class=""
+          data-bs-slide-to="2"
+          data-bs-target="#homeCarousel"
+          type="button"
+        />
+        <button
+          aria-label="Slide 4"
+          class=""
+          data-bs-slide-to="3"
+          data-bs-target="#homeCarousel"
+          type="button"
+        />
+      </div>
+      <div
+        class="carousel-inner"
+      >
+        <div
+          aria-label="1 de 4"
+          aria-roledescription="slide"
+          class="carousel-item active"
+          role="group"
+        >
+          <img
+            alt="Torta con frutas"
+            class="d-block w-100"
+            src="http://localhost:3000/src/assets/images/carrusel/carrusel_carta.jpg"
+          />
+          <div
+            class="carousel-caption"
+          >
+            <a
+              class="btn btn-pastel btn-strawberry btn-lg"
+              data-discover="true"
+              href="/menu"
+            >
+              Ver carta
+            </a>
+          </div>
+        </div>
+        <div
+          aria-label="2 de 4"
+          aria-roledescription="slide"
+          class="carousel-item "
+          role="group"
+        >
+          <img
+            alt="Vitrina de pastelería"
+            class="d-block w-100"
+            src="http://localhost:3000/src/assets/images/carrusel/carrusel_nosotros.jpg"
+          />
+          <div
+            class="carousel-caption"
+          >
+            <a
+              class="btn btn-pastel btn-strawberry btn-lg"
+              data-discover="true"
+              href="/about"
+            >
+              Conócenos
+            </a>
+          </div>
+        </div>
+        <div
+          aria-label="3 de 4"
+          aria-roledescription="slide"
+          class="carousel-item "
+          role="group"
+        >
+          <img
+            alt="Persona usando laptop"
+            class="d-block w-100"
+            src="http://localhost:3000/src/assets/images/carrusel/carrusel_blog.jpg"
+          />
+          <div
+            class="carousel-caption"
+          >
+            <a
+              class="btn btn-pastel btn-strawberry btn-lg"
+              data-discover="true"
+              href="/blog"
+            >
+              Visita nuestro blog
+            </a>
+          </div>
+        </div>
+        <div
+          aria-label="4 de 4"
+          aria-roledescription="slide"
+          class="carousel-item "
+          role="group"
+        >
+          <img
+            alt="Vitrina con variedad de pasteles"
+            class="d-block w-100"
+            src="http://localhost:3000/src/assets/images/carrusel/diversidad_pasteles.jpg"
+          />
+          <div
+            class="position-absolute top-50 start-50 translate-middle text-center w-100 px-3"
+          >
+            <div
+              class="promo-overlay mx-auto"
+            >
+              <p
+                class="promo-title mb-2"
+              >
+                TRIVIA MIL SABORES
+              </p>
+              <p
+                class="promo-subtitle mb-2"
+              >
+                Síguenos en Instagram y participa
+              </p>
+              <p
+                class="promo-highlight mb-0"
+              >
+                Gana descuentos permanentes
+              </p>
+            </div>
+          </div>
+          <div
+            class="carousel-caption"
+          >
+            <a
+              class="btn btn-pastel btn-strawberry btn-lg"
+              href="https://www.instagram.com/pasteleria1000sabores"
+              rel="noreferrer"
+              target="_blank"
+            >
+              Ir a Instagram
+            </a>
+          </div>
+        </div>
+      </div>
+      <button
+        class="carousel-control-prev"
+        data-bs-slide="prev"
+        data-bs-target="#homeCarousel"
+        type="button"
+      >
+        <span
+          aria-hidden="true"
+          class="carousel-control-prev-icon"
+        />
+        <span
+          class="visually-hidden"
+        >
+          Anterior
+        </span>
+      </button>
+      <button
+        class="carousel-control-next"
+        data-bs-slide="next"
+        data-bs-target="#homeCarousel"
+        type="button"
+      >
+        <span
+          aria-hidden="true"
+          class="carousel-control-next-icon"
+        />
+        <span
+          class="visually-hidden"
+        >
+          Siguiente
+        </span>
+      </button>
+    </div>
+  </section>
+  <section
+    class="py-5"
+  >
+    <div
+      class="container"
+    >
+      <h2
+        class="mb-4 text-center section-title"
+      >
+        Nuestra carta
+      </h2>
+      <p
+        class="text-center mb-0"
+      >
+        Pronto compartiremos nuestra selección de productos.
+      </p>
+    </div>
+  </section>
+</DocumentFragment>
+`;
