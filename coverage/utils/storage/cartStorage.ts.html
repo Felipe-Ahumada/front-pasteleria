@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">80% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>8/10</span>
+                <span class='fraction'>12/15</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">75% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>1/2</span>
+                <span class='fraction'>3/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">66.66% </span>
+                <span class="strong">75% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>2/3</span>
+                <span class='fraction'>3/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">80% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>8/10</span>
+                <span class='fraction'>12/15</span>
             </div>
         
             
@@ -84,47 +84,92 @@
 <a name='L19'></a><a href='#L19'>19</a>
 <a name='L20'></a><a href='#L20'>20</a>
 <a name='L21'></a><a href='#L21'>21</a>
-<a name='L22'></a><a href='#L22'>22</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">8x</span>
-<span class="cline-any cline-yes">8x</span>
-<span class="cline-any cline-yes">8x</span>
-<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// utils/storage/cartStorage.ts
-import type { CartItem } from "@/context/cart/CartContext";
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import type { CartItem } from "@/context/cart/CartContext";
 &nbsp;
-const CART_KEY = "carrito";
+const CART_KEY_PREFIX = "carrito_";
 &nbsp;
-export const getCart = (): CartItem[] =&gt; {
+// Key única para cada usuario → carrito_123 | carrito_ana@mail.com
+const getUserCartKey = (userId: string | null): string =&gt;
+  `${CART_KEY_PREFIX}${userId ?? "guest"}`;
+&nbsp;
+// =============================
+// GET
+// =============================
+export const getCart = (userId: string | null): CartItem[] =&gt; {
   try {
-    const data = localStorage.getItem(CART_KEY);
+    const key = getUserCartKey(userId);
+    const data = localStorage.getItem(key);
     return data ? (<span class="branch-0 cbranch-no" title="branch not covered" >JSON.parse(data) as CartItem[]) : [</span>];
   } catch {
 <span class="cstat-no" title="statement not covered" >    return [];</span>
   }
 };
 &nbsp;
-export const setCart = (items: CartItem[]) =&gt; {
-  localStorage.setItem(CART_KEY, JSON.stringify(items));
+// =============================
+// SET
+// =============================
+export const setCart = (userId: string | null, items: CartItem[]) =&gt; {
+  const key = getUserCartKey(userId);
+  localStorage.setItem(key, JSON.stringify(items));
 };
 &nbsp;
-export const clearCart = <span class="fstat-no" title="function not covered" >() =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  localStorage.removeItem(CART_KEY);</span>
+// =============================
+// CLEAR
+// =============================
+export const clearCart = <span class="fstat-no" title="function not covered" >(u</span>serId: string | null) =&gt; {
+  const key = <span class="cstat-no" title="statement not covered" >getUserCartKey(userId);</span>
+<span class="cstat-no" title="statement not covered" >  localStorage.removeItem(key);</span>
 };
 &nbsp;</pre></td></tr></table></pre>
 
@@ -133,7 +178,7 @@ export const clearCart = <span class="fstat-no" title="function not covered" >()
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-11-17T16:02:59.828Z
+                at 2025-11-17T16:58:35.818Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

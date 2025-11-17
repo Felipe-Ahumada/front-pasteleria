@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for context/blog/BlogProvider.tsx</title>
+    <title>Code coverage report for utils/blog/constants.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../prettify.css" />
     <link rel="stylesheet" href="../../base.css" />
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">context/blog</a> BlogProvider.tsx</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">utils/blog</a> constants.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">41.66% </span>
+                <span class="strong">17.64% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>5/12</span>
+                <span class='fraction'>3/17</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>0/18</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">40% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>2/5</span>
+                <span class='fraction'>0/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">36.36% </span>
+                <span class="strong">17.64% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>4/11</span>
+                <span class='fraction'>3/17</span>
             </div>
         
             
@@ -97,73 +97,85 @@
 <a name='L32'></a><a href='#L32'>32</a>
 <a name='L33'></a><a href='#L33'>33</a>
 <a name='L34'></a><a href='#L34'>34</a>
-<a name='L35'></a><a href='#L35'>35</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { useCallback, useState } from "react";
-import { BlogContext } from "./BlogContext";
-import type { BlogPost, BlogStatus } from "@/types/blog";
-import { loadBlogs, saveBlogs } from "@/utils/storage/blogStorage";
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">export const DEFAULT_BLOG_COVER = "https://res.cloudinary.com/dx83p4455/image/upload/v1762268069/cheesecake_sin_azucar_dggxns.png";
 &nbsp;
-export const BlogProvider = ({ children }: { children: React.ReactNode }) =&gt; {
-  const [blogs, setBlogs] = useState&lt;BlogPost[]&gt;(() =&gt; loadBlogs());
+const PLACEHOLDER_PATHS = new Set([
+  "/images/blog/default.jpg",
+  "images/blog/default.jpg",
+]);
 &nbsp;
-  const createBlog = useCallback(
-<span class="fstat-no" title="function not covered" >    (p</span>ost: BlogPost) =&gt; {
-      const updated = <span class="cstat-no" title="statement not covered" >[...blogs, post];</span>
-<span class="cstat-no" title="statement not covered" >      setBlogs(updated);</span>
-<span class="cstat-no" title="statement not covered" >      saveBlogs(updated);</span>
-    },
-    [blogs]
-  );
+/**
+ * Normaliza la URL de la portada de un blog y aplica un fallback conocido.
+ */
+export const resolveBlogCover = <span class="fstat-no" title="function not covered" >(v</span>alue?: string | null): string =&gt; {
+  const cover = <span class="cstat-no" title="statement not covered" >(value ?? "").trim();</span>
+<span class="cstat-no" title="statement not covered" >  if (!cover) {</span>
+<span class="cstat-no" title="statement not covered" >    return DEFAULT_BLOG_COVER;</span>
+  }
 &nbsp;
-  const updateStatus = useCallback(
-<span class="fstat-no" title="function not covered" >    (i</span>d: string, status: BlogStatus) =&gt; {
-      const updated = <span class="cstat-no" title="statement not covered" >blogs.map(<span class="fstat-no" title="function not covered" >(b</span>) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >        b.id === id ? { ...b, status } : b</span>
-      );
-<span class="cstat-no" title="statement not covered" >      setBlogs(updated);</span>
-<span class="cstat-no" title="statement not covered" >      saveBlogs(updated);</span>
-    },
-    [blogs]
-  );
+<span class="cstat-no" title="statement not covered" >  if (PLACEHOLDER_PATHS.has(cover)) {</span>
+<span class="cstat-no" title="statement not covered" >    return DEFAULT_BLOG_COVER;</span>
+  }
 &nbsp;
-  return (
-    &lt;BlogContext.Provider value={{ blogs, createBlog, updateStatus }}&gt;
-      {children}
-    &lt;/BlogContext.Provider&gt;
-  );
+<span class="cstat-no" title="statement not covered" >  if (cover.startsWith("data:")) {</span>
+<span class="cstat-no" title="statement not covered" >    return cover;</span>
+  }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  if (cover.startsWith("http://") || cover.startsWith("https://")) {</span>
+<span class="cstat-no" title="statement not covered" >    return cover;</span>
+  }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  if (cover.startsWith("/")) {</span>
+<span class="cstat-no" title="statement not covered" >    return cover;</span>
+  }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  if (cover.startsWith("./") || cover.startsWith("../")) {</span>
+<span class="cstat-no" title="statement not covered" >    return cover;</span>
+  }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  return DEFAULT_BLOG_COVER;</span>
 };
 &nbsp;</pre></td></tr></table></pre>
 

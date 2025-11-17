@@ -61,8 +61,6 @@ const notifyCacheUpdate = () => {
   }
 };
 
-<<<<<<< HEAD
-=======
 const groupQuantities = (
   items: Array<{ codigo: string; cantidad: number }>
 ): Map<string, number> => {
@@ -81,8 +79,6 @@ const groupQuantities = (
 
   return grouped;
 };
-
->>>>>>> main
 const mergeDetailImages = (
   slug: string,
   raw?: string[]
@@ -248,8 +244,6 @@ export const menuService = {
   clearCache() {
     localStorage.removeItem(CACHE_KEY);
     notifyCacheUpdate();
-<<<<<<< HEAD
-=======
   },
 
   consumeStock(orderItems: Array<{ codigo: string; cantidad: number }>) {
@@ -280,7 +274,6 @@ export const menuService = {
     if (hasChanges) {
       saveCache(updated);
     }
->>>>>>> main
   },
 };
 

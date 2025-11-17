@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">23.8% </span>
+                <span class="strong">21.73% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>10/42</span>
+                <span class='fraction'>10/46</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/41</span>
+                <span class='fraction'>0/43</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">26.31% </span>
+                <span class="strong">23.8% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>10/38</span>
+                <span class='fraction'>10/42</span>
             </div>
         
             
@@ -224,7 +224,35 @@
 <a name='L159'></a><a href='#L159'>159</a>
 <a name='L160'></a><a href='#L160'>160</a>
 <a name='L161'></a><a href='#L161'>161</a>
-<a name='L162'></a><a href='#L162'>162</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L162'></a><a href='#L162'>162</a>
+<a name='L163'></a><a href='#L163'>163</a>
+<a name='L164'></a><a href='#L164'>164</a>
+<a name='L165'></a><a href='#L165'>165</a>
+<a name='L166'></a><a href='#L166'>166</a>
+<a name='L167'></a><a href='#L167'>167</a>
+<a name='L168'></a><a href='#L168'>168</a>
+<a name='L169'></a><a href='#L169'>169</a>
+<a name='L170'></a><a href='#L170'>170</a>
+<a name='L171'></a><a href='#L171'>171</a>
+<a name='L172'></a><a href='#L172'>172</a>
+<a name='L173'></a><a href='#L173'>173</a>
+<a name='L174'></a><a href='#L174'>174</a>
+<a name='L175'></a><a href='#L175'>175</a>
+<a name='L176'></a><a href='#L176'>176</a>
+<a name='L177'></a><a href='#L177'>177</a>
+<a name='L178'></a><a href='#L178'>178</a>
+<a name='L179'></a><a href='#L179'>179</a>
+<a name='L180'></a><a href='#L180'>180</a>
+<a name='L181'></a><a href='#L181'>181</a>
+<a name='L182'></a><a href='#L182'>182</a>
+<a name='L183'></a><a href='#L183'>183</a>
+<a name='L184'></a><a href='#L184'>184</a>
+<a name='L185'></a><a href='#L185'>185</a>
+<a name='L186'></a><a href='#L186'>186</a>
+<a name='L187'></a><a href='#L187'>187</a>
+<a name='L188'></a><a href='#L188'>188</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -236,6 +264,7 @@
 <span class="cline-any cline-yes">14x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -380,6 +409,29 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -393,6 +445,8 @@ import type { StoredUser, UserRoleName } from "@/types/user";
 &nbsp;
 import { readArray, writeJSON } from "./localStorageUtils";
 import { ensureHashedPassword } from "@/utils/security/password";
+import type { BlogPost } from "@/types/blog";
+import { DEFAULT_BLOG_COVER } from "@/utils/blog/constants";
 &nbsp;
 const isBrowser = typeof window !== "undefined";
 &nbsp;
@@ -403,6 +457,7 @@ export const LOCAL_STORAGE_KEYS = {
   activeUser: "usuarioActivo",
   contactMessages: "contactMessages",
   menuFilters: "menuFilters",
+  blogs: "dataBlogs", // &lt;&lt;--- AGREGADO
 } as const;
 &nbsp;
 export type RegionSeed = {
@@ -542,6 +597,29 @@ export const initLocalData = <span class="fstat-no" title="function not covered"
         buildComunasSeed(effectiveRegions)
       );
     }
+&nbsp;
+    // -------------------------------------------------------
+    // BLOGS (SEED)
+    // -------------------------------------------------------
+    const <span class="cstat-no" title="statement not covered" >existingBlogs = readArray&lt;BlogPost&gt;(LOCAL_STORAGE_KEYS.blogs);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    if (!existingBlogs.length) {</span>
+      const exampleBlog: BlogPost = <span class="cstat-no" title="statement not covered" >{</span>
+        id: "blog-ejemplo-1",
+        titulo: "Bienvenidos al Blog de Mil Sabores",
+        descripcion:
+          "Este es un artículo de ejemplo creado automáticamente para mostrar cómo funciona el blog.",
+        contenido:
+          "En Mil Sabores compartimos recetas, tips, novedades y trucos de pastelería. Este post sirve como demostración inicial.",
+        autorId: "sistema",
+        autorNombre: "Pastelería Mil Sabores",
+        createdAt: new Date().toISOString(),
+        portada: DEFAULT_BLOG_COVER,
+        status: "aprobado",
+      };
+&nbsp;
+<span class="cstat-no" title="statement not covered" >      writeJSON(LOCAL_STORAGE_KEYS.blogs, [exampleBlog]);</span>
+    }
   } catch (error) {
 <span class="cstat-no" title="statement not covered" >    console.error("No fue posible inicializar los datos locales", error);</span>
   }
@@ -553,7 +631,7 @@ export const initLocalData = <span class="fstat-no" title="function not covered"
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-11-17T16:02:59.828Z
+                at 2025-11-17T16:58:35.818Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

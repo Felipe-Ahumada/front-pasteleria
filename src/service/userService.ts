@@ -42,9 +42,6 @@ const dispatchUsersUpdate = () => {
     window.dispatchEvent(new CustomEvent(USERS_CACHE_UPDATED_EVENT));
   }
 };
-
-<<<<<<< HEAD
-=======
 const clone = <T>(value: T): T => {
   if (typeof structuredClone === "function") {
     return structuredClone(value);
@@ -52,8 +49,6 @@ const clone = <T>(value: T): T => {
 
   return JSON.parse(JSON.stringify(value));
 };
-
->>>>>>> main
 const ensureActiveFlag = (usuario: Usuario): Usuario => ({
   ...usuario,
   activo: usuario.activo ?? true,
@@ -162,8 +157,6 @@ const init = (): Usuario[] => {
 
   return cache!;
 };
-
-const clone = (list: Usuario[]): Usuario[] => list.map((u) => ({ ...u }));
 
 export const userService = {
   getAll(): Usuario[] {

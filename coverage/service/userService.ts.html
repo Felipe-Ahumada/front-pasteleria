@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">14.42% </span>
+                <span class="strong">14.28% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>15/104</span>
+                <span class='fraction'>15/105</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/45</span>
+                <span class='fraction'>0/47</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/30</span>
+                <span class='fraction'>0/29</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">16.3% </span>
+                <span class="strong">15.78% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>15/92</span>
+                <span class='fraction'>15/95</span>
             </div>
         
             
@@ -307,8 +307,10 @@
 <a name='L242'></a><a href='#L242'>242</a>
 <a name='L243'></a><a href='#L243'>243</a>
 <a name='L244'></a><a href='#L244'>244</a>
-<a name='L245'></a><a href='#L245'>245</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L245'></a><a href='#L245'>245</a>
+<a name='L246'></a><a href='#L246'>246</a>
+<a name='L247'></a><a href='#L247'>247</a>
+<a name='L248'></a><a href='#L248'>248</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -352,6 +354,12 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -464,8 +472,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">8x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -551,8 +557,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// service/userService.ts
-import usuariosRaw from "@/data/usuarios.json";
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import usuariosRaw from "@/data/usuarios.json";
 import { LOCAL_STORAGE_KEYS } from "@/utils/storage/initLocalData";
 import {
   getLocalData,
@@ -596,7 +601,13 @@ const dispatchUsersUpdate = <span class="fstat-no" title="function not covered" 
 <span class="cstat-no" title="statement not covered" >    window.dispatchEvent(new CustomEvent(USERS_CACHE_UPDATED_EVENT));</span>
   }
 };
+const clone = <span class="fstat-no" title="function not covered" >&lt;T&gt;(v</span>alue: T): T =&gt; {
+<span class="cstat-no" title="statement not covered" >  if (typeof structuredClone === "function") {</span>
+<span class="cstat-no" title="statement not covered" >    return structuredClone(value);</span>
+  }
 &nbsp;
+<span class="cstat-no" title="statement not covered" >  return JSON.parse(JSON.stringify(value));</span>
+};
 const ensureActiveFlag = <span class="fstat-no" title="function not covered" >(u</span>suario: Usuario): Usuario =&gt; (<span class="cstat-no" title="statement not covered" >{</span>
   ...usuario,
   activo: usuario.activo ?? true,
@@ -706,8 +717,6 @@ const init = <span class="fstat-no" title="function not covered" >(): Usuario[] 
 <span class="cstat-no" title="statement not covered" >  return cache!;</span>
 };
 &nbsp;
-const clone = <span class="fstat-no" title="function not covered" >(l</span>ist: Usuario[]): Usuario[] =&gt; <span class="cstat-no" title="statement not covered" >list.map(<span class="fstat-no" title="function not covered" >(u</span>) =&gt; (<span class="cstat-no" title="statement not covered" >{ ...u }));</span></span>
-&nbsp;
 export const userService = {
 <span class="fstat-no" title="function not covered" >  getAll(): Usuario[] {</span>
 <span class="cstat-no" title="statement not covered" >    return clone(init());</span>
@@ -802,7 +811,7 @@ export const userService = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-11-17T16:02:59.828Z
+                at 2025-11-17T16:58:35.818Z
             </div>
         <script src="../prettify.js"></script>
         <script>
