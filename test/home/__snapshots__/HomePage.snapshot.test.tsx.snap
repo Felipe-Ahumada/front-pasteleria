@@ -212,11 +212,349 @@ exports[`HomePage – Snapshot > coincide con la UI esperada 1`] = `
       >
         Nuestra carta
       </h2>
-      <p
-        class="text-center mb-0"
+      <div
+        class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4"
       >
-        Pronto compartiremos nuestra selección de productos.
-      </p>
+        <div
+          class="col"
+        >
+          <div
+            class="card card-soft shadow-soft h-100 product-card"
+          >
+            <a
+              class="ratio ratio-4x3"
+              data-discover="true"
+              href="/menu"
+            >
+              <img
+                alt="Categoría Tortas Cuadradas"
+                class="w-100 h-100 object-fit-cover"
+                loading="lazy"
+                src="https://res.cloudinary.com/dx83p4455/image/upload/v1762263545/torta_cuadrada_de_chocolate_ljjmpj.jpg"
+              />
+            </a>
+            <div
+              class="card-body text-center d-flex flex-column gap-2"
+            >
+              <h3
+                class="h5 mb-1"
+              >
+                Tortas Cuadradas
+              </h3>
+              <p
+                class="mb-0 text-muted small"
+              >
+                2 productos disponibles
+              </p>
+              <a
+                class="btn btn-pastel btn-strawberry btn-sm mt-2"
+                data-discover="true"
+                href="/menu"
+              >
+                Explorar
+              </a>
+            </div>
+          </div>
+        </div>
+        <div
+          class="col"
+        >
+          <div
+            class="card card-soft shadow-soft h-100 product-card"
+          >
+            <a
+              class="ratio ratio-4x3"
+              data-discover="true"
+              href="/menu"
+            >
+              <img
+                alt="Categoría Tortas Circulares"
+                class="w-100 h-100 object-fit-cover"
+                loading="lazy"
+                src="https://res.cloudinary.com/dx83p4455/image/upload/v1762263544/torta_circular_de_vainilla_ofxqru.jpg"
+              />
+            </a>
+            <div
+              class="card-body text-center d-flex flex-column gap-2"
+            >
+              <h3
+                class="h5 mb-1"
+              >
+                Tortas Circulares
+              </h3>
+              <p
+                class="mb-0 text-muted small"
+              >
+                2 productos disponibles
+              </p>
+              <a
+                class="btn btn-pastel btn-strawberry btn-sm mt-2"
+                data-discover="true"
+                href="/menu"
+              >
+                Explorar
+              </a>
+            </div>
+          </div>
+        </div>
+        <div
+          class="col"
+        >
+          <div
+            class="card card-soft shadow-soft h-100 product-card"
+          >
+            <a
+              class="ratio ratio-4x3"
+              data-discover="true"
+              href="/menu"
+            >
+              <img
+                alt="Categoría Postres Individuales"
+                class="w-100 h-100 object-fit-cover"
+                loading="lazy"
+                src="https://res.cloudinary.com/dx83p4455/image/upload/v1762263540/mousse_de_chocolate_mmx3pa.jpg"
+              />
+            </a>
+            <div
+              class="card-body text-center d-flex flex-column gap-2"
+            >
+              <h3
+                class="h5 mb-1"
+              >
+                Postres Individuales
+              </h3>
+              <p
+                class="mb-0 text-muted small"
+              >
+                2 productos disponibles
+              </p>
+              <a
+                class="btn btn-pastel btn-strawberry btn-sm mt-2"
+                data-discover="true"
+                href="/menu"
+              >
+                Explorar
+              </a>
+            </div>
+          </div>
+        </div>
+        <div
+          class="col"
+        >
+          <div
+            class="card card-soft shadow-soft h-100 product-card"
+          >
+            <a
+              class="ratio ratio-4x3"
+              data-discover="true"
+              href="/menu"
+            >
+              <img
+                alt="Categoría Productos sin Azúcar"
+                class="w-100 h-100 object-fit-cover"
+                loading="lazy"
+                src="https://res.cloudinary.com/dx83p4455/image/upload/v1762263549/torta_sin_azucar_de_naranja_metjjn.jpg"
+              />
+            </a>
+            <div
+              class="card-body text-center d-flex flex-column gap-2"
+            >
+              <h3
+                class="h5 mb-1"
+              >
+                Productos sin Azúcar
+              </h3>
+              <p
+                class="mb-0 text-muted small"
+              >
+                2 productos disponibles
+              </p>
+              <a
+                class="btn btn-pastel btn-strawberry btn-sm mt-2"
+                data-discover="true"
+                href="/menu"
+              >
+                Explorar
+              </a>
+            </div>
+          </div>
+        </div>
+        <div
+          class="col"
+        >
+          <div
+            class="card card-soft shadow-soft h-100 product-card"
+          >
+            <a
+              class="ratio ratio-4x3"
+              data-discover="true"
+              href="/menu"
+            >
+              <img
+                alt="Categoría Pastelería Tradicional"
+                class="w-100 h-100 object-fit-cover"
+                loading="lazy"
+                src="https://res.cloudinary.com/dx83p4455/image/upload/v1762263539/empanada_de_manzana_c2on4y.jpg"
+              />
+            </a>
+            <div
+              class="card-body text-center d-flex flex-column gap-2"
+            >
+              <h3
+                class="h5 mb-1"
+              >
+                Pastelería Tradicional
+              </h3>
+              <p
+                class="mb-0 text-muted small"
+              >
+                2 productos disponibles
+              </p>
+              <a
+                class="btn btn-pastel btn-strawberry btn-sm mt-2"
+                data-discover="true"
+                href="/menu"
+              >
+                Explorar
+              </a>
+            </div>
+          </div>
+        </div>
+        <div
+          class="col"
+        >
+          <div
+            class="card card-soft shadow-soft h-100 product-card"
+          >
+            <a
+              class="ratio ratio-4x3"
+              data-discover="true"
+              href="/menu"
+            >
+              <img
+                alt="Categoría Productos sin Gluten"
+                class="w-100 h-100 object-fit-cover"
+                loading="lazy"
+                src="https://res.cloudinary.com/dx83p4455/image/upload/v1762263538/brownie_sin_gluten_o70nfg.jpg"
+              />
+            </a>
+            <div
+              class="card-body text-center d-flex flex-column gap-2"
+            >
+              <h3
+                class="h5 mb-1"
+              >
+                Productos sin Gluten
+              </h3>
+              <p
+                class="mb-0 text-muted small"
+              >
+                2 productos disponibles
+              </p>
+              <a
+                class="btn btn-pastel btn-strawberry btn-sm mt-2"
+                data-discover="true"
+                href="/menu"
+              >
+                Explorar
+              </a>
+            </div>
+          </div>
+        </div>
+        <div
+          class="col"
+        >
+          <div
+            class="card card-soft shadow-soft h-100 product-card"
+          >
+            <a
+              class="ratio ratio-4x3"
+              data-discover="true"
+              href="/menu"
+            >
+              <img
+                alt="Categoría Productos Veganos"
+                class="w-100 h-100 object-fit-cover"
+                loading="lazy"
+                src="https://res.cloudinary.com/dx83p4455/image/upload/v1762263550/torta_vegana_de_chocolate_ybcpgf.jpg"
+              />
+            </a>
+            <div
+              class="card-body text-center d-flex flex-column gap-2"
+            >
+              <h3
+                class="h5 mb-1"
+              >
+                Productos Veganos
+              </h3>
+              <p
+                class="mb-0 text-muted small"
+              >
+                2 productos disponibles
+              </p>
+              <a
+                class="btn btn-pastel btn-strawberry btn-sm mt-2"
+                data-discover="true"
+                href="/menu"
+              >
+                Explorar
+              </a>
+            </div>
+          </div>
+        </div>
+        <div
+          class="col"
+        >
+          <div
+            class="card card-soft shadow-soft h-100 product-card"
+          >
+            <a
+              class="ratio ratio-4x3"
+              data-discover="true"
+              href="/menu"
+            >
+              <img
+                alt="Categoría Tortas Especiales"
+                class="w-100 h-100 object-fit-cover"
+                loading="lazy"
+                src="https://res.cloudinary.com/dx83p4455/image/upload/v1762263547/torta_especial_de_cumpleanos_drxjqa.jpg"
+              />
+            </a>
+            <div
+              class="card-body text-center d-flex flex-column gap-2"
+            >
+              <h3
+                class="h5 mb-1"
+              >
+                Tortas Especiales
+              </h3>
+              <p
+                class="mb-0 text-muted small"
+              >
+                2 productos disponibles
+              </p>
+              <a
+                class="btn btn-pastel btn-strawberry btn-sm mt-2"
+                data-discover="true"
+                href="/menu"
+              >
+                Explorar
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="text-center mt-4"
+      >
+        <a
+          class="btn btn-pastel btn-strawberry btn-lg"
+          data-discover="true"
+          href="/menu"
+        >
+          Ver carta completa
+        </a>
+      </div>
     </div>
   </section>
 </DocumentFragment>

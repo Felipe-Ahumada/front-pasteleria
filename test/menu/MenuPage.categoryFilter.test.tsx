@@ -21,28 +21,34 @@ vi.mock("@/data/menu_datos.json", () => ({
   },
 }));
 
+const mockedProducts = [
+  {
+    id: "P1",
+    nombre: "Torta Chocolate",
+    descripcion: "Rica torta",
+    precio: 5000,
+    imagen: "",
+    categoria: "Tortas",
+    stock: 10,
+    activo: true,
+  },
+  {
+    id: "P2",
+    nombre: "Cheesecake Frutilla",
+    descripcion: "Delicioso",
+    precio: 4500,
+    imagen: "",
+    categoria: "Cheesecakes",
+    stock: 5,
+    activo: true,
+  },
+];
+
 vi.mock("@/service/menuService", () => ({
+  MENU_CACHE_UPDATED_EVENT: "menu:cache-updated",
   menuService: {
-    getCached: () => [
-      {
-        id: "P1",
-        nombre: "Torta Chocolate",
-        descripcion: "Rica torta",
-        precio: 5000,
-        imagen: "",
-        categoria: "Tortas",
-        stock: 10,
-      },
-      {
-        id: "P2",
-        nombre: "Cheesecake Frutilla",
-        descripcion: "Delicioso",
-        precio: 4500,
-        imagen: "",
-        categoria: "Cheesecakes",
-        stock: 5,
-      },
-    ],
+    getCached: () => mockedProducts,
+    getActive: () => mockedProducts.filter((p) => p.activo !== false),
   },
 }));
 
