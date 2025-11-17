@@ -62,13 +62,20 @@ const CommentsPage = () => {
     setMessages(contactMessageService.toggleRead(messageId));
   }, []);
 
-  const handleDelete = useCallback((messageId: string) => {
-    const confirmed = window.confirm(
-      "¿Seguro que deseas eliminar este mensaje de contacto?"
-    );
-    if (!confirmed) return;
+  const handleReply = useCallback((message: ContactMessage) => {
+    const subject = encodeURIComponent("Respuesta desde Pastelería Mil Sabores");
+    const greeting = `Hola ${message.nombre},\n\n`;
+    const original = `En relación a tu mensaje:\n"${message.comentario}"\n\n`;
+    const signature = "Saludos,\nEquipo Pastelería Mil Sabores";
+    const body = encodeURIComponent(`${greeting}${original}${signature}`);
 
-    setMessages(contactMessageService.remove(messageId));
+    const mailtoUrl = `mailto:${message.correo}?subject=${subject}&body=${body}`;
+
+    window.open(mailtoUrl, "_blank", "noopener,noreferrer");
+
+    if (!message.leido) {
+      setMessages(contactMessageService.toggleRead(message.id));
+    }
   }, []);
 
   const handleRefresh = useCallback(() => {
@@ -161,11 +168,11 @@ const CommentsPage = () => {
                       {message.leido ? "Marcar como pendiente" : "Marcar como leído"}
                     </Button>
                     <Button
-                      variant="danger"
+                      variant="strawberry"
                       size="sm"
-                      onClick={() => handleDelete(message.id)}
+                      onClick={() => handleReply(message)}
                     >
-                      Eliminar
+                      Responder por correo
                     </Button>
                   </div>
                 </td>
