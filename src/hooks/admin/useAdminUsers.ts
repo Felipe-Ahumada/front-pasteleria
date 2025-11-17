@@ -4,6 +4,11 @@ import {
   type Usuario,
   USERS_CACHE_UPDATED_EVENT,
 } from "@/service/userService";
+import {
+  exportUsersCSV,
+  exportUsersExcel,
+  exportUsersPDF,
+} from "@/utils/exporters";
 
 export const useAdminUsers = () => {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
@@ -49,6 +54,10 @@ export const useAdminUsers = () => {
     load();
   };
 
+  const exportCSV = () => exportUsersCSV(usuarios);
+  const exportExcel = () => exportUsersExcel(usuarios);
+  const exportPDF = () => exportUsersPDF(usuarios);
+
   const filteredUsers = useMemo(() => {
     if (!search.trim()) return usuarios;
 
@@ -78,5 +87,8 @@ export const useAdminUsers = () => {
     updateUser,
     blockUser,
     unblockUser,
+    exportCSV,
+    exportExcel,
+    exportPDF,
   };
 };
