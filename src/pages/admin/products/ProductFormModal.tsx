@@ -1,4 +1,3 @@
-// ProductFormModal.tsx
 import { useState, useEffect } from "react";
 import type { Producto } from "@/service/menuService";
 import { Modal, Button, Input } from "@/components/common";

@@ -65,9 +65,6 @@ const carouselData: CarouselItem[] = [
   },
 ];
 
-/** ======================================
- *  Tipo seguro para Bootstrap.getInstance
- *  ====================================== */
 type CarouselStatic = {
   getInstance?: (element: Element) => InstanceType<typeof Carousel> | null;
   new (element: Element, config?: Record<string, unknown>): InstanceType<typeof Carousel>;

@@ -1,4 +1,3 @@
-// ProductDetailModal.tsx
 import { Modal, Button } from "@/components/common";
 import type { Producto } from "@/service/menuService";
 

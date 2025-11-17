@@ -1,4 +1,3 @@
-// pages/admin/users/UserFormModal.tsx
 import { useEffect, useState } from "react";
 import { Modal, Button, Input } from "@/components/common";
 import regionesData from "@/data/region_comuna.json";

@@ -19,16 +19,16 @@ export type LoadedProduct = {
 };
 
 export function useMenuPage() {
-  /** -----------------------------
-   * Estado principal
-   * ----------------------------- */
+  /* -----------------------------
+    Estado principal
+    ----------------------------- */
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [productos, setProductos] = useState<Producto[]>([]);
 
-  /** -----------------------------
-   * Filtros
-   * ----------------------------- */
+  /* -----------------------------
+    Filtros
+   ----------------------------- */
   const [selectedCategory, setSelectedCategory] = useState<string | "all">("all");
   const [selectedProduct, setSelectedProduct] = useState<string | "all">("all");
   const [minPrice, setMinPrice] = useState("");
@@ -76,9 +76,9 @@ export function useMenuPage() {
     return Array.from(set); // string[]
   }, [productos]);
 
-  /** -----------------------------
-   * 3) Opciones de productos
-   * ----------------------------- */
+  /* -----------------------------
+    Opciones de productos
+    ----------------------------- */
   const productOptions = useMemo(() => {
     const map = new Map<string, Producto>();
     productos.forEach((p) => {
@@ -89,9 +89,9 @@ export function useMenuPage() {
     );
   }, [productos]);
 
-  /** -----------------------------
-   * 4) Filtrado
-   * ----------------------------- */
+  /* -----------------------------
+   Filtrado
+    ----------------------------- */
   const filteredProducts = useMemo(() => {
     let result = [...productos];
 
@@ -136,9 +136,9 @@ export function useMenuPage() {
 
   const totalProductos = filteredProducts.length;
 
-  /** -----------------------------
-   * 5) Handlers de filtros
-   * ----------------------------- */
+  /* -----------------------------
+    Handlers de filtros
+    ----------------------------- */
   const handleMinPriceChange = (value: string) => {
     setMinPrice(value);
     const v = validatePriceFilters({ precioMin: value, precioMax: maxPrice });
@@ -169,9 +169,9 @@ export function useMenuPage() {
     setFilterErrors({});
   };
 
-  /** -----------------------------
-   * 6) Conversion a LoadedProduct (UI)
-   * ----------------------------- */
+  /* -----------------------------
+     Conversion a LoadedProduct (UI)
+    ----------------------------- */
   const normalizedProducts: LoadedProduct[] = filteredProducts.map((p) => ({
     id: p.id,
     nombre: p.nombre,
@@ -182,9 +182,9 @@ export function useMenuPage() {
     stock: p.stock,
   }));
 
-  /** -----------------------------
-   * RETORNO FINAL
-   * ----------------------------- */
+  /* -----------------------------
+    RETORNO FINAL
+    ----------------------------- */
   return {
     loading,
     error,

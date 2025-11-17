@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { useBlogDetails } from "@/hooks/blog/useBlogDetails";
 import { useState } from "react";
 import { Button } from "@/components/common";
+import { resolveBlogCover } from "@/utils/blog/constants";
 
 const BlogDetailPage = () => {
   const { id } = useParams();
@@ -44,17 +45,16 @@ const BlogDetailPage = () => {
       </p>
 
       {/* PORTADA */}
-      {blog.portada && (
-        <img
-          src={blog.portada}
-          className="img-fluid rounded shadow-sm mb-4"
-          style={{
-            maxHeight: "420px",
-            objectFit: "cover",
-            width: "100%",
-          }}
-        />
-      )}
+      <img
+        src={resolveBlogCover(blog.portada)}
+        className="img-fluid rounded shadow-sm mb-4"
+        style={{
+          maxHeight: "420px",
+          objectFit: "cover",
+          width: "100%",
+        }}
+        alt={blog.titulo}
+      />
 
       {/* CONTENIDO */}
       <div

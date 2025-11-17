@@ -54,9 +54,9 @@ export const useMenuDetailsPage = () => {
     feedbackTimeout.current = window.setTimeout(() => setFeedback(null), 3500);
   }, []);
 
-  /**
-   * ✅ Controla que solo se puedan ingresar números positivos.
-   * Si el usuario escribe 0 o negativo, se corrige automáticamente a vacío.
+  /*
+   Controla que solo se puedan ingresar números positivos.
+    Si el usuario escribe 0 o negativo, se corrige automáticamente a vacío.
    */
   const handleQuantityChange = useCallback((value: string) => {
     if (!/^\d*$/.test(value)) return; // ignora caracteres no numéricos
@@ -98,6 +98,6 @@ export const useMenuDetailsPage = () => {
     feedback,
     setMensaje,
     addToCart,
-    handleQuantityChange, // ✅ nuevo método para manejar entrada segura
+    handleQuantityChange,
   };
 };

@@ -51,7 +51,7 @@ export function useMenuDetails() {
   const stockRestante = cart.getRemainingStock();
   const isOutOfStock = stockRestante <= 0;
 
-  // CANTIDAD (corregido → ahora depende del stockRestante)
+  // CANTIDAD 
   const quantity = useDetailQuantity(stockRestante);
 
   // MENSAJE

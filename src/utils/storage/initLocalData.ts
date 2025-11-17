@@ -6,6 +6,8 @@ import type { StoredUser, UserRoleName } from "@/types/user";
 
 import { readArray, writeJSON } from "./localStorageUtils";
 import { ensureHashedPassword } from "@/utils/security/password";
+import type { BlogPost } from "@/types/blog";
+import { DEFAULT_BLOG_COVER } from "@/utils/blog/constants";
 
 const isBrowser = typeof window !== "undefined";
 
@@ -16,6 +18,7 @@ export const LOCAL_STORAGE_KEYS = {
   activeUser: "usuarioActivo",
   contactMessages: "contactMessages",
   menuFilters: "menuFilters",
+  blogs: "dataBlogs", // <<--- AGREGADO
 } as const;
 
 export type RegionSeed = {
@@ -154,6 +157,29 @@ export const initLocalData = (force = false) => {
         LOCAL_STORAGE_KEYS.comunas,
         buildComunasSeed(effectiveRegions)
       );
+    }
+
+    // -------------------------------------------------------
+    // BLOGS (SEED)
+    // -------------------------------------------------------
+    const existingBlogs = readArray<BlogPost>(LOCAL_STORAGE_KEYS.blogs);
+
+    if (!existingBlogs.length) {
+      const exampleBlog: BlogPost = {
+        id: "blog-ejemplo-1",
+        titulo: "Bienvenidos al Blog de Mil Sabores",
+        descripcion:
+          "Este es un artículo de ejemplo creado automáticamente para mostrar cómo funciona el blog.",
+        contenido:
+          "En Mil Sabores compartimos recetas, tips, novedades y trucos de pastelería. Este post sirve como demostración inicial.",
+        autorId: "sistema",
+        autorNombre: "Pastelería Mil Sabores",
+        createdAt: new Date().toISOString(),
+        portada: DEFAULT_BLOG_COVER,
+        status: "aprobado",
+      };
+
+      writeJSON(LOCAL_STORAGE_KEYS.blogs, [exampleBlog]);
     }
   } catch (error) {
     console.error("No fue posible inicializar los datos locales", error);

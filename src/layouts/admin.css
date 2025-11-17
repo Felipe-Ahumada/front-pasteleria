@@ -15,9 +15,7 @@
 
 .admin-shell.collapsed .admin-sidebar h2,
 .admin-shell.collapsed .admin-sidebar .admin-user,
-.admin-shell.collapsed .admin-link span,
-.admin-shell.collapsed .admin-return,
-.admin-shell.collapsed .admin-footer button {
+.admin-shell.collapsed .admin-link span {
   opacity: 0;
   pointer-events: none;
 }
@@ -111,35 +109,42 @@
 }
 
 /**********************************************************
-   FOOTER SIDEBAR
+   ACCIONES LATERALES
 **********************************************************/
-.admin-footer {
-  margin-top: auto;
+.admin-nav-actions {
+  margin-top: 1.4rem;
   display: flex;
   flex-direction: column;
-  gap: 0.9rem;
+  gap: 0.35rem;
 }
 
-.admin-return {
-  color: var(--title-main);
-  text-decoration: none;
-  text-align: center;
-  font-weight: 600;
-}
-
-.admin-logout {
-  padding: 0.65rem 1.2rem;
+.admin-nav-actions .admin-link {
   border: none;
-  border-radius: var(--radius);
-  font-weight: 600;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.admin-nav-actions .admin-link:hover {
+  background: var(--pastel-strawberry);
+  color: var(--ink);
+  transform: translateX(6px);
+}
+
+.admin-nav-actions .admin-link:focus-visible {
+  outline: 2px solid #a3d6c4;
+  outline-offset: 2px;
+}
+
+.admin-nav-action--danger {
+  color: #8e3c4b;
+}
+
+.admin-nav-action--danger:hover {
   background: #ffd6de;
   color: #71353f;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.admin-logout:hover {
-  background: #ffb9c8;
+  transform: translateX(6px);
 }
 
 /**********************************************************

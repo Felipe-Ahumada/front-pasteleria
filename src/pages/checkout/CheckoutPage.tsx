@@ -11,6 +11,7 @@ import { getLocalItem } from "@/utils/storage/localStorageUtils";
 import { LOCAL_STORAGE_KEYS } from "@/utils/storage/initLocalData";
 import type { StoredUser } from "@/types/user";
 import type { Order } from "@/types/order";
+import { menuService } from "@/service/menuService";
 
 type RegionData = {
   id: string;
@@ -25,7 +26,7 @@ const CheckoutPage = () => {
   const { user } = useAuth();
   const { createOrder } = useOrders();
 
-  // Usuario completo desde localStorage (tiene run, direccion, etc.)
+  // Usuario completo
   const storedUser = getLocalItem<StoredUser>(LOCAL_STORAGE_KEYS.activeUser);
 
   // ===========================
@@ -64,8 +65,6 @@ const CheckoutPage = () => {
   // ===========================
   const confirmar = () => {
     if (!form.fecha || !form.regionId || !form.comuna || !form.direccion) {
-      // Aquí podrías usar un Alert bonito, pero para ahora:
-      // eslint-disable-next-line no-alert
       alert("Completa todos los campos obligatorios");
       return;
     }
@@ -85,8 +84,6 @@ const CheckoutPage = () => {
       fechaEntrega: form.fecha,
       total: totals.totalPagar, // total con descuento aplicado
       status: "pendiente",
-      // Si en tu tipo Order tienes campo "envio", déjalo.
-      // Si no, bórralo de aquí y del tipo.
       envio: {
         run: form.run,
         nombres: form.nombres,
@@ -101,6 +98,7 @@ const CheckoutPage = () => {
     };
 
     createOrder(order);
+    menuService.consumeStock(order.items);
     clear();
     window.location.href = `/order-success?id=${order.id}`;
   };
@@ -191,7 +189,7 @@ const CheckoutPage = () => {
               placeholder="12345678-9"
               value={form.run}
               onChange={handleChange}
-              readOnly // <- no editable
+              readOnly 
             />
           </div>
 
@@ -204,7 +202,7 @@ const CheckoutPage = () => {
               className="form-control"
               value={form.correo}
               onChange={handleChange}
-              readOnly // <- no editable
+              readOnly 
             />
           </div>
 
@@ -289,7 +287,7 @@ const CheckoutPage = () => {
               type="date"
               name="fecha"
               className="form-control"
-              min={today} // ← evita fechas pasadas
+              min={today} // evita fechas pasadas
               value={form.fecha}
               onChange={handleChange}
             />
