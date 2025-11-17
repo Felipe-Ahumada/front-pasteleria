@@ -30,6 +30,9 @@ const UserViewModal = ({ open, onClose, usuario }: Props) => {
           <strong>Tipo de usuario:</strong> {usuario.tipoUsuario}
         </p>
         <p>
+          <strong>Estado:</strong> {usuario.activo !== false ? "Activo" : "Bloqueado"}
+        </p>
+        <p>
           <strong>Fecha de nacimiento:</strong> {usuario.fechaNacimiento}
         </p>
         <p>

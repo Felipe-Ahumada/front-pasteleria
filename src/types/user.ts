@@ -17,4 +17,5 @@ export type StoredUser = {
 	avatarUrl?: string
 	createdAt?: string
 	updatedAt?: string
+	activo?: boolean
 }

@@ -1,6 +1,10 @@
 // hooks/admin/useAdminUsers.ts
 import { useState, useEffect, useMemo } from "react";
-import { userService, type Usuario } from "@/service/userService";
+import {
+  userService,
+  type Usuario,
+  USERS_CACHE_UPDATED_EVENT,
+} from "@/service/userService";
 
 export const useAdminUsers = () => {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
@@ -15,6 +19,15 @@ export const useAdminUsers = () => {
 
   useEffect(() => {
     load();
+
+    if (typeof window === "undefined") return;
+
+    const handleUpdate = () => load();
+    window.addEventListener(USERS_CACHE_UPDATED_EVENT, handleUpdate);
+
+    return () => {
+      window.removeEventListener(USERS_CACHE_UPDATED_EVENT, handleUpdate);
+    };
   }, []);
 
   const addUser = (user: Usuario) => {
@@ -27,8 +40,13 @@ export const useAdminUsers = () => {
     load();
   };
 
-  const deleteUser = (id: string) => {
-    userService.delete(id);
+  const blockUser = (id: string) => {
+    userService.block(id);
+    load();
+  };
+
+  const unblockUser = (id: string) => {
+    userService.unblock(id);
     load();
   };
 
@@ -43,6 +61,7 @@ export const useAdminUsers = () => {
         u.apellidos.toLowerCase(),
         u.correo.toLowerCase(),
         u.tipoUsuario.toLowerCase(),
+        (u.activo !== false ? "activo" : "bloqueado"),
         u.regionNombre.toLowerCase(),
         u.comuna.toLowerCase(),
         `${u.run}-${u.dv}`.toLowerCase(),
@@ -58,6 +77,7 @@ export const useAdminUsers = () => {
     loading,
     addUser,
     updateUser,
-    deleteUser,
+    blockUser,
+    unblockUser,
   };
 };

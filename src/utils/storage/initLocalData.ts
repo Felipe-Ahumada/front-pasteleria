@@ -40,6 +40,7 @@ type UsuarioSeed = {
   password: string;
   avatarUrl?: string;
   codigoDescuento?: string;
+  activo?: boolean;
 };
 
 type ComunaSeed = {
@@ -84,7 +85,7 @@ export const initLocalData = (force = false) => {
 
     if (!usuarios.length) {
       const normalized = (usuariosSeed as UsuarioSeed[]).map(
-        ({ dv, run, tipoUsuario, avatarUrl, password, ...rest }) => {
+        ({ dv, run, tipoUsuario, avatarUrl, password, activo, ...rest }) => {
           const combinedRun = `${run}${dv}`.toUpperCase();
           return {
             ...rest,
@@ -92,6 +93,7 @@ export const initLocalData = (force = false) => {
             run: combinedRun,
             avatarUrl: avatarUrl ?? defaultProfileImage,
             password: ensureHashedPassword(password ?? ""),
+            activo: activo ?? true,
           };
         }
       );
@@ -101,11 +103,16 @@ export const initLocalData = (force = false) => {
       const sanitizedUsuarios = usuarios.map((user) => ({
         ...user,
         password: ensureHashedPassword(user.password ?? ""),
+        activo: user.activo ?? true,
       }));
 
-      const hasChanges = sanitizedUsuarios.some(
-        (u, i) => u.password !== usuarios[i]?.password
-      );
+      const hasChanges = sanitizedUsuarios.some((u, i) => {
+        const original = usuarios[i];
+        return (
+          u.password !== original?.password ||
+          (u.activo ?? true) !== (original?.activo ?? true)
+        );
+      });
 
       if (hasChanges) {
         writeJSON(LOCAL_STORAGE_KEYS.usuarios, sanitizedUsuarios);
