@@ -1,0 +1,22 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`BlogPage – Snapshot > renderiza correctamente la vista del blog 1`] = `
+<DocumentFragment>
+  <section
+    class="container py-5"
+  >
+    <div
+      class="d-flex justify-content-between align-items-center mb-4"
+    >
+      <h1
+        class="section-title"
+      >
+        Blog
+      </h1>
+    </div>
+    <p>
+      Aún no hay blogs publicados.
+    </p>
+  </section>
+</DocumentFragment>
+`;
