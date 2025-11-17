@@ -1,3 +1,4 @@
+// utils/storage/cartStorage.ts
 import type { CartItem } from "@/context/cart/CartContext";
 
 const CART_KEY_PREFIX = "carrito_";
