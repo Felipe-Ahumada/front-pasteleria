@@ -188,9 +188,9 @@ const ProfilePage = () => {
     if (role === "Vendedor") {
       return {
         label: "Ir a la vista de vendedor",
-        to: "/seller",
+        to: "/admin",
         icon: "bi-shop",
-      };
+      }
     }
 
     return null;
@@ -469,10 +469,9 @@ const ProfilePage = () => {
                     type="button"
                     variant="strawberry"
                     onClick={() => {
-                      cleanupOffcanvas("offcanvasLogin");
-                      logout();
-                      remountLoginOffcanvas();
-                      navigate("/", { replace: true });
+                      cleanupOffcanvas('offcanvasLogin')
+                      logout()
+                      remountLoginOffcanvas()
                     }}
                   >
                     <i

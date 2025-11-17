@@ -8,6 +8,7 @@ import ProductDetailModal from "./ProductDetailModal";
 
 import { useAdminProducts } from "@/hooks/admin/useAdminProducts";
 import type { Producto } from "@/service/menuService";
+import useAuth from "@/hooks/useAuth";
 
 const ProductsPage = () => {
   const {
@@ -20,6 +21,9 @@ const ProductsPage = () => {
     exportarExcel,
     exportarPDF,
   } = useAdminProducts();
+  const { user } = useAuth();
+  const role = user?.role;
+  const canManageProducts = role === "admin" || role === "superadmin";
 
   // --------------------------
   // ESTADO DE MODALES
@@ -35,11 +39,17 @@ const ProductsPage = () => {
   // HANDLERS BÁSICOS
   // --------------------------
   const handleAddProduct = () => {
+    if (!canManageProducts) {
+      return;
+    }
     setProductoSeleccionado(null);
     setModalFormOpen(true);
   };
 
   const handleEditProduct = (p: Producto) => {
+    if (!canManageProducts) {
+      return;
+    }
     setProductoSeleccionado(p);
     setModalFormOpen(true);
   };
@@ -50,6 +60,9 @@ const ProductsPage = () => {
   };
 
   const handleDeleteProduct = (p: Producto) => {
+    if (!canManageProducts) {
+      return;
+    }
     setProductoSeleccionado(p);
     setModalDeleteOpen(true);
   };
@@ -58,6 +71,9 @@ const ProductsPage = () => {
   // GUARDAR (crear o editar)
   // --------------------------
   const handleSaveProduct = (data: Producto) => {
+    if (!canManageProducts) {
+      return;
+    }
     if (productoSeleccionado) {
       // Modo edición
       actualizarProducto(productoSeleccionado.id, data);
@@ -74,6 +90,9 @@ const ProductsPage = () => {
   // ELIMINAR
   // --------------------------
   const handleConfirmDelete = () => {
+    if (!canManageProducts) {
+      return;
+    }
     if (productoSeleccionado) {
       eliminarProducto(productoSeleccionado.id);
       setModalDeleteOpen(false);
@@ -95,23 +114,27 @@ const ProductsPage = () => {
           </p>
         </div>
 
-        <Button variant="mint" onClick={handleAddProduct}>
-          <i className="bi bi-plus-circle" /> Añadir producto
-        </Button>
+        {canManageProducts ? (
+          <Button variant="mint" onClick={handleAddProduct}>
+            <i className="bi bi-plus-circle" /> Añadir producto
+          </Button>
+        ) : null}
       </div>
 
       {/* BOTONES DE EXPORTACIÓN */}
-      <div className="d-flex flex-wrap gap-2">
-        <Button variant="mint" onClick={exportarCSV}>
-          <i className="bi bi-filetype-csv" /> Exportar CSV
-        </Button>
-        <Button variant="mint" onClick={exportarExcel}>
-          <i className="bi bi-file-earmark-excel-fill" /> Exportar Excel
-        </Button>
-        <Button variant="strawberry" onClick={exportarPDF}>
-          <i className="bi bi-file-earmark-pdf-fill" /> Exportar PDF
-        </Button>
-      </div>
+      {canManageProducts ? (
+        <div className="d-flex flex-wrap gap-2">
+          <Button variant="mint" onClick={exportarCSV}>
+            <i className="bi bi-filetype-csv" /> Exportar CSV
+          </Button>
+          <Button variant="mint" onClick={exportarExcel}>
+            <i className="bi bi-file-earmark-excel-fill" /> Exportar Excel
+          </Button>
+          <Button variant="strawberry" onClick={exportarPDF}>
+            <i className="bi bi-file-earmark-pdf-fill" /> Exportar PDF
+          </Button>
+        </div>
+      ) : null}
 
       {/* TABLA */}
       {cargando ? (
@@ -119,33 +142,37 @@ const ProductsPage = () => {
       ) : (
         <ProductTable
           productos={productos}
-          onEdit={handleEditProduct}
-          onDelete={handleDeleteProduct}
+          onEdit={canManageProducts ? handleEditProduct : undefined}
+          onDelete={canManageProducts ? handleDeleteProduct : undefined}
           onView={handleViewProduct}
         />
       )}
 
       {/* MODAL → Crear / Editar */}
-      <ProductFormModal
-        open={modalFormOpen}
-        onClose={() => {
-          setModalFormOpen(false);
-          setProductoSeleccionado(null);
-        }}
-        producto={productoSeleccionado}
-        onSaved={handleSaveProduct}
-      />
+      {canManageProducts ? (
+        <>
+          <ProductFormModal
+            open={modalFormOpen}
+            onClose={() => {
+              setModalFormOpen(false);
+              setProductoSeleccionado(null);
+            }}
+            producto={productoSeleccionado}
+            onSaved={handleSaveProduct}
+          />
 
-      {/* MODAL → Eliminar */}
-      <ProductDeleteModal
-        open={modalDeleteOpen}
-        onClose={() => {
-          setModalDeleteOpen(false);
-          setProductoSeleccionado(null);
-        }}
-        producto={productoSeleccionado}
-        onConfirm={handleConfirmDelete}
-      />
+          {/* MODAL → Eliminar */}
+          <ProductDeleteModal
+            open={modalDeleteOpen}
+            onClose={() => {
+              setModalDeleteOpen(false);
+              setProductoSeleccionado(null);
+            }}
+            producto={productoSeleccionado}
+            onConfirm={handleConfirmDelete}
+          />
+        </>
+      ) : null}
 
       {/* MODAL → Detalle */}
       <ProductDetailModal

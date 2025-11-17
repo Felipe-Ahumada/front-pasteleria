@@ -174,7 +174,7 @@ const Navbar = () => {
 							<li className="nav-item ms-2">
 								<Button
 									as="link"
-									to="/"
+									to="/admin"
 									size="sm"
 									variant="strawberry"
 									className="d-flex align-items-center gap-2 px-3"
@@ -226,7 +226,7 @@ const Navbar = () => {
 								: { type: 'login', label: 'Iniciar sesión' }
 						}
 						adminAction={
-							shouldShowAdminPanel ? { type: 'admin', label: 'Panel Administración', to: '/' } : undefined
+							shouldShowAdminPanel ? { type: 'admin', label: 'Panel Administración', to: '/admin' } : undefined
 						}
 					/>
 				</div>

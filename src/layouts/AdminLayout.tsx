@@ -1,10 +1,92 @@
-import { useState } from "react";
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { useCallback, useMemo, useState } from "react";
+import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import "./admin.css";
 import { logoImage } from "@/assets";
+import useAuth from "@/hooks/useAuth";
+import type { UserRole } from "@/context";
+
+type NavItemConfig = {
+  to: string;
+  icon: string;
+  label: string;
+  end?: boolean;
+  badge?: number;
+  roles?: UserRole[];
+};
 
 const AdminLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const navigate = useNavigate();
+  const { logout, user } = useAuth();
+
+  const handleLogout = useCallback(() => {
+    logout();
+    navigate("/", { replace: true });
+  }, [logout, navigate]);
+
+  const role = user?.role ?? "customer";
+
+  const navItems = useMemo<NavItemConfig[]>(
+    () => [
+      {
+        to: "/admin",
+        icon: "bi-speedometer2",
+        label: "Dashboard",
+        end: true,
+        roles: ["admin", "superadmin", "seller"],
+      },
+      {
+        to: "/admin/products",
+        icon: "bi-basket",
+        label: "Productos",
+        roles: ["admin", "superadmin", "seller"],
+      },
+      {
+        to: "/admin/orders",
+        icon: "bi-receipt",
+        label: "Pedidos",
+        roles: ["admin", "superadmin", "seller"],
+      },
+      {
+        to: "/admin/users",
+        icon: "bi-people",
+        label: "Usuarios",
+        roles: ["admin", "superadmin"],
+      },
+      {
+        to: "/admin/comments",
+        icon: "bi-chat-left-dots",
+        label: "Comentarios",
+        badge: 53,
+        roles: ["admin", "superadmin"],
+      },
+      {
+        to: "/admin/reports",
+        icon: "bi-bar-chart",
+        label: "Reportes",
+        roles: ["admin", "superadmin"],
+      },
+      {
+        to: "/admin/blogs",
+        icon: "bi-journal-text",
+        label: "Blogs",
+        roles: ["admin", "superadmin"],
+      },
+    ],
+    []
+  );
+
+  const visibleNavItems = useMemo(
+    () =>
+      navItems.filter((item) => {
+        if (!item.roles) {
+          return true;
+        }
+
+        return item.roles.includes(role);
+      }),
+    [navItems, role]
+  );
 
   return (
     <div className={`admin-shell ${collapsed ? "collapsed" : ""}`}>
@@ -21,26 +103,19 @@ const AdminLayout = () => {
         </div>
 
         <nav className="admin-nav">
-          <NavItem to="/admin" icon="bi-speedometer2" label="Dashboard" end />
-          <NavItem to="/admin/products" icon="bi-basket" label="Productos" />
-          <NavItem to="/admin/orders" icon="bi-receipt" label="Pedidos" />
-          <NavItem to="/admin/users" icon="bi-people" label="Usuarios" />
-          <NavItem
-            to="/admin/comments"
-            icon="bi-chat-left-dots"
-            label="Comentarios"
-            badge={53}
-          />
-          <NavItem to="/admin/reports" icon="bi-bar-chart" label="Reportes" />
-          <NavItem to="/admin/blogs" icon="bi-journal-text" label="Blogs" />
+          {visibleNavItems.map(({ roles: _roles, ...item }) => (
+            <NavItem key={item.to} {...item} />
+          ))}
         </nav>
 
         <div className="admin-footer">
-          <Link to="/profile" className="admin-return">
-            ← Volver a perfil
+          <Link to="/" className="admin-return">
+            ← Volver a tienda
           </Link>
 
-          <button className="admin-logout">Cerrar sesión</button>
+          <button type="button" className="admin-logout" onClick={handleLogout}>
+            Cerrar sesión
+          </button>
         </div>
       </aside>
 

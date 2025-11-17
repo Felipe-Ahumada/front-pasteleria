@@ -4,7 +4,7 @@
 NOTAS:
 - Para entrar como administrador se utiliza el correo de: ana@duoc.cl y pass: 123q (ella es SuperAdmin)
 - Para entrar como vendedor se utiliza el correo de: marcela@profesor.duoc.cl y pass: 123q
-- Para entrar como cliente cualquier correo con @gmail.com
+- Para entrar como cliente se utiliza el correo de: claudia.fernandez@gmail.com y pass: 123q
 =======================================================================================
 
 # 🍰 Pastelería Mil Sabores - Frontend

@@ -3,12 +3,15 @@ import { Button } from "@/components/common";
 
 interface Props {
   productos: Producto[];
-  onEdit: (p: Producto) => void;
-  onDelete: (p: Producto) => void;    // ← ahora recibe Producto
-  onView: (p: Producto) => void;      // ← agregado correctamente
+  onEdit?: (p: Producto) => void;
+  onDelete?: (p: Producto) => void;
+  onView: (p: Producto) => void;
 }
 
 const ProductTable = ({ productos, onEdit, onDelete, onView }: Props) => {
+  const canEdit = typeof onEdit === "function";
+  const canDelete = typeof onDelete === "function";
+
   return (
     <div className="table-responsive card-soft p-3">
       <table className="table align-middle">
@@ -43,26 +46,30 @@ const ProductTable = ({ productos, onEdit, onDelete, onView }: Props) => {
               <td className="text-end">
                 <Button
                   variant="mint"
-                  className="me-2"
+                  className={canEdit || canDelete ? "me-2" : undefined}
                   onClick={() => onView(p)}
                 >
                   Ver
                 </Button>
 
-                <Button
-                  variant="mint"
-                  className="me-2"
-                  onClick={() => onEdit(p)}
-                >
-                  Editar
-                </Button>
+                {canEdit && onEdit ? (
+                  <Button
+                    variant="mint"
+                    className={canDelete ? "me-2" : undefined}
+                    onClick={() => onEdit(p)}
+                  >
+                    Editar
+                  </Button>
+                ) : null}
 
-                <Button
-                  variant="strawberry"
-                  onClick={() => onDelete(p)}
-                >
-                  Eliminar
-                </Button>
+                {canDelete && onDelete ? (
+                  <Button
+                    variant="strawberry"
+                    onClick={() => onDelete(p)}
+                  >
+                    Eliminar
+                  </Button>
+                ) : null}
               </td>
             </tr>
           ))}
