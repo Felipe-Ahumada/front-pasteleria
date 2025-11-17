@@ -41,7 +41,8 @@ export const CartProvider = ({ children }: Props) => {
   const getStockFor = useCallback((codigo: string): number => {
     const productos = menuService.getCached();
     const p = productos.find((prod) => prod.id === codigo);
-    return p?.stock ?? 0;
+    if (!p || p.activo === false) return 0;
+    return p.stock;
   }, []);
 
   /* -------------------------------

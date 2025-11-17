@@ -82,6 +82,10 @@ const ProductViewModal = ({ open, onClose, producto }: Props) => {
               <strong>Stock crítico:</strong>{" "}
               {producto.stock_critico ?? 3}
             </span>
+
+            <span>
+              <strong>Estado:</strong> {producto.activo === false ? "Bloqueado" : "Activo"}
+            </span>
           </div>
         </div>
 

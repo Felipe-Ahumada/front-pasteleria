@@ -14,6 +14,7 @@ const buildHtmlTable = (productos: Producto[]) => {
           <th>Precio</th>
           <th>Stock</th>
           <th>Categoría</th>
+          <th>Estado</th>
         </tr>
       </thead>
       <tbody>
@@ -27,6 +28,7 @@ const buildHtmlTable = (productos: Producto[]) => {
             <td>${p.precio}</td>
             <td>${p.stock}</td>
             <td>${p.categoria}</td>
+            <td>${p.activo === false ? "Bloqueado" : "Activo"}</td>
           </tr>
         `
           )
@@ -40,12 +42,12 @@ const buildHtmlTable = (productos: Producto[]) => {
    EXPORTAR CSV
 ----------------------------------------- */
 export const exportCSV = (productos: Producto[]) => {
-  const header = "ID,Nombre,Descripción,Precio,Stock,Categoría\n";
+  const header = "ID,Nombre,Descripción,Precio,Stock,Categoría,Estado\n";
 
   const rows = productos
     .map(
       (p) =>
-        `${p.id},"${p.nombre}","${p.descripcion}",${p.precio},${p.stock},"${p.categoria}"`
+        `${p.id},"${p.nombre}","${p.descripcion}",${p.precio},${p.stock},"${p.categoria}",${p.activo === false ? "Bloqueado" : "Activo"}`
     )
     .join("\n");
 

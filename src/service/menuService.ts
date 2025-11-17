@@ -44,8 +44,22 @@ export interface Producto {
   categoria: string;
   stock: number;
   stock_critico?: number;
+  activo: boolean;
 }
 const FALLBACK_IMAGE = fallbackProductImage;
+
+type ProductoCache = Omit<Producto, "activo"> & {
+  activo?: boolean;
+  imagenes_detalle?: string[];
+};
+
+export const MENU_CACHE_UPDATED_EVENT = "menu:cache-updated";
+
+const notifyCacheUpdate = () => {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent(MENU_CACHE_UPDATED_EVENT));
+  }
+};
 
 const mergeDetailImages = (
   slug: string,
@@ -82,6 +96,7 @@ const mapJsonToProductos = (data: MenuJSON): Producto[] => {
         categoria: categoria.nombre_categoria,
         stock: p.stock,
         stock_critico: p.stock_critico,
+        activo: true,
       });
     }
   }
@@ -94,12 +109,34 @@ const mapJsonToProductos = (data: MenuJSON): Producto[] => {
 =========================================================== */
 const CACHE_KEY = "menu_cache_v1";
 
-const saveCache = (productos: Producto[]) =>
-  localStorage.setItem(CACHE_KEY, JSON.stringify(productos));
+const normalizeProductos = (productos: ProductoCache[]): Producto[] =>
+  productos.map((p) => ({
+    ...p,
+    imagenes_detalle: Array.isArray(p.imagenes_detalle)
+      ? p.imagenes_detalle
+      : [],
+    activo: p.activo ?? true,
+  }));
+
+const saveCache = (productos: Producto[]) => {
+  localStorage.setItem(
+    CACHE_KEY,
+    JSON.stringify(normalizeProductos(productos))
+  );
+  notifyCacheUpdate();
+};
 
 const loadCache = (): Producto[] | null => {
   const raw = localStorage.getItem(CACHE_KEY);
-  return raw ? (JSON.parse(raw) as Producto[]) : null;
+  if (!raw) return null;
+
+  try {
+    const parsed = JSON.parse(raw) as ProductoCache[];
+    return normalizeProductos(parsed);
+  } catch {
+    localStorage.removeItem(CACHE_KEY);
+    return null;
+  }
 };
 
 /* ===========================================================
@@ -107,9 +144,7 @@ const loadCache = (): Producto[] | null => {
 =========================================================== */
 export const menuService = {
   getAll(): Producto[] {
-    const productos = mapJsonToProductos(menuData as MenuJSON);
-    saveCache(productos);
-    return productos;
+    return this.getCached();
   },
 
   getCached(): Producto[] {
@@ -121,9 +156,17 @@ export const menuService = {
     return productos;
   },
 
+  getActive(): Producto[] {
+    return this.getCached().filter((p) => p.activo !== false);
+  },
+
   getById(id: string): Producto | undefined {
     const productos = this.getCached();
     return productos.find((p) => p.id === id);
+  },
+
+  getActiveById(id: string): Producto | undefined {
+    return this.getActive().find((p) => p.id === id);
   },
 
   create(producto: Producto): void {
@@ -131,7 +174,13 @@ export const menuService = {
     if (productos.some((p) => p.id === producto.id))
       throw new Error("Ya existe un producto con este ID");
 
-    const nuevos = [...productos, producto];
+    const nuevo: Producto = {
+      ...producto,
+      activo: producto.activo ?? true,
+      imagenes_detalle: producto.imagenes_detalle ?? [],
+    };
+
+    const nuevos = [...productos, nuevo];
     saveCache(nuevos);
   },
 
@@ -140,18 +189,43 @@ export const menuService = {
     const index = productos.findIndex((p) => p.id === id);
     if (index === -1) throw new Error("Producto no encontrado");
 
-    productos[index] = { ...data };
+    productos[index] = {
+      ...data,
+      activo: data.activo ?? productos[index].activo ?? true,
+      imagenes_detalle: data.imagenes_detalle ?? [],
+    };
     saveCache(productos);
   },
 
-  delete(id: string): void {
+  setStatus(id: string, activo: boolean): void {
     const productos = this.getCached();
-    const nuevos = productos.filter((p) => p.id !== id);
-    saveCache(nuevos);
+    const index = productos.findIndex((p) => p.id === id);
+    if (index === -1) throw new Error("Producto no encontrado");
+
+    productos[index] = {
+      ...productos[index],
+      activo,
+    };
+
+    saveCache(productos);
+  },
+
+  block(id: string): void {
+    this.setStatus(id, false);
+  },
+
+  unblock(id: string): void {
+    this.setStatus(id, true);
+  },
+
+  delete(id: string): void {
+    // Compatibilidad retro: el "delete" ahora actúa como bloqueo.
+    this.block(id);
   },
 
   clearCache() {
     localStorage.removeItem(CACHE_KEY);
+    notifyCacheUpdate();
   },
 };
 

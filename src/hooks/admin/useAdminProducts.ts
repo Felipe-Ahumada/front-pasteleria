@@ -36,8 +36,13 @@ export const useAdminProducts = () => {
     cargarProductos();
   };
 
-  const eliminarProducto = (id: string) => {
-    menuService.delete(id);
+  const bloquearProducto = (id: string) => {
+    menuService.block(id);
+    cargarProductos();
+  };
+
+  const desbloquearProducto = (id: string) => {
+    menuService.unblock(id);
     cargarProductos();
   };
 
@@ -69,7 +74,8 @@ export const useAdminProducts = () => {
 
     crearProducto,
     actualizarProducto,
-    eliminarProducto,
+    bloquearProducto,
+    desbloquearProducto,
 
     exportarCSV,
     exportarExcel,

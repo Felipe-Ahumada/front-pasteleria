@@ -25,6 +25,9 @@ const ProductDetailModal = ({ open, onClose, producto }: Props) => {
       <p><strong>Categoría:</strong> {producto.categoria}</p>
       <p><strong>Precio:</strong> ${producto.precio.toLocaleString()}</p>
       <p><strong>Stock:</strong> {producto.stock}</p>
+      <p>
+        <strong>Estado:</strong> {producto.activo === false ? "Bloqueado" : "Activo"}
+      </p>
 
       <hr />
 

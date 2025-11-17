@@ -4,13 +4,13 @@ import { Button } from "@/components/common";
 interface Props {
   productos: Producto[];
   onEdit?: (p: Producto) => void;
-  onDelete?: (p: Producto) => void;
+  onToggleStatus?: (p: Producto) => void;
   onView: (p: Producto) => void;
 }
 
-const ProductTable = ({ productos, onEdit, onDelete, onView }: Props) => {
+const ProductTable = ({ productos, onEdit, onToggleStatus, onView }: Props) => {
   const canEdit = typeof onEdit === "function";
-  const canDelete = typeof onDelete === "function";
+  const canToggle = typeof onToggleStatus === "function";
 
   return (
     <div className="table-responsive card-soft p-3">
@@ -22,13 +22,17 @@ const ProductTable = ({ productos, onEdit, onDelete, onView }: Props) => {
             <th>Código</th>
             <th>Precio</th>
             <th>Stock</th>
+            <th>Estado</th>
             <th className="text-end">Acciones</th>
           </tr>
         </thead>
 
         <tbody>
-          {productos.map((p) => (
-            <tr key={p.id}>
+          {productos.map((p) => {
+            const isBlocked = p.activo === false;
+
+            return (
+              <tr key={p.id}>
               <td style={{ width: 80 }}>
                 <img
                   src={p.imagen}
@@ -42,11 +46,20 @@ const ProductTable = ({ productos, onEdit, onDelete, onView }: Props) => {
               <td>{p.id}</td>
               <td>${p.precio.toLocaleString()}</td>
               <td>{p.stock}</td>
+              <td>
+                <span
+                  className={
+                    isBlocked ? "badge bg-secondary" : "badge bg-success"
+                  }
+                >
+                  {isBlocked ? "Bloqueado" : "Activo"}
+                </span>
+              </td>
 
               <td className="text-end">
                 <Button
                   variant="mint"
-                  className={canEdit || canDelete ? "me-2" : undefined}
+                  className={canEdit || canToggle ? "me-2" : undefined}
                   onClick={() => onView(p)}
                 >
                   Ver
@@ -55,24 +68,25 @@ const ProductTable = ({ productos, onEdit, onDelete, onView }: Props) => {
                 {canEdit && onEdit ? (
                   <Button
                     variant="mint"
-                    className={canDelete ? "me-2" : undefined}
+                    className={canToggle ? "me-2" : undefined}
                     onClick={() => onEdit(p)}
                   >
                     Editar
                   </Button>
                 ) : null}
 
-                {canDelete && onDelete ? (
+                {canToggle && onToggleStatus ? (
                   <Button
-                    variant="strawberry"
-                    onClick={() => onDelete(p)}
+                    variant={isBlocked ? "mint" : "strawberry"}
+                    onClick={() => onToggleStatus(p)}
                   >
-                    Eliminar
+                    {isBlocked ? "Desbloquear" : "Bloquear"}
                   </Button>
                 ) : null}
               </td>
             </tr>
-          ))}
+          );
+          })}
         </tbody>
       </table>
     </div>

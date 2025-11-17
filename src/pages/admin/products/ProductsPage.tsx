@@ -3,7 +3,7 @@ import { Button } from "@/components/common";
 
 import ProductTable from "./ProductTable";
 import ProductFormModal from "./ProductFormModal";
-import ProductDeleteModal from "./ProductDeleteModal";
+import ProductStatusModal from "./ProductStatusModal";
 import ProductDetailModal from "./ProductDetailModal";
 
 import { useAdminProducts } from "@/hooks/admin/useAdminProducts";
@@ -16,7 +16,8 @@ const ProductsPage = () => {
     cargando,
     crearProducto,
     actualizarProducto,
-    eliminarProducto,
+    bloquearProducto,
+    desbloquearProducto,
     exportarCSV,
     exportarExcel,
     exportarPDF,
@@ -29,8 +30,9 @@ const ProductsPage = () => {
   // ESTADO DE MODALES
   // --------------------------
   const [modalFormOpen, setModalFormOpen] = useState(false);
-  const [modalDeleteOpen, setModalDeleteOpen] = useState(false);
+  const [modalStatusOpen, setModalStatusOpen] = useState(false);
   const [modalDetailOpen, setModalDetailOpen] = useState(false);
+  const [statusAction, setStatusAction] = useState<"block" | "unblock">("block");
 
   const [productoSeleccionado, setProductoSeleccionado] =
     useState<Producto | null>(null);
@@ -59,12 +61,13 @@ const ProductsPage = () => {
     setModalDetailOpen(true);
   };
 
-  const handleDeleteProduct = (p: Producto) => {
+  const handleToggleStatus = (p: Producto) => {
     if (!canManageProducts) {
       return;
     }
     setProductoSeleccionado(p);
-    setModalDeleteOpen(true);
+    setStatusAction(p.activo === false ? "unblock" : "block");
+    setModalStatusOpen(true);
   };
 
   // --------------------------
@@ -89,13 +92,17 @@ const ProductsPage = () => {
   // --------------------------
   // ELIMINAR
   // --------------------------
-  const handleConfirmDelete = () => {
+  const handleConfirmStatusChange = () => {
     if (!canManageProducts) {
       return;
     }
     if (productoSeleccionado) {
-      eliminarProducto(productoSeleccionado.id);
-      setModalDeleteOpen(false);
+      if (statusAction === "block") {
+        bloquearProducto(productoSeleccionado.id);
+      } else {
+        desbloquearProducto(productoSeleccionado.id);
+      }
+      setModalStatusOpen(false);
       setProductoSeleccionado(null);
     }
   };
@@ -143,7 +150,9 @@ const ProductsPage = () => {
         <ProductTable
           productos={productos}
           onEdit={canManageProducts ? handleEditProduct : undefined}
-          onDelete={canManageProducts ? handleDeleteProduct : undefined}
+          onToggleStatus={
+            canManageProducts ? handleToggleStatus : undefined
+          }
           onView={handleViewProduct}
         />
       )}
@@ -161,15 +170,16 @@ const ProductsPage = () => {
             onSaved={handleSaveProduct}
           />
 
-          {/* MODAL → Eliminar */}
-          <ProductDeleteModal
-            open={modalDeleteOpen}
+          {/* MODAL → Cambiar estado */}
+          <ProductStatusModal
+            open={modalStatusOpen}
+            mode={statusAction}
             onClose={() => {
-              setModalDeleteOpen(false);
+              setModalStatusOpen(false);
               setProductoSeleccionado(null);
             }}
             producto={productoSeleccionado}
-            onConfirm={handleConfirmDelete}
+            onConfirm={handleConfirmStatusChange}
           />
         </>
       ) : null}
