@@ -28,6 +28,7 @@ export type UserFormValues = {
 	termsAccepted?: boolean
 	avatarUrl?: string
 	codigoDescuento?: string
+	tipoUsuario?: UserRoleName
 }
 
 export type ResetPasswordFormValues = {
@@ -307,7 +308,17 @@ export const mapFormToStoredUser = (values: UserFormValues, current?: StoredUser
 		: ensureHashedPassword(existingPassword)
 	const identifier = values.id ?? current?.id ?? generateUserId()
 	const avatar = normalizeAvatarUrl(values.avatarUrl ?? current?.avatarUrl, defaultProfileImage)
-	const role: UserRoleName = current?.tipoUsuario ?? 'Cliente'
+	let role: UserRoleName = current?.tipoUsuario ?? values.tipoUsuario ?? 'Cliente'
+
+	if (current) {
+		if (current.tipoUsuario === 'SuperAdmin') {
+			role = values.tipoUsuario ?? current.tipoUsuario
+		} else {
+			role = current.tipoUsuario
+		}
+	} else if (!values.tipoUsuario) {
+		role = 'Cliente'
+	}
 	const discountCode = values.codigoDescuento?.trim().toUpperCase() || current?.codigoDescuento
 
 	return {
@@ -343,11 +354,15 @@ export const saveUserRecord = (record: StoredUser): StoredUser[] => {
 	const existing = users[index]
 	// Mantener el tipo de usuario original (no permitir cambiar rol aquí),
 	// pero permitir que la cuenta SuperAdmin también se actualice desde el perfil.
+	const resolvedRole: UserRoleName = existing.tipoUsuario === 'SuperAdmin'
+		? record.tipoUsuario ?? existing.tipoUsuario
+		: existing.tipoUsuario
+
 	users[index] = {
 		...existing,
 		...record,
 		createdAt: existing.createdAt ?? record.createdAt,
-		tipoUsuario: existing.tipoUsuario,
+		tipoUsuario: resolvedRole,
 	}
 
 	setLocalData(LOCAL_STORAGE_KEYS.usuarios, users)

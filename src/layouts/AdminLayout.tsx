@@ -57,7 +57,6 @@ const AdminLayout = () => {
         to: "/admin/comments",
         icon: "bi-chat-left-dots",
         label: "Comentarios",
-        badge: 53,
         roles: ["admin", "superadmin"],
       },
       {

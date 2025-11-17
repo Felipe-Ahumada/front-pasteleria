@@ -1,51 +1,59 @@
-import { useState } from 'react'
-import type { ChangeEvent, FormEvent } from 'react'
+import { useState } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 
-import { Button, Input } from '@/components/common'
-import { LOCAL_STORAGE_KEYS } from '@/utils/storage/initLocalData'
-import { appendLocalData } from '@/utils/storage/localStorageUtils'
+import { Button, Input } from "@/components/common";
+import { contactMessageService } from "@/service/contactMessageService";
 import {
 	validateContactForm,
 	type ContactFormValues,
-} from '@/utils/validations/contactValidations'
-import { sanitizeNameField } from '@/utils/validations/userValidations'
-import type { ValidationErrors } from '@/utils/validations/types'
+} from "@/utils/validations/contactValidations";
+import { sanitizeNameField } from "@/utils/validations/userValidations";
+import type { ValidationErrors } from "@/utils/validations/types";
+import type { ContactMessage } from "@/types/contactMessage";
 
-type ContactMessage = ContactFormValues & {
-	fecha: string
-}
-
-const ContactPage = () => {
-	const [values, setValues] = useState<ContactFormValues>({ nombre: '', correo: '', comentario: '' })
-	const [errors, setErrors] = useState<ValidationErrors<ContactFormValues>>({})
-	const [feedback, setFeedback] = useState<{ type: 'success' | 'danger'; text: string } | null>(null)
-
-	const handleInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-		const { name, value } = event.currentTarget
-		const sanitizedValue = name === 'nombre' ? sanitizeNameField(value) : value
-		setValues((previous) => ({ ...previous, [name]: sanitizedValue }))
-		setErrors((previous) => ({ ...previous, [name]: undefined }))
-		setFeedback(null)
+const createMessageId = () => {
+	if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+		return crypto.randomUUID();
 	}
 
+	return `contact-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+};
+
+const ContactPage = () => {
+	const [values, setValues] = useState<ContactFormValues>({ nombre: "", correo: "", comentario: "" });
+	const [errors, setErrors] = useState<ValidationErrors<ContactFormValues>>({});
+	const [feedback, setFeedback] = useState<{ type: "success" | "danger"; text: string } | null>(null);
+
+	const handleInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+		const { name, value } = event.currentTarget;
+		const sanitizedValue = name === "nombre" ? sanitizeNameField(value) : value;
+		setValues((previous) => ({ ...previous, [name]: sanitizedValue }));
+		setErrors((previous) => ({ ...previous, [name]: undefined }));
+		setFeedback(null);
+	};
+
 	const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-		event.preventDefault()
-		const validation = validateContactForm(values)
+		event.preventDefault();
+		const validation = validateContactForm(values);
 		if (!validation.isValid) {
-			setErrors(validation.errors)
-			setFeedback({ type: 'danger', text: 'Revisa los campos marcados e inténtalo nuevamente.' })
-			return
+			setErrors(validation.errors);
+			setFeedback({ type: "danger", text: "Revisa los campos marcados e inténtalo nuevamente." });
+			return;
 		}
 
 		const message: ContactMessage = {
-			...values,
+			id: createMessageId(),
+			nombre: values.nombre,
+			correo: values.correo,
+			comentario: values.comentario,
 			fecha: new Date().toISOString(),
-		}
+			leido: false,
+		};
 
-		appendLocalData<ContactMessage>(LOCAL_STORAGE_KEYS.contactMessages, message)
-		setFeedback({ type: 'success', text: '¡Mensaje enviado! Te contactaremos a la brevedad.' })
-		setValues({ nombre: '', correo: '', comentario: '' })
-	}
+		contactMessageService.add(message);
+		setFeedback({ type: "success", text: "¡Mensaje enviado! Te contactaremos a la brevedad." });
+		setValues({ nombre: "", correo: "", comentario: "" });
+	};
 
 	return (
 		<section className="contact-page py-4">
@@ -81,7 +89,7 @@ const ContactPage = () => {
 								Comentario
 							</label>
 							<textarea
-								className={`form-control${errors.comentario ? ' is-invalid' : ''}`}
+								className={`form-control${errors.comentario ? " is-invalid" : ""}`}
 								id="contactComment"
 								name="comentario"
 								rows={4}
@@ -98,7 +106,7 @@ const ContactPage = () => {
 				</div>
 			</div>
 		</section>
-	)
-}
+	);
+};
 
-export default ContactPage
+export default ContactPage;

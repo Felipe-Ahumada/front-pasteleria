@@ -40,6 +40,20 @@ const splitRun = (value: string) => {
   };
 };
 
+const ROLE_OPTIONS: StoredUser["tipoUsuario"][] = [
+  "SuperAdmin",
+  "Administrador",
+  "Vendedor",
+  "Cliente",
+];
+
+const ROLE_LABELS: Record<StoredUser["tipoUsuario"], string> = {
+  SuperAdmin: "Super administradora",
+  Administrador: "Administradora",
+  Vendedor: "Vendedora",
+  Cliente: "Cliente",
+};
+
 const createInitialValues = (user?: StoredUser | null): UserFormValues => {
   const { body, digit } = splitRun(user?.run ?? "");
   return {
@@ -59,6 +73,7 @@ const createInitialValues = (user?: StoredUser | null): UserFormValues => {
     termsAccepted: true,
     avatarUrl: normalizeAvatarUrl(user?.avatarUrl),
     codigoDescuento: user?.codigoDescuento ?? "",
+    tipoUsuario: user?.tipoUsuario ?? "Cliente",
   };
 };
 
@@ -307,6 +322,22 @@ const ProfilePage = () => {
     setFeedback(null);
   };
 
+  const handleRoleChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const nextRole = event.currentTarget.value as StoredUser["tipoUsuario"];
+    if (!ROLE_OPTIONS.includes(nextRole)) {
+      return;
+    }
+    const nextValues = { ...values, tipoUsuario: nextRole };
+    const nextTouched: Partial<Record<keyof UserFormValues, boolean>> = {
+      ...touched,
+      tipoUsuario: true,
+    };
+    runValidation(nextValues, nextTouched);
+    setValues(nextValues);
+    setTouched(nextTouched);
+    setFeedback(null);
+  };
+
   const handleRunBodyChange = () => {};
 
   const handleRunDigitChange = () => {};
@@ -417,16 +448,33 @@ const ProfilePage = () => {
                     </span>
                   ) : null}
 
+                  {isSuperAdmin ? (
+                    <div className="mb-3 text-start">
+                      <label className="form-label" htmlFor="profileRole">
+                        Tipo de perfil
+                      </label>
+                      <select
+                        id="profileRole"
+                        className="form-select"
+                        value={values.tipoUsuario ?? "SuperAdmin"}
+                        onChange={handleRoleChange}
+                      >
+                        {ROLE_OPTIONS.map((roleOption) => (
+                          <option key={roleOption} value={roleOption}>
+                            {ROLE_LABELS[roleOption]}
+                          </option>
+                        ))}
+                      </select>
+                      <small className="form-text text-muted">
+                        Solo la cuenta principal puede modificar este valor.
+                      </small>
+                    </div>
+                  ) : null}
+
                   <div className="d-grid gap-2">
                     <label
-                      className={`btn btn-outline-secondary${
-                        isSuperAdmin ? " disabled" : ""
-                      }`}
-                      htmlFor={isSuperAdmin ? undefined : "profileAvatarUpload"}
-                      aria-disabled={isSuperAdmin}
-                      style={
-                        isSuperAdmin ? { pointerEvents: "none" } : undefined
-                      }
+                      className="btn btn-outline-secondary"
+                      htmlFor="profileAvatarUpload"
                     >
                       <i className="bi bi-image me-1" aria-hidden="true" />{" "}
                       Cambiar foto
@@ -442,7 +490,6 @@ const ProfilePage = () => {
                       type="button"
                       variant="mint"
                       onClick={handleAvatarReset}
-                      disabled={isSuperAdmin}
                     >
                       <i className="bi bi-trash me-1" aria-hidden="true" />{" "}
                       Quitar foto
