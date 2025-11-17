@@ -10,15 +10,11 @@ import LoginRoute from "@/routes/LoginRoute";
 import AdminRoute from "@/routes/AdminRoute";
 import ProtectedRoute from "@/routes/ProtectedRoute";
 
-/* ================================
-   Layouts
-================================= */
+// Layouts
 const AppLayout = lazy(() => import("@/layouts/AppLayout"));
 const AdminLayout = lazy(() => import("@/layouts/AdminLayout"));
 
-/* ================================
-   Páginas públicas
-================================= */
+// Páginas públicas
 const HomePage = lazy(() => import("@/pages/home/HomePage"));
 const AboutPage = lazy(() => import("@/pages/about/AboutPage"));
 const ContactPage = lazy(() => import("@/pages/contact/ContactPage"));
@@ -27,52 +23,39 @@ const MenuDetailsPage = lazy(() => import("@/pages/menu/MenuDetailsPage"));
 const ProfilePage = lazy(() => import("@/pages/profile/ProfilePage"));
 const BlogPage = lazy(() => import("@/pages/blog/BlogPage"));
 const BlogDetailPage = lazy(() => import("@/pages/blog/BlogDetailPage"));
-const BlogCreatePage = lazy(() => import("@/pages/blog/BlogCreatePage"));
 const CartPage = lazy(() => import("@/pages/cart/CartPage"));
 const RegisterUserPage = lazy(() => import("@/pages/auth/RegisterUserPage"));
-const ResetPasswordPage = lazy(() => import("@/pages/auth/ResetPasswordPage"));
 const PrivacyPage = lazy(() => import("@/pages/legal/PrivacyPage"));
 const TermsPage = lazy(() => import("@/pages/legal/TermsPage"));
-
-/* ================================
-   Checkout
-================================= */
+const ResetPasswordPage = lazy(() => import("@/pages/auth/ResetPasswordPage"));
 const CheckoutPage = lazy(() => import("@/pages/checkout/CheckoutPage"));
 const OrderSuccessPage = lazy(() =>
   import("@/pages/checkout/OrderSuccessPage")
 );
 
-/* ================================
-   Pedidos usuario
-================================= */
+// Páginas de pedidos
 const MyOrdersPage = lazy(() => import("@/pages/orders/MyOrdersPage"));
 const OrderDetailPage = lazy(() => import("@/pages/orders/OrderDetailPage"));
 
-/* ================================
-   Admin
-================================= */
+// Páginas admin
 const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
 const ProductsPage = lazy(() => import("@/pages/admin/products/ProductsPage"));
 const UsersPage = lazy(() => import("@/pages/admin/users/UsersPage"));
 const BlogAdminPage = lazy(() => import("@/pages/admin/blog/BlogAdminPage"));
+
+// Blog create
+const BlogCreatePage = lazy(() => import("@/pages/blog/BlogCreatePage"));
+
+// 🆕 Gestión de pedidos admin
 const OrdersAdminPage = lazy(() =>
   import("@/pages/admin/orders/OrdersAdminPage")
 );
-const ReportsPage = lazy(() =>
-  import("@/pages/admin/reports/ReportsPage")
-);
-
-/* ================================
-   Router
-================================= */
 
 const basename = (import.meta.env.BASE_URL ?? "/").replace(/\/*$/, "") || "/";
 
 const router = createBrowserRouter(
   [
-    /* =============================
-         RUTAS PÚBLICAS
-    ============================= */
+    // 🌸 RUTAS PÚBLICAS
     {
       element: <AppLayout />,
       children: [
@@ -82,7 +65,7 @@ const router = createBrowserRouter(
         { path: "menu", element: <MenuPage /> },
         { path: "menu/:productCode", element: <MenuDetailsPage /> },
 
-        /* Blog */
+        // BLOG
         { path: "blog", element: <BlogPage /> },
         {
           path: "blog/create",
@@ -94,10 +77,10 @@ const router = createBrowserRouter(
         },
         { path: "blog/:id", element: <BlogDetailPage /> },
 
-        /* Carrito */
+        // 🛒 Carrito
         { path: "cart", element: <CartPage /> },
 
-        /* Perfil */
+        // 👤 Perfil
         {
           path: "profile",
           element: (
@@ -107,7 +90,7 @@ const router = createBrowserRouter(
           ),
         },
 
-        /* Pedidos usuario */
+        // 📝 Pedidos usuario
         {
           path: "orders",
           element: (
@@ -125,14 +108,14 @@ const router = createBrowserRouter(
           ),
         },
 
-        /* Legal */
+        // 🧾 Legal
         { path: "privacy", element: <PrivacyPage /> },
         { path: "terms", element: <TermsPage /> },
 
-        /* Auth */
+        // 🔐 Auth
         { path: "reset-password", element: <ResetPasswordPage /> },
 
-        /* Checkout */
+        // 💳 Compra
         {
           path: "checkout",
           element: (
@@ -152,9 +135,7 @@ const router = createBrowserRouter(
       ],
     },
 
-    /* =============================
-         ADMIN AREA
-    ============================= */
+    // 🔥 ADMIN AREA
     {
       path: "/admin",
       element: (
@@ -166,21 +147,20 @@ const router = createBrowserRouter(
         { index: true, element: <AdminDashboard /> },
         { path: "products", element: <ProductsPage /> },
         { path: "users", element: <UsersPage /> },
+
+        // 🆕 ESTA ES LA RUTA CORRECTA
         { path: "orders", element: <OrdersAdminPage /> },
-        { path: "reports", element: <ReportsPage /> },
+
+        { path: "reports", element: <div>Reportes</div> },
         { path: "blogs", element: <BlogAdminPage /> },
       ],
     },
 
-    /* =============================
-         AUTH
-    ============================= */
+    // 👤 AUTH
     { path: "/login", element: <LoginRoute /> },
     { path: "/register", element: <RegisterUserPage /> },
 
-    /* =============================
-         404
-    ============================= */
+    // 🚫 404
     { path: "*", element: <Navigate to="/" replace /> },
   ],
   { basename }

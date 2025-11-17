@@ -1,0 +1,1413 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`MenuPage – Snapshot > debe coincidir con la UI esperada 1`] = `
+<DocumentFragment>
+  <section
+    class="py-4 py-lg-5"
+  >
+    <div
+      class="container"
+    >
+      <header
+        class="text-center mb-4 mb-lg-5"
+      >
+        <h1
+          class="section-title mb-2"
+        >
+          Nuestra Carta
+        </h1>
+        <p
+          class="mb-0"
+        >
+          Explora nuestras categorías y encuentra el postre ideal.
+        </p>
+      </header>
+      <div
+        class="card card-soft shadow-soft mb-4 p-3"
+      >
+        <div
+          class="row g-3"
+        >
+          <div
+            class="col-md-3"
+          >
+            <label
+              class="form-label fw-semibold"
+            >
+              Categoría
+            </label>
+            <select
+              class="form-select"
+            >
+              <option
+                value=""
+              >
+                Todas
+              </option>
+              <option
+                value="1"
+              >
+                Tortas Cuadradas
+              </option>
+              <option
+                value="2"
+              >
+                Tortas Circulares
+              </option>
+              <option
+                value="3"
+              >
+                Postres Individuales
+              </option>
+              <option
+                value="4"
+              >
+                Productos sin Azúcar
+              </option>
+              <option
+                value="5"
+              >
+                Pastelería Tradicional
+              </option>
+              <option
+                value="6"
+              >
+                Productos sin Gluten
+              </option>
+              <option
+                value="7"
+              >
+                Productos Veganos
+              </option>
+              <option
+                value="8"
+              >
+                Tortas Especiales
+              </option>
+            </select>
+          </div>
+          <div
+            class="col-md-3"
+          >
+            <label
+              class="form-label fw-semibold"
+            >
+              Producto
+            </label>
+            <select
+              class="form-select"
+            >
+              <option
+                value=""
+              >
+                Todos
+              </option>
+              <option
+                value="TC001"
+              >
+                Torta Cuadrada de Chocolate
+              </option>
+              <option
+                value="TC002"
+              >
+                Torta Cuadrada de Frutas
+              </option>
+              <option
+                value="TT001"
+              >
+                Torta Circular de Vainilla
+              </option>
+              <option
+                value="TT002"
+              >
+                Torta Circular de Manjar
+              </option>
+              <option
+                value="PI001"
+              >
+                Mousse de Chocolate
+              </option>
+              <option
+                value="PI002"
+              >
+                Tiramisú Clásico
+              </option>
+              <option
+                value="PSA001"
+              >
+                Torta Sin Azúcar de Naranja
+              </option>
+              <option
+                value="PSA002"
+              >
+                Cheesecake Sin Azúcar
+              </option>
+              <option
+                value="PT001"
+              >
+                Empanada de Manzana
+              </option>
+              <option
+                value="PT002"
+              >
+                Tarta de Santiago
+              </option>
+              <option
+                value="PG001"
+              >
+                Brownie Sin Gluten
+              </option>
+              <option
+                value="PG002"
+              >
+                Pan Sin Gluten
+              </option>
+              <option
+                value="PV001"
+              >
+                Torta Vegana de Chocolate
+              </option>
+              <option
+                value="PV002"
+              >
+                Galletas Veganas de Avena
+              </option>
+              <option
+                value="TE001"
+              >
+                Torta Especial de Cumpleaños
+              </option>
+              <option
+                value="TE002"
+              >
+                Torta Especial de Boda
+              </option>
+            </select>
+          </div>
+          <div
+            class="col-md-2"
+          >
+            <label
+              class="form-label fw-semibold"
+            >
+              Precio mínimo
+            </label>
+            <input
+              class="form-control "
+              min="0"
+              type="number"
+              value=""
+            />
+          </div>
+          <div
+            class="col-md-2"
+          >
+            <label
+              class="form-label fw-semibold"
+            >
+              Precio máximo
+            </label>
+            <input
+              class="form-control "
+              min="0"
+              type="number"
+              value=""
+            />
+          </div>
+          <div
+            class="col-md-2"
+          >
+            <label
+              class="form-label fw-semibold"
+            >
+              Ordenar por
+            </label>
+            <select
+              class="form-select"
+            >
+              <option
+                value="name-asc"
+              >
+                Nombre: A → Z
+              </option>
+              <option
+                value="name-desc"
+              >
+                Nombre: Z → A
+              </option>
+              <option
+                value="price-asc"
+              >
+                Precio: menor a mayor
+              </option>
+              <option
+                value="price-desc"
+              >
+                Precio: mayor a menor
+              </option>
+            </select>
+          </div>
+        </div>
+        <div
+          class="text-end mt-3"
+        >
+          <button
+            class="btn btn-mint"
+          >
+            Limpiar filtros
+          </button>
+        </div>
+      </div>
+      <div
+        class="d-flex justify-content-between align-items-center mb-3"
+      >
+        <p
+          class="mb-0"
+        >
+          16 productos disponibles
+        </p>
+      </div>
+      <div
+        class="row g-4"
+      >
+        <div
+          class="col-12 col-md-6 col-lg-4"
+        >
+          <div
+            class="card card-soft shadow-soft h-100 product-card"
+          >
+            <a
+              class="ratio ratio-4x3"
+              data-discover="true"
+              href="/menu/PG001"
+            >
+              <img
+                alt="Brownie Sin Gluten"
+                class="w-100 h-100 object-fit-cover"
+                loading="lazy"
+                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+              />
+            </a>
+            <div
+              class="card-body d-flex flex-column text-center gap-2"
+            >
+              <p
+                class="text-uppercase small text-muted mb-1"
+              >
+                Productos sin Gluten
+              </p>
+              <h3
+                class="h5 mb-0"
+              >
+                Brownie Sin Gluten
+              </h3>
+              <p
+                class="fw-semibold mb-0"
+              >
+                $4.000
+              </p>
+              <p
+                class="text-muted flex-grow-1"
+              >
+                Rico y denso, este brownie es perfecto para quienes necesitan evitar el gluten sin sacrificar el sabor.
+              </p>
+              <div
+                class="d-grid gap-2"
+              >
+                <a
+                  class="btn btn-pastel btn-strawberry w-100"
+                  data-discover="true"
+                  href="/menu/PG001"
+                >
+                  Ver detalle y personalizar
+                </a>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-cart-plus"
+                  />
+                   Añadir al carrito
+                </button>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-share"
+                  />
+                   Compartir
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="col-12 col-md-6 col-lg-4"
+        >
+          <div
+            class="card card-soft shadow-soft h-100 product-card"
+          >
+            <a
+              class="ratio ratio-4x3"
+              data-discover="true"
+              href="/menu/PSA002"
+            >
+              <img
+                alt="Cheesecake Sin Azúcar"
+                class="w-100 h-100 object-fit-cover"
+                loading="lazy"
+                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+              />
+            </a>
+            <div
+              class="card-body d-flex flex-column text-center gap-2"
+            >
+              <p
+                class="text-uppercase small text-muted mb-1"
+              >
+                Productos sin Azúcar
+              </p>
+              <h3
+                class="h5 mb-0"
+              >
+                Cheesecake Sin Azúcar
+              </h3>
+              <p
+                class="fw-semibold mb-0"
+              >
+                $47.000
+              </p>
+              <p
+                class="text-muted flex-grow-1"
+              >
+                Suave y cremoso, este cheesecake es una opción perfecta para disfrutar sin culpa.
+              </p>
+              <div
+                class="d-grid gap-2"
+              >
+                <a
+                  class="btn btn-pastel btn-strawberry w-100"
+                  data-discover="true"
+                  href="/menu/PSA002"
+                >
+                  Ver detalle y personalizar
+                </a>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-cart-plus"
+                  />
+                   Añadir al carrito
+                </button>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-share"
+                  />
+                   Compartir
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="col-12 col-md-6 col-lg-4"
+        >
+          <div
+            class="card card-soft shadow-soft h-100 product-card"
+          >
+            <a
+              class="ratio ratio-4x3"
+              data-discover="true"
+              href="/menu/PT001"
+            >
+              <img
+                alt="Empanada de Manzana"
+                class="w-100 h-100 object-fit-cover"
+                loading="lazy"
+                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+              />
+            </a>
+            <div
+              class="card-body d-flex flex-column text-center gap-2"
+            >
+              <p
+                class="text-uppercase small text-muted mb-1"
+              >
+                Pastelería Tradicional
+              </p>
+              <h3
+                class="h5 mb-0"
+              >
+                Empanada de Manzana
+              </h3>
+              <p
+                class="fw-semibold mb-0"
+              >
+                $3.000
+              </p>
+              <p
+                class="text-muted flex-grow-1"
+              >
+                Pastelería tradicional rellena de manzanas especiadas, perfecta para un dulce desayuno o merienda.
+              </p>
+              <div
+                class="d-grid gap-2"
+              >
+                <a
+                  class="btn btn-pastel btn-strawberry w-100"
+                  data-discover="true"
+                  href="/menu/PT001"
+                >
+                  Ver detalle y personalizar
+                </a>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-cart-plus"
+                  />
+                   Añadir al carrito
+                </button>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-share"
+                  />
+                   Compartir
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="col-12 col-md-6 col-lg-4"
+        >
+          <div
+            class="card card-soft shadow-soft h-100 product-card"
+          >
+            <a
+              class="ratio ratio-4x3"
+              data-discover="true"
+              href="/menu/PV002"
+            >
+              <img
+                alt="Galletas Veganas de Avena"
+                class="w-100 h-100 object-fit-cover"
+                loading="lazy"
+                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+              />
+            </a>
+            <div
+              class="card-body d-flex flex-column text-center gap-2"
+            >
+              <p
+                class="text-uppercase small text-muted mb-1"
+              >
+                Productos Veganos
+              </p>
+              <h3
+                class="h5 mb-0"
+              >
+                Galletas Veganas de Avena
+              </h3>
+              <p
+                class="fw-semibold mb-0"
+              >
+                $4.500
+              </p>
+              <p
+                class="text-muted flex-grow-1"
+              >
+                Crujientes y sabrosas, estas galletas son una excelente opción para un snack saludable y vegano.
+              </p>
+              <div
+                class="d-grid gap-2"
+              >
+                <a
+                  class="btn btn-pastel btn-strawberry w-100"
+                  data-discover="true"
+                  href="/menu/PV002"
+                >
+                  Ver detalle y personalizar
+                </a>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-cart-plus"
+                  />
+                   Añadir al carrito
+                </button>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-share"
+                  />
+                   Compartir
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="col-12 col-md-6 col-lg-4"
+        >
+          <div
+            class="card card-soft shadow-soft h-100 product-card"
+          >
+            <a
+              class="ratio ratio-4x3"
+              data-discover="true"
+              href="/menu/PI001"
+            >
+              <img
+                alt="Mousse de Chocolate"
+                class="w-100 h-100 object-fit-cover"
+                loading="lazy"
+                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+              />
+            </a>
+            <div
+              class="card-body d-flex flex-column text-center gap-2"
+            >
+              <p
+                class="text-uppercase small text-muted mb-1"
+              >
+                Postres Individuales
+              </p>
+              <h3
+                class="h5 mb-0"
+              >
+                Mousse de Chocolate
+              </h3>
+              <p
+                class="fw-semibold mb-0"
+              >
+                $5.000
+              </p>
+              <p
+                class="text-muted flex-grow-1"
+              >
+                Postre individual cremoso y suave, hecho con chocolate de alta calidad, ideal para los amantes del chocolate.
+              </p>
+              <div
+                class="d-grid gap-2"
+              >
+                <a
+                  class="btn btn-pastel btn-strawberry w-100"
+                  data-discover="true"
+                  href="/menu/PI001"
+                >
+                  Ver detalle y personalizar
+                </a>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-cart-plus"
+                  />
+                   Añadir al carrito
+                </button>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-share"
+                  />
+                   Compartir
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="col-12 col-md-6 col-lg-4"
+        >
+          <div
+            class="card card-soft shadow-soft h-100 product-card"
+          >
+            <a
+              class="ratio ratio-4x3"
+              data-discover="true"
+              href="/menu/PG002"
+            >
+              <img
+                alt="Pan Sin Gluten"
+                class="w-100 h-100 object-fit-cover"
+                loading="lazy"
+                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+              />
+            </a>
+            <div
+              class="card-body d-flex flex-column text-center gap-2"
+            >
+              <p
+                class="text-uppercase small text-muted mb-1"
+              >
+                Productos sin Gluten
+              </p>
+              <h3
+                class="h5 mb-0"
+              >
+                Pan Sin Gluten
+              </h3>
+              <p
+                class="fw-semibold mb-0"
+              >
+                $3.500
+              </p>
+              <p
+                class="text-muted flex-grow-1"
+              >
+                Suave y esponjoso, ideal para sándwiches o para acompañar cualquier comida.
+              </p>
+              <div
+                class="d-grid gap-2"
+              >
+                <a
+                  class="btn btn-pastel btn-strawberry w-100"
+                  data-discover="true"
+                  href="/menu/PG002"
+                >
+                  Ver detalle y personalizar
+                </a>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-cart-plus"
+                  />
+                   Añadir al carrito
+                </button>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-share"
+                  />
+                   Compartir
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="col-12 col-md-6 col-lg-4"
+        >
+          <div
+            class="card card-soft shadow-soft h-100 product-card"
+          >
+            <a
+              class="ratio ratio-4x3"
+              data-discover="true"
+              href="/menu/PT002"
+            >
+              <img
+                alt="Tarta de Santiago"
+                class="w-100 h-100 object-fit-cover"
+                loading="lazy"
+                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+              />
+            </a>
+            <div
+              class="card-body d-flex flex-column text-center gap-2"
+            >
+              <p
+                class="text-uppercase small text-muted mb-1"
+              >
+                Pastelería Tradicional
+              </p>
+              <h3
+                class="h5 mb-0"
+              >
+                Tarta de Santiago
+              </h3>
+              <p
+                class="fw-semibold mb-0"
+              >
+                $6.000
+              </p>
+              <p
+                class="text-muted flex-grow-1"
+              >
+                Tradicional tarta española hecha con almendras, azúcar, y huevos, una delicia para los amantes de los postres clásicos.
+              </p>
+              <div
+                class="d-grid gap-2"
+              >
+                <a
+                  class="btn btn-pastel btn-strawberry w-100"
+                  data-discover="true"
+                  href="/menu/PT002"
+                >
+                  Ver detalle y personalizar
+                </a>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-cart-plus"
+                  />
+                   Añadir al carrito
+                </button>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-share"
+                  />
+                   Compartir
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="col-12 col-md-6 col-lg-4"
+        >
+          <div
+            class="card card-soft shadow-soft h-100 product-card"
+          >
+            <a
+              class="ratio ratio-4x3"
+              data-discover="true"
+              href="/menu/PI002"
+            >
+              <img
+                alt="Tiramisú Clásico"
+                class="w-100 h-100 object-fit-cover"
+                loading="lazy"
+                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+              />
+            </a>
+            <div
+              class="card-body d-flex flex-column text-center gap-2"
+            >
+              <p
+                class="text-uppercase small text-muted mb-1"
+              >
+                Postres Individuales
+              </p>
+              <h3
+                class="h5 mb-0"
+              >
+                Tiramisú Clásico
+              </h3>
+              <p
+                class="fw-semibold mb-0"
+              >
+                $5.500
+              </p>
+              <p
+                class="text-muted flex-grow-1"
+              >
+                Un postre italiano individual con capas de café, mascarpone y cacao, perfecto para finalizar cualquier comida.
+              </p>
+              <div
+                class="d-grid gap-2"
+              >
+                <a
+                  class="btn btn-pastel btn-strawberry w-100"
+                  data-discover="true"
+                  href="/menu/PI002"
+                >
+                  Ver detalle y personalizar
+                </a>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-cart-plus"
+                  />
+                   Añadir al carrito
+                </button>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-share"
+                  />
+                   Compartir
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="col-12 col-md-6 col-lg-4"
+        >
+          <div
+            class="card card-soft shadow-soft h-100 product-card"
+          >
+            <a
+              class="ratio ratio-4x3"
+              data-discover="true"
+              href="/menu/TT002"
+            >
+              <img
+                alt="Torta Circular de Manjar"
+                class="w-100 h-100 object-fit-cover"
+                loading="lazy"
+                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+              />
+            </a>
+            <div
+              class="card-body d-flex flex-column text-center gap-2"
+            >
+              <p
+                class="text-uppercase small text-muted mb-1"
+              >
+                Tortas Circulares
+              </p>
+              <h3
+                class="h5 mb-0"
+              >
+                Torta Circular de Manjar
+              </h3>
+              <p
+                class="fw-semibold mb-0"
+              >
+                $42.000
+              </p>
+              <p
+                class="text-muted flex-grow-1"
+              >
+                Torta tradicional chilena con manjar y nueces, un deleite para los amantes de los sabores dulces y clásicos.
+              </p>
+              <div
+                class="d-grid gap-2"
+              >
+                <a
+                  class="btn btn-pastel btn-strawberry w-100"
+                  data-discover="true"
+                  href="/menu/TT002"
+                >
+                  Ver detalle y personalizar
+                </a>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-cart-plus"
+                  />
+                   Añadir al carrito
+                </button>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-share"
+                  />
+                   Compartir
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="col-12 col-md-6 col-lg-4"
+        >
+          <div
+            class="card card-soft shadow-soft h-100 product-card"
+          >
+            <a
+              class="ratio ratio-4x3"
+              data-discover="true"
+              href="/menu/TT001"
+            >
+              <img
+                alt="Torta Circular de Vainilla"
+                class="w-100 h-100 object-fit-cover"
+                loading="lazy"
+                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+              />
+            </a>
+            <div
+              class="card-body d-flex flex-column text-center gap-2"
+            >
+              <p
+                class="text-uppercase small text-muted mb-1"
+              >
+                Tortas Circulares
+              </p>
+              <h3
+                class="h5 mb-0"
+              >
+                Torta Circular de Vainilla
+              </h3>
+              <p
+                class="fw-semibold mb-0"
+              >
+                $40.000
+              </p>
+              <p
+                class="text-muted flex-grow-1"
+              >
+                Bizcocho de vainilla clásico relleno con crema pastelera y cubierto con un glaseado dulce, perfecto para cualquier ocasión.
+              </p>
+              <div
+                class="d-grid gap-2"
+              >
+                <a
+                  class="btn btn-pastel btn-strawberry w-100"
+                  data-discover="true"
+                  href="/menu/TT001"
+                >
+                  Ver detalle y personalizar
+                </a>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-cart-plus"
+                  />
+                   Añadir al carrito
+                </button>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-share"
+                  />
+                   Compartir
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="col-12 col-md-6 col-lg-4"
+        >
+          <div
+            class="card card-soft shadow-soft h-100 product-card"
+          >
+            <a
+              class="ratio ratio-4x3"
+              data-discover="true"
+              href="/menu/TC001"
+            >
+              <img
+                alt="Torta Cuadrada de Chocolate"
+                class="w-100 h-100 object-fit-cover"
+                loading="lazy"
+                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+              />
+            </a>
+            <div
+              class="card-body d-flex flex-column text-center gap-2"
+            >
+              <p
+                class="text-uppercase small text-muted mb-1"
+              >
+                Tortas Cuadradas
+              </p>
+              <h3
+                class="h5 mb-0"
+              >
+                Torta Cuadrada de Chocolate
+              </h3>
+              <p
+                class="fw-semibold mb-0"
+              >
+                $45.000
+              </p>
+              <p
+                class="text-muted flex-grow-1"
+              >
+                Deliciosa torta de chocolate con capas de ganache y un toque de avellanas. Personalizable con mensajes especiales.
+              </p>
+              <div
+                class="d-grid gap-2"
+              >
+                <a
+                  class="btn btn-pastel btn-strawberry w-100"
+                  data-discover="true"
+                  href="/menu/TC001"
+                >
+                  Ver detalle y personalizar
+                </a>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-cart-plus"
+                  />
+                   Añadir al carrito
+                </button>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-share"
+                  />
+                   Compartir
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="col-12 col-md-6 col-lg-4"
+        >
+          <div
+            class="card card-soft shadow-soft h-100 product-card"
+          >
+            <a
+              class="ratio ratio-4x3"
+              data-discover="true"
+              href="/menu/TC002"
+            >
+              <img
+                alt="Torta Cuadrada de Frutas"
+                class="w-100 h-100 object-fit-cover"
+                loading="lazy"
+                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+              />
+            </a>
+            <div
+              class="card-body d-flex flex-column text-center gap-2"
+            >
+              <p
+                class="text-uppercase small text-muted mb-1"
+              >
+                Tortas Cuadradas
+              </p>
+              <h3
+                class="h5 mb-0"
+              >
+                Torta Cuadrada de Frutas
+              </h3>
+              <p
+                class="fw-semibold mb-0"
+              >
+                $50.000
+              </p>
+              <p
+                class="text-muted flex-grow-1"
+              >
+                Una mezcla de frutas frescas y crema chantilly sobre un suave bizcocho de vainilla, ideal para celebraciones.
+              </p>
+              <div
+                class="d-grid gap-2"
+              >
+                <a
+                  class="btn btn-pastel btn-strawberry w-100"
+                  data-discover="true"
+                  href="/menu/TC002"
+                >
+                  Ver detalle y personalizar
+                </a>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-cart-plus"
+                  />
+                   Añadir al carrito
+                </button>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-share"
+                  />
+                   Compartir
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="col-12 col-md-6 col-lg-4"
+        >
+          <div
+            class="card card-soft shadow-soft h-100 product-card"
+          >
+            <a
+              class="ratio ratio-4x3"
+              data-discover="true"
+              href="/menu/TE002"
+            >
+              <img
+                alt="Torta Especial de Boda"
+                class="w-100 h-100 object-fit-cover"
+                loading="lazy"
+                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+              />
+            </a>
+            <div
+              class="card-body d-flex flex-column text-center gap-2"
+            >
+              <p
+                class="text-uppercase small text-muted mb-1"
+              >
+                Tortas Especiales
+              </p>
+              <h3
+                class="h5 mb-0"
+              >
+                Torta Especial de Boda
+              </h3>
+              <p
+                class="fw-semibold mb-0"
+              >
+                $60.000
+              </p>
+              <p
+                class="text-muted flex-grow-1"
+              >
+                Elegante y deliciosa, esta torta está diseñada para ser el centro de atención en cualquier boda.
+              </p>
+              <div
+                class="d-grid gap-2"
+              >
+                <a
+                  class="btn btn-pastel btn-strawberry w-100"
+                  data-discover="true"
+                  href="/menu/TE002"
+                >
+                  Ver detalle y personalizar
+                </a>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-cart-plus"
+                  />
+                   Añadir al carrito
+                </button>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-share"
+                  />
+                   Compartir
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="col-12 col-md-6 col-lg-4"
+        >
+          <div
+            class="card card-soft shadow-soft h-100 product-card"
+          >
+            <a
+              class="ratio ratio-4x3"
+              data-discover="true"
+              href="/menu/TE001"
+            >
+              <img
+                alt="Torta Especial de Cumpleaños"
+                class="w-100 h-100 object-fit-cover"
+                loading="lazy"
+                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+              />
+            </a>
+            <div
+              class="card-body d-flex flex-column text-center gap-2"
+            >
+              <p
+                class="text-uppercase small text-muted mb-1"
+              >
+                Tortas Especiales
+              </p>
+              <h3
+                class="h5 mb-0"
+              >
+                Torta Especial de Cumpleaños
+              </h3>
+              <p
+                class="fw-semibold mb-0"
+              >
+                $55.000
+              </p>
+              <p
+                class="text-muted flex-grow-1"
+              >
+                Diseñada especialmente para celebraciones, personalizable con decoraciones y mensajes únicos.
+              </p>
+              <div
+                class="d-grid gap-2"
+              >
+                <a
+                  class="btn btn-pastel btn-strawberry w-100"
+                  data-discover="true"
+                  href="/menu/TE001"
+                >
+                  Ver detalle y personalizar
+                </a>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-cart-plus"
+                  />
+                   Añadir al carrito
+                </button>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-share"
+                  />
+                   Compartir
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="col-12 col-md-6 col-lg-4"
+        >
+          <div
+            class="card card-soft shadow-soft h-100 product-card"
+          >
+            <a
+              class="ratio ratio-4x3"
+              data-discover="true"
+              href="/menu/PSA001"
+            >
+              <img
+                alt="Torta Sin Azúcar de Naranja"
+                class="w-100 h-100 object-fit-cover"
+                loading="lazy"
+                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+              />
+            </a>
+            <div
+              class="card-body d-flex flex-column text-center gap-2"
+            >
+              <p
+                class="text-uppercase small text-muted mb-1"
+              >
+                Productos sin Azúcar
+              </p>
+              <h3
+                class="h5 mb-0"
+              >
+                Torta Sin Azúcar de Naranja
+              </h3>
+              <p
+                class="fw-semibold mb-0"
+              >
+                $48.000
+              </p>
+              <p
+                class="text-muted flex-grow-1"
+              >
+                Torta ligera y deliciosa, endulzada naturalmente, ideal para quienes buscan opciones más saludables.
+              </p>
+              <div
+                class="d-grid gap-2"
+              >
+                <a
+                  class="btn btn-pastel btn-strawberry w-100"
+                  data-discover="true"
+                  href="/menu/PSA001"
+                >
+                  Ver detalle y personalizar
+                </a>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-cart-plus"
+                  />
+                   Añadir al carrito
+                </button>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-share"
+                  />
+                   Compartir
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="col-12 col-md-6 col-lg-4"
+        >
+          <div
+            class="card card-soft shadow-soft h-100 product-card"
+          >
+            <a
+              class="ratio ratio-4x3"
+              data-discover="true"
+              href="/menu/PV001"
+            >
+              <img
+                alt="Torta Vegana de Chocolate"
+                class="w-100 h-100 object-fit-cover"
+                loading="lazy"
+                src="file:///Users/felipeahumadasilva/duocUC/programacion/fullstack_ll/experiencia_2/pagina_final_real/front-pasteleria/src/pages/menu/undefined"
+              />
+            </a>
+            <div
+              class="card-body d-flex flex-column text-center gap-2"
+            >
+              <p
+                class="text-uppercase small text-muted mb-1"
+              >
+                Productos Veganos
+              </p>
+              <h3
+                class="h5 mb-0"
+              >
+                Torta Vegana de Chocolate
+              </h3>
+              <p
+                class="fw-semibold mb-0"
+              >
+                $50.000
+              </p>
+              <p
+                class="text-muted flex-grow-1"
+              >
+                Torta de chocolate húmeda y deliciosa, hecha sin productos de origen animal, perfecta para veganos.
+              </p>
+              <div
+                class="d-grid gap-2"
+              >
+                <a
+                  class="btn btn-pastel btn-strawberry w-100"
+                  data-discover="true"
+                  href="/menu/PV001"
+                >
+                  Ver detalle y personalizar
+                </a>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-cart-plus"
+                  />
+                   Añadir al carrito
+                </button>
+                <button
+                  class="btn btn-pastel btn-mint w-100"
+                >
+                  <i
+                    class="bi bi-share"
+                  />
+                   Compartir
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</DocumentFragment>
+`;
