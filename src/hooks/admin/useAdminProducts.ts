@@ -1,6 +1,6 @@
 // useAdminProducts.ts
-import { useEffect, useState } from "react";
-import { menuService, type Producto } from "@/service/menuService";
+import { useCallback, useEffect, useState } from "react";
+import { menuService, MENU_CACHE_UPDATED_EVENT, type Producto } from "@/service/menuService";
 
 import { exportCSV, exportExcel, exportPDF } from "@/utils/exporters";
 
@@ -12,16 +12,25 @@ export const useAdminProducts = () => {
   // -------------------------
   // CARGAR PRODUCTOS
   // -------------------------
-  const cargarProductos = () => {
+  const cargarProductos = useCallback(() => {
     setCargando(true);
     const data = menuService.getCached();
     setProductos(data);
     setCargando(false);
-  };
+  }, []);
 
   useEffect(() => {
     cargarProductos();
-  }, []);
+
+    if (typeof window === "undefined") return;
+
+    const handler = () => cargarProductos();
+    window.addEventListener(MENU_CACHE_UPDATED_EVENT, handler);
+
+    return () => {
+      window.removeEventListener(MENU_CACHE_UPDATED_EVENT, handler);
+    };
+  }, [cargarProductos]);
 
   // -------------------------
   // CRUD (delegado al service)

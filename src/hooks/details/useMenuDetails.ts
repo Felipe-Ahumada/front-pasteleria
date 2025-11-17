@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-import { useMemo } from "react";
-=======
 // hooks/details/useMenuDetails.ts
 import { useCallback, useEffect, useMemo, useState } from "react";
->>>>>>> a8ab971 (Edicion de botones en gestion de productos en admin)
 import { useParams } from "react-router-dom";
 
 import { menuService, MENU_CACHE_UPDATED_EVENT } from "@/service/menuService";

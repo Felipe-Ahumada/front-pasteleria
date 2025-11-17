@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-import { useEffect, useMemo, useRef, useState } from "react";
-=======
 // pages/menu/MenuPage.tsx
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
->>>>>>> a8ab971 (Edicion de botones en gestion de productos en admin)
 import { Link } from "react-router-dom";
 import { Button } from "@/components/common";
 

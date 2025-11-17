@@ -7,6 +7,7 @@ import type { StoredUser, UserRoleName } from "@/types/user";
 import { readArray, writeJSON } from "./localStorageUtils";
 import { ensureHashedPassword } from "@/utils/security/password";
 import type { BlogPost } from "@/types/blog";
+import { DEFAULT_BLOG_COVER } from "@/utils/blog/constants";
 
 const isBrowser = typeof window !== "undefined";
 
@@ -164,7 +165,7 @@ export const initLocalData = (force = false) => {
     const existingBlogs = readArray<BlogPost>(LOCAL_STORAGE_KEYS.blogs);
 
     if (!existingBlogs.length) {
-      const exampleBlog = {
+      const exampleBlog: BlogPost = {
         id: "blog-ejemplo-1",
         titulo: "Bienvenidos al Blog de Mil Sabores",
         descripcion:
@@ -173,8 +174,8 @@ export const initLocalData = (force = false) => {
           "En Mil Sabores compartimos recetas, tips, novedades y trucos de pastelería. Este post sirve como demostración inicial.",
         autorId: "sistema",
         autorNombre: "Pastelería Mil Sabores",
-        fecha: new Date().toISOString().split("T")[0],
-        portada: "/images/blog/default.jpg",
+        createdAt: new Date().toISOString(),
+        portada: DEFAULT_BLOG_COVER,
         status: "aprobado",
       };
 

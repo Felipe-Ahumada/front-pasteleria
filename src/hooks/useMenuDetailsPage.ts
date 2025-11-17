@@ -31,14 +31,8 @@ export const useMenuDetailsPage = () => {
     refreshProducto();
   }, [refreshProducto]);
 
-<<<<<<< HEAD
-      // Reinicia cantidad y mensaje al cambiar producto
-      setQuantity("");
-      setMensaje("");
-=======
   useEffect(() => {
     if (typeof window === "undefined") return;
->>>>>>> a8ab971 (Edicion de botones en gestion de productos en admin)
 
     const handler = () => refreshProducto();
     window.addEventListener(MENU_CACHE_UPDATED_EVENT, handler);

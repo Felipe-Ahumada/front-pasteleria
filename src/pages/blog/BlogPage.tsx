@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useBlogs } from "@/context/blog/useBlogs";
 import useAuth from "@/hooks/useAuth";
 import type { BlogPost } from "@/types/blog";
+import { resolveBlogCover } from "@/utils/blog/constants";
 
 const BlogPage = () => {
   const { blogs } = useBlogs();
@@ -36,13 +37,12 @@ const BlogPage = () => {
                 className="text-decoration-none text-dark"
               >
                 <div className="card h-100 shadow-sm">
-                  {post.portada && (
-                    <img
-                      src={post.portada}
-                      className="card-img-top"
-                      style={{ height: "200px", objectFit: "cover" }}
-                    />
-                  )}
+                  <img
+                    src={resolveBlogCover(post.portada)}
+                    className="card-img-top"
+                    style={{ height: "200px", objectFit: "cover" }}
+                    alt={post.titulo}
+                  />
 
                   <div className="card-body">
                     <h5 className="card-title">{post.titulo}</h5>

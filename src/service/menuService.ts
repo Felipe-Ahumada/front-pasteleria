@@ -61,6 +61,25 @@ const notifyCacheUpdate = () => {
   }
 };
 
+const groupQuantities = (
+  items: Array<{ codigo: string; cantidad: number }>
+): Map<string, number> => {
+  const grouped = new Map<string, number>();
+
+  items.forEach(({ codigo, cantidad }) => {
+    const normalizedCode = codigo.trim();
+    if (!normalizedCode) return;
+
+    const safeQty = Number.isFinite(cantidad) ? Math.max(0, cantidad) : 0;
+    if (safeQty <= 0) return;
+
+    const prev = grouped.get(normalizedCode) ?? 0;
+    grouped.set(normalizedCode, prev + safeQty);
+  });
+
+  return grouped;
+};
+
 const mergeDetailImages = (
   slug: string,
   raw?: string[]
@@ -226,6 +245,36 @@ export const menuService = {
   clearCache() {
     localStorage.removeItem(CACHE_KEY);
     notifyCacheUpdate();
+  },
+
+  consumeStock(orderItems: Array<{ codigo: string; cantidad: number }>) {
+    if (!Array.isArray(orderItems) || orderItems.length === 0) {
+      return;
+    }
+
+    const byProduct = groupQuantities(orderItems);
+    if (byProduct.size === 0) return;
+
+    const productos = this.getCached();
+    let hasChanges = false;
+
+    const updated = productos.map((producto) => {
+      const qty = byProduct.get(producto.id);
+      if (!qty) return producto;
+
+      const nextStock = Math.max(0, producto.stock - qty);
+      if (nextStock === producto.stock) return producto;
+
+      hasChanges = true;
+      return {
+        ...producto,
+        stock: nextStock,
+      };
+    });
+
+    if (hasChanges) {
+      saveCache(updated);
+    }
   },
 };
 

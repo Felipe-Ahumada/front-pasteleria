@@ -11,6 +11,7 @@ import { getLocalItem } from "@/utils/storage/localStorageUtils";
 import { LOCAL_STORAGE_KEYS } from "@/utils/storage/initLocalData";
 import type { StoredUser } from "@/types/user";
 import type { Order } from "@/types/order";
+import { menuService } from "@/service/menuService";
 
 type RegionData = {
   id: string;
@@ -97,6 +98,7 @@ const CheckoutPage = () => {
     };
 
     createOrder(order);
+    menuService.consumeStock(order.items);
     clear();
     window.location.href = `/order-success?id=${order.id}`;
   };
