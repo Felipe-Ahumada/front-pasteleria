@@ -12,7 +12,8 @@
     "regionNombre": "Metropolitana",
     "comuna": "Santiago",
     "direccion": "Av. Libertador 123",
-    "password": "fbd77bc68717f45eedbf71d09826c4a64c0447da1f42c7a6dbf608fa7c97f710"
+    "password": "fbd77bc68717f45eedbf71d09826c4a64c0447da1f42c7a6dbf608fa7c97f710",
+    "activo": true
   },
   {
     "id": "2",
@@ -27,7 +28,8 @@
     "regionNombre": "Valparaíso",
     "comuna": "Viña del Mar",
     "direccion": "Calle 5 Norte 456",
-    "password": "fbd77bc68717f45eedbf71d09826c4a64c0447da1f42c7a6dbf608fa7c97f710"
+    "password": "fbd77bc68717f45eedbf71d09826c4a64c0447da1f42c7a6dbf608fa7c97f710",
+    "activo": true
   },
   {
     "id": "3",
@@ -42,7 +44,8 @@
     "regionNombre": "Biobío",
     "comuna": "Concepción",
     "direccion": "Pasaje Los Álamos 789",
-    "password": "fbd77bc68717f45eedbf71d09826c4a64c0447da1f42c7a6dbf608fa7c97f710"
+    "password": "fbd77bc68717f45eedbf71d09826c4a64c0447da1f42c7a6dbf608fa7c97f710",
+    "activo": true
   },
   {
     "id": "4",
@@ -57,7 +60,8 @@
     "regionNombre": "Araucanía",
     "comuna": "Temuco",
     "direccion": "Camino a Labranza 234",
-    "password": "fbd77bc68717f45eedbf71d09826c4a64c0447da1f42c7a6dbf608fa7c97f710"
+    "password": "fbd77bc68717f45eedbf71d09826c4a64c0447da1f42c7a6dbf608fa7c97f710",
+    "activo": true
   },
   {
     "id": "5",
@@ -72,7 +76,8 @@
     "regionNombre": "Maule",
     "comuna": "Talca",
     "direccion": "Av. San Miguel 876",
-    "password": "fbd77bc68717f45eedbf71d09826c4a64c0447da1f42c7a6dbf608fa7c97f710"
+    "password": "fbd77bc68717f45eedbf71d09826c4a64c0447da1f42c7a6dbf608fa7c97f710",
+    "activo": true
   },
   {
     "id": "6",
@@ -87,7 +92,8 @@
     "regionNombre": "Coquimbo",
     "comuna": "La Serena",
     "direccion": "Los Perales 111",
-    "password": "fbd77bc68717f45eedbf71d09826c4a64c0447da1f42c7a6dbf608fa7c97f710"
+    "password": "fbd77bc68717f45eedbf71d09826c4a64c0447da1f42c7a6dbf608fa7c97f710",
+    "activo": true
   },
   {
     "id": "7",
@@ -102,7 +108,8 @@
     "regionNombre": "O'Higgins",
     "comuna": "Rancagua",
     "direccion": "Calle Estado 222",
-    "password": "fbd77bc68717f45eedbf71d09826c4a64c0447da1f42c7a6dbf608fa7c97f710"
+    "password": "fbd77bc68717f45eedbf71d09826c4a64c0447da1f42c7a6dbf608fa7c97f710",
+    "activo": true
   },
   {
     "id": "8",
@@ -117,7 +124,8 @@
     "regionNombre": "Antofagasta",
     "comuna": "Antofagasta",
     "direccion": "Av. Brasil 333",
-    "password": "fbd77bc68717f45eedbf71d09826c4a64c0447da1f42c7a6dbf608fa7c97f710"
+    "password": "fbd77bc68717f45eedbf71d09826c4a64c0447da1f42c7a6dbf608fa7c97f710",
+    "activo": true
   },
   {
     "id": "9",
@@ -132,7 +140,8 @@
     "regionNombre": "Los Lagos",
     "comuna": "Puerto Montt",
     "direccion": "Diego Portales 444",
-    "password": "fbd77bc68717f45eedbf71d09826c4a64c0447da1f42c7a6dbf608fa7c97f710"
+    "password": "fbd77bc68717f45eedbf71d09826c4a64c0447da1f42c7a6dbf608fa7c97f710",
+    "activo": true
   },
   {
     "id": "10",
@@ -147,6 +156,7 @@
     "regionNombre": "Atacama",
     "comuna": "Copiapó",
     "direccion": "Colipí 555",
-    "password": "fbd77bc68717f45eedbf71d09826c4a64c0447da1f42c7a6dbf608fa7c97f710"
+    "password": "fbd77bc68717f45eedbf71d09826c4a64c0447da1f42c7a6dbf608fa7c97f710",
+    "activo": true
   }
 ]

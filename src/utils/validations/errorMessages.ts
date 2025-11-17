@@ -15,6 +15,7 @@ export const errorMessages = {
 	negativePrice: 'El precio no puede ser negativo',
 	priceOrder: 'El precio mínimo no puede superar al máximo',
 	userNotFound: 'No encontramos una cuenta asociada a este correo',
+	userBlocked: 'La cuenta se encuentra bloqueada. Contacta al administrador.',
 	lettersOnly: (field: string) => `${field} solo puede contener letras, espacios y acentos`,
 	runLeadingZero: 'El RUN no puede comenzar con 0',
 	acceptTerms: 'Debes aceptar los términos y condiciones para continuar',

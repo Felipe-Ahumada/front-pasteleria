@@ -1,3 +1,4 @@
+// pages/admin/users/UserDeleteModal.tsx
 import { Modal, Button } from "@/components/common";
 import type { Usuario } from "@/service/userService";
 

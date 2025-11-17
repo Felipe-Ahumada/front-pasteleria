@@ -7,6 +7,7 @@ import { authenticateCredentials } from '@/utils/validations/authValidations'
 import { LOCAL_STORAGE_KEYS } from '@/utils/storage/initLocalData'
 import { getLocalItem, removeLocalItem, setLocalItem } from '@/utils/storage/localStorageUtils'
 import type { StoredUser } from '@/types/user'
+import { USERS_CACHE_UPDATED_EVENT } from '@/service/userService'
 
 export type { AuthCredentials, AuthUser, UserRole } from './types'
 
@@ -55,6 +56,10 @@ const readPersistedUser = (): AuthUser | null => {
 	}
 
 	try {
+		if (stored.activo === false) {
+			removeLocalItem(ACTIVE_USER_KEY)
+			return null
+		}
 		return buildAuthUser(stored)
 	} catch {
 		return null
@@ -99,8 +104,36 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 	}, [])
 
 	const refreshUser = useCallback((stored: StoredUser) => {
+		if (stored.activo === false) {
+			logout()
+			return
+		}
 		setLocalItem(ACTIVE_USER_KEY, stored)
 		setUser(buildAuthUser(stored))
+	}, [logout])
+
+	useEffect(() => {
+		if (typeof window === 'undefined') {
+			return
+		}
+
+		const syncFromStorage = () => {
+			setUser(() => readPersistedUser())
+		}
+
+		const handleStorage = (event: StorageEvent) => {
+			if (!event.key || event.key === ACTIVE_USER_KEY || event.key === LOCAL_STORAGE_KEYS.usuarios) {
+				syncFromStorage()
+			}
+		}
+
+		window.addEventListener(USERS_CACHE_UPDATED_EVENT, syncFromStorage)
+		window.addEventListener('storage', handleStorage)
+
+		return () => {
+			window.removeEventListener(USERS_CACHE_UPDATED_EVENT, syncFromStorage)
+			window.removeEventListener('storage', handleStorage)
+		}
 	}, [])
 
 	const value = useMemo<AuthContextValue>(

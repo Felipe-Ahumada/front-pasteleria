@@ -40,7 +40,8 @@ const emptyUser: Usuario = {
   regionNombre: "",
   comuna: "",
   direccion: "",
-  password: DEFAULT_PASSWORD_HASH,
+  password: "",
+  activo: true,
 };
 
 // ==================================================
@@ -66,7 +67,11 @@ const UserFormModal = ({ open, onClose, usuario, onSaved }: Props) => {
 
     if (usuario) {
       // Modo edición
-      setForm({ ...usuario });
+      setForm({
+        ...usuario,
+        password: "",
+        activo: usuario.activo ?? true,
+      });
 
       const region = regionesData.find((r) => r.id === usuario.regionId);
       setComunasDisponibles(region?.comunas ?? []);
@@ -74,6 +79,7 @@ const UserFormModal = ({ open, onClose, usuario, onSaved }: Props) => {
       setForm({
         ...emptyUser,
         id: getNextUserId(),
+        activo: true,
       });
       setComunasDisponibles([]);
     }
@@ -119,11 +125,11 @@ const UserFormModal = ({ open, onClose, usuario, onSaved }: Props) => {
         regionId: form.regionId,
         comuna: form.comuna,
         direccion: form.direccion,
-        password: form.password,
-        confirmPassword: form.password,
+        password: "",
+        confirmPassword: "",
         termsAccepted: true,
       },
-      { mode: usuario ? "update" : "create" }
+      { mode: "update" }
     );
 
     setErrors(validationErrors);
@@ -137,7 +143,9 @@ const UserFormModal = ({ open, onClose, usuario, onSaved }: Props) => {
 
     const finalUser: Usuario = {
       ...form,
-      password: form.password || usuario?.password || DEFAULT_PASSWORD_HASH,
+      password: usuario?.password || DEFAULT_PASSWORD_HASH,
+      activo: form.activo ?? usuario?.activo ?? true,
+      createdAt: usuario?.createdAt ?? form.createdAt,
     };
 
     onSaved(finalUser);

@@ -29,6 +29,7 @@ export type UserFormValues = {
 	avatarUrl?: string
 	codigoDescuento?: string
 	tipoUsuario?: UserRoleName
+	activo?: boolean
 }
 
 export type ResetPasswordFormValues = {
@@ -320,6 +321,7 @@ export const mapFormToStoredUser = (values: UserFormValues, current?: StoredUser
 		role = 'Cliente'
 	}
 	const discountCode = values.codigoDescuento?.trim().toUpperCase() || current?.codigoDescuento
+	const isActive = values.activo ?? current?.activo ?? true
 
 	return {
 		id: identifier,
@@ -338,6 +340,7 @@ export const mapFormToStoredUser = (values: UserFormValues, current?: StoredUser
 		codigoDescuento: discountCode,
 		createdAt: current?.createdAt ?? timestamp,
 		updatedAt: timestamp,
+		activo: isActive,
 	}
 }
 
@@ -363,6 +366,7 @@ export const saveUserRecord = (record: StoredUser): StoredUser[] => {
 		...record,
 		createdAt: existing.createdAt ?? record.createdAt,
 		tipoUsuario: resolvedRole,
+		activo: record.activo ?? existing.activo ?? true,
 	}
 
 	setLocalData(LOCAL_STORAGE_KEYS.usuarios, users)

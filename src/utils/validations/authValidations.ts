@@ -94,5 +94,9 @@ export const authenticateCredentials = (values: LoginFormValues): Authentication
 		return { success: false, error: errorMessages.credentials }
 	}
 
+	if (matchedUser.activo === false) {
+		return { success: false, error: errorMessages.userBlocked }
+	}
+
 	return { success: true, user: matchedUser }
 }
