@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { menuService, type Producto } from "@/service/menuService";
+import { menuService, MENU_CACHE_UPDATED_EVENT, type Producto } from "@/service/menuService";
 
 export interface FeedbackState {
   text: string;
@@ -18,21 +18,40 @@ export const useMenuDetailsPage = () => {
   const [feedback, setFeedback] = useState<FeedbackState | null>(null);
   const feedbackTimeout = useRef<number | null>(null);
 
-  useEffect(() => {
-    const load = async () => {
-      const all = menuService.getCached();
-      const found = all.find((p) => p.id.toLowerCase() === productCode?.toLowerCase());
-      setProducto(found ?? null);
+  const refreshProducto = useCallback(() => {
+    const all = menuService.getActive();
+    const found = all.find((p) => p.id.toLowerCase() === productCode?.toLowerCase()) ?? null;
+    setProducto(found);
 
+    const others = all.filter((p) => p.id !== found?.id);
+    setRecommended(others.slice(0, 3));
+  }, [productCode]);
+
+  useEffect(() => {
+    refreshProducto();
+  }, [refreshProducto]);
+
+<<<<<<< HEAD
       // Reinicia cantidad y mensaje al cambiar producto
       setQuantity("");
       setMensaje("");
+=======
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+>>>>>>> a8ab971 (Edicion de botones en gestion de productos en admin)
 
-      const others = all.filter((p) => p.id !== found?.id);
-      setRecommended(others.slice(0, 3));
+    const handler = () => refreshProducto();
+    window.addEventListener(MENU_CACHE_UPDATED_EVENT, handler);
+
+    return () => {
+      window.removeEventListener(MENU_CACHE_UPDATED_EVENT, handler);
     };
+  }, [refreshProducto]);
 
-    load();
+  useEffect(() => {
+    // Reinicia cantidad y mensaje al cambiar de producto
+    setQuantity("");
+    setMensaje("");
   }, [productCode]);
 
   const scheduleFeedback = useCallback((next: FeedbackState) => {

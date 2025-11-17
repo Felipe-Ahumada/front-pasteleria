@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Carousel } from "bootstrap";
-import { menuService, type Producto } from "@/service/menuService";
+import { menuService, MENU_CACHE_UPDATED_EVENT, type Producto } from "@/service/menuService";
 
 export interface CarouselItem {
   id: string;
@@ -78,13 +78,23 @@ export function useHomePage() {
   /** ===============================
    *  1) Cargar productos del service
    *  =============================== */
-  useEffect(() => {
-    async function load() {
-      const data = await menuService.getAll();
-      setProductos(data);
-    }
-    load();
+  const refreshProducts = useCallback(() => {
+    const data = menuService.getActive();
+    setProductos(data);
   }, []);
+
+  useEffect(() => {
+    refreshProducts();
+
+    if (typeof window === "undefined") return;
+
+    const handler = () => refreshProducts();
+    window.addEventListener(MENU_CACHE_UPDATED_EVENT, handler);
+
+    return () => {
+      window.removeEventListener(MENU_CACHE_UPDATED_EVENT, handler);
+    };
+  }, [refreshProducts]);
 
   /** ===============================
    *  2) Inicializar carrusel

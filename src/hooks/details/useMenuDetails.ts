@@ -1,7 +1,12 @@
+<<<<<<< HEAD
 import { useMemo } from "react";
+=======
+// hooks/details/useMenuDetails.ts
+import { useCallback, useEffect, useMemo, useState } from "react";
+>>>>>>> a8ab971 (Edicion de botones en gestion de productos en admin)
 import { useParams } from "react-router-dom";
 
-import { menuService } from "@/service/menuService";
+import { menuService, MENU_CACHE_UPDATED_EVENT } from "@/service/menuService";
 import type { Producto } from "@/service/menuService";
 
 import { useDetailQuantity } from "./useDetailQuantity";
@@ -16,12 +21,31 @@ export function useMenuDetails() {
   const code = (productCode ?? "").toUpperCase();
 
   // Todos los productos desde el service (cacheado)
-  const all: Producto[] = useMemo(() => menuService.getCached(), []);
+  const [productosActivos, setProductosActivos] = useState<Producto[]>(() =>
+    menuService.getActive()
+  );
+
+  const refreshProductos = useCallback(() => {
+    setProductosActivos(menuService.getActive());
+  }, []);
+
+  useEffect(() => {
+    refreshProductos();
+
+    if (typeof window === "undefined") return;
+
+    const handler = () => refreshProductos();
+    window.addEventListener(MENU_CACHE_UPDATED_EVENT, handler);
+
+    return () => {
+      window.removeEventListener(MENU_CACHE_UPDATED_EVENT, handler);
+    };
+  }, [refreshProductos]);
 
   // Producto activo
   const producto = useMemo(
-    () => all.find((p) => p.id.toUpperCase() === code),
-    [all, code]
+    () => productosActivos.find((p) => p.id.toUpperCase() === code),
+    [productosActivos, code]
   );
 
   const categoria = producto?.categoria ?? null;
@@ -44,7 +68,7 @@ export function useMenuDetails() {
   const feedback = useCardFeedback();
 
   // RECOMENDADOS
-  const recommended = useDetailRecommend(producto, all);
+  const recommended = useDetailRecommend(producto, productosActivos);
 
   // AÑADIR AL CARRITO
   const addToCart = () => {

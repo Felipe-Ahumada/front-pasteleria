@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 import { useEffect, useMemo, useState } from "react";
 import { menuService } from "@/service/menuService";
+=======
+// hooks/useMenuPage.ts
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { menuService, MENU_CACHE_UPDATED_EVENT } from "@/service/menuService";
+>>>>>>> a8ab971 (Edicion de botones en gestion de productos en admin)
 import type { Producto } from "@/service/menuService";
 import { validatePriceFilters } from "@/utils/validations/filtersValidations";
 import type { ValidationErrors } from "@/utils/validations/types";
@@ -38,6 +44,7 @@ export function useMenuPage() {
     ValidationErrors<FilterValues>
   >({});
 
+<<<<<<< HEAD
   /*-----------------------------
     Cargar productos del service
     ----------------------------- */
@@ -69,6 +76,39 @@ export function useMenuPage() {
   /* -----------------------------
     Categorías únicas
     ----------------------------- */
+=======
+  /** -----------------------------
+   * 1) Cargar productos del service
+   * ----------------------------- */
+  const loadProductos = useCallback(() => {
+    try {
+      const data = menuService.getActive();
+      setProductos(data);
+      setError(null);
+      setLoading(false);
+    } catch {
+      setError("No fue posible cargar el menú.");
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadProductos();
+
+    if (typeof window === "undefined") return;
+
+    const handler = () => loadProductos();
+    window.addEventListener(MENU_CACHE_UPDATED_EVENT, handler);
+
+    return () => {
+      window.removeEventListener(MENU_CACHE_UPDATED_EVENT, handler);
+    };
+  }, [loadProductos]);
+
+  /** -----------------------------
+   * 2) Categorías únicas
+   * ----------------------------- */
+>>>>>>> a8ab971 (Edicion de botones en gestion de productos en admin)
   const categories = useMemo(() => {
     const set = new Set<string>();
     productos.forEach((p) => set.add(p.categoria));

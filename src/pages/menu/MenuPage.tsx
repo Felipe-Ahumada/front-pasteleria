@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 import { useEffect, useMemo, useRef, useState } from "react";
+=======
+// pages/menu/MenuPage.tsx
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+>>>>>>> a8ab971 (Edicion de botones en gestion de productos en admin)
 import { Link } from "react-router-dom";
 import { Button } from "@/components/common";
 
@@ -12,7 +17,7 @@ import {
 } from "@/hooks/menu/useMenuFilters";
 
 import { useMenuShare } from "@/hooks/menu/useMenuShare";
-import { menuService } from "@/service/menuService";
+import { menuService, MENU_CACHE_UPDATED_EVENT, type Producto } from "@/service/menuService";
 import { formatImagePath } from "@/utils/storage/imageHelpers";
 const formatPrice = (value: number) =>
   value.toLocaleString("es-CL", {
@@ -25,30 +30,53 @@ const formatPrice = (value: number) =>
    NORMALIZAR PRODUCTOS PARA FILTROS
 =========================================================== */
 
-const allProducts: EnrichedProduct[] = menuService.getCached().map((p) => {
-  const categoriaOriginal = menuData.categorias.find(
-    (c) => c.nombre_categoria === p.categoria
-  );
+const mapToEnrichedProducts = (productos: Producto[]): EnrichedProduct[] =>
+  productos.map((p) => {
+    const categoriaOriginal = menuData.categorias.find(
+      (c) => c.nombre_categoria === p.categoria
+    );
 
-  return {
-    codigo_producto: p.id,
-    nombre_producto: p.nombre,
-    precio_producto: p.precio,
-    imagen_producto: p.imagen,
-    descripción_producto: p.descripcion,
+    return {
+      codigo_producto: p.id,
+      nombre_producto: p.nombre,
+      precio_producto: p.precio,
+      imagen_producto: p.imagen,
+      descripción_producto: p.descripcion,
 
-    categoriaId: categoriaOriginal?.id_categoria ?? 0,
-    categoriaNombre: p.categoria,
+      categoriaId: categoriaOriginal?.id_categoria ?? 0,
+      categoriaNombre: p.categoria,
 
-    stock: p.stock,
-  };
-});
+      stock: p.stock,
+    };
+  });
 
 /* ===========================================================
    COMPONENTE PRINCIPAL
 =========================================================== */
 
 const MenuPage = () => {
+  const [allProducts, setAllProducts] = useState<EnrichedProduct[]>(() =>
+    mapToEnrichedProducts(menuService.getActive())
+  );
+
+  const refreshProducts = useCallback(() => {
+    const activos = menuService.getActive();
+    setAllProducts(mapToEnrichedProducts(activos));
+  }, []);
+
+  useEffect(() => {
+    refreshProducts();
+
+    if (typeof window === "undefined") return;
+
+    const handler = () => refreshProducts();
+    window.addEventListener(MENU_CACHE_UPDATED_EVENT, handler);
+
+    return () => {
+      window.removeEventListener(MENU_CACHE_UPDATED_EVENT, handler);
+    };
+  }, [refreshProducts]);
+
   const collator = useMemo(
     () => new Intl.Collator("es", { sensitivity: "base" }),
     []
@@ -95,6 +123,13 @@ const MenuPage = () => {
   const handleAddToCart = (item: EnrichedProduct) => {
     const productos = menuService.getCached();
     const real = productos.find((p) => p.id === item.codigo_producto);
+    if (!real || real.activo === false) {
+      scheduleCardFeedback(item.codigo_producto, {
+        text: "Producto no disponible",
+        tone: "danger",
+      });
+      return;
+    }
     const stockReal = real?.stock ?? 0;
 
     const enCarrito = getCantidadEnCarrito(item.codigo_producto);
@@ -189,7 +224,7 @@ const MenuPage = () => {
             {filteredProducts.map((item) => {
               const productos = menuService.getCached();
               const real = productos.find((p) => p.id === item.codigo_producto);
-              const stockReal = real?.stock ?? 0;
+              const stockReal = real?.activo === false ? 0 : (real?.stock ?? 0);
               const enCarrito = getCantidadEnCarrito(item.codigo_producto);
               const disponible = stockReal - enCarrito;
 

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { Modal, Button } from "@/components/common";
 import type { Producto } from "@/service/menuService";
 
@@ -24,3 +25,6 @@ const ProductDeleteModal = ({ open, onClose, producto, onConfirm }: Props) => {
 };
 
 export default ProductDeleteModal;
+=======
+export { default } from "./ProductStatusModal";
+>>>>>>> a8ab971 (Edicion de botones en gestion de productos en admin)

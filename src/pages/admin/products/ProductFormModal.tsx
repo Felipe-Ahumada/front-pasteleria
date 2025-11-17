@@ -24,6 +24,7 @@ const ProductFormModal = ({ open, onClose, producto, onSaved }: Props) => {
     stock_critico: 3,
     imagen: "",
     imagenes_detalle: [],
+    activo: true,
   });
 
   const [errors, setErrors] = useState<
@@ -51,6 +52,7 @@ const ProductFormModal = ({ open, onClose, producto, onSaved }: Props) => {
         stock_critico: 3,
         imagen: defaultProductImage,
         imagenes_detalle: [],
+        activo: true,
       });
     }
 
