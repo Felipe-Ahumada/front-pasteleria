@@ -1,4 +1,4 @@
-import { Button } from "@/components/common";
+import { Modal, Button } from "@/components/common";
 import type { Order, OrderStatus } from "@/types/order";
 
 type Props = {
@@ -27,25 +27,35 @@ const OrderAdminModal = ({ order, onClose, onStatusChange }: Props) => {
   const next = NEXT_STATUS[order.status];
 
   return (
-    <div className="modal-backdrop-custom">
-      <div className="modal-box-custom">
-        <h3 className="mb-3">Pedido #{order.id}</h3>
-
-        <p><b>Estado actual:</b> {STATUS_LABELS[order.status]}</p>
-        <p><b>Fecha:</b> {order.fechaPedido}</p>
-        <p><b>Total:</b> ${order.total.toLocaleString()}</p>
+    <Modal open={true} onClose={onClose} title={`Pedido #${order.id}`}>
+      <div className="d-flex flex-column gap-2">
+        <p>
+          <b>Estado actual:</b> {STATUS_LABELS[order.status]}
+        </p>
+        <p>
+          <b>Fecha:</b> {order.fechaPedido}
+        </p>
+        <p>
+          <b>Total:</b> ${order.total.toLocaleString()}
+        </p>
 
         <hr />
 
         <h5>Datos del Cliente</h5>
-        <p>{order.envio.nombres} {order.envio.apellidos}</p>
+        <p>
+          {order.envio.nombres} {order.envio.apellidos}
+        </p>
         <p>RUN: {order.envio.run}</p>
         <p>Email: {order.envio.correo}</p>
 
         <h5 className="mt-3">Envío</h5>
-        <p>{order.envio.direccion}, {order.envio.comuna}</p>
-        <p>Región ID: {order.envio.regionId}</p>
-        <p><b>Método pago:</b> {order.envio.metodoPago}</p>
+        <p>
+          {order.envio.direccion}, {order.envio.comuna}
+        </p>
+        <p>Región: {order.envio.regionNombre || order.envio.regionId}</p>
+        <p>
+          <b>Método pago:</b> {order.envio.metodoPago}
+        </p>
 
         <hr />
 
@@ -84,7 +94,7 @@ const OrderAdminModal = ({ order, onClose, onStatusChange }: Props) => {
           )}
         </div>
       </div>
-    </div>
+    </Modal>
   );
 };
 

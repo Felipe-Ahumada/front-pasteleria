@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Carousel } from "bootstrap";
-import { menuService, MENU_CACHE_UPDATED_EVENT, type Producto } from "@/service/menuService";
+import {
+  menuService,
+  MENU_CACHE_UPDATED_EVENT,
+  type Producto,
+} from "@/service/menuService";
 
 export interface CarouselItem {
   id: string;
@@ -67,7 +71,9 @@ const carouselData: CarouselItem[] = [
 
 type CarouselStatic = {
   getInstance?: (element: Element) => InstanceType<typeof Carousel> | null;
-  new (element: Element, config?: Record<string, unknown>): InstanceType<typeof Carousel>;
+  new (element: Element, config?: Record<string, unknown>): InstanceType<
+    typeof Carousel
+  >;
 };
 
 const SafeCarousel = Carousel as unknown as CarouselStatic;
@@ -78,22 +84,20 @@ export function useHomePage() {
   /** ===============================
    *  1) Cargar productos del service
    *  =============================== */
-  const refreshProducts = useCallback(() => {
-    const data = menuService.getActive();
-    setProductos(data);
+  /** ===============================
+   *  1) Cargar productos del service
+   *  =============================== */
+  const refreshProducts = useCallback(async () => {
+    try {
+      const data = await menuService.getActive();
+      setProductos(data);
+    } catch (error) {
+      console.error("Error loading home products:", error);
+    }
   }, []);
 
   useEffect(() => {
     refreshProducts();
-
-    if (typeof window === "undefined") return;
-
-    const handler = () => refreshProducts();
-    window.addEventListener(MENU_CACHE_UPDATED_EVENT, handler);
-
-    return () => {
-      window.removeEventListener(MENU_CACHE_UPDATED_EVENT, handler);
-    };
   }, [refreshProducts]);
 
   /** ===============================

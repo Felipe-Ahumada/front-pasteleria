@@ -1,4 +1,10 @@
-import { useState, useCallback, useMemo, type ReactNode, useEffect } from "react";
+import {
+  useState,
+  useCallback,
+  useMemo,
+  type ReactNode,
+  useEffect,
+} from "react";
 import { CartContext, type CartItem } from "./CartContext";
 
 import {
@@ -7,12 +13,9 @@ import {
   clearCart as clearStorage,
 } from "@/utils/storage/cartStorage";
 
-import { menuService } from "@/service/menuService";
+import { menuService, type Producto } from "@/service/menuService";
 import useAuth from "@/hooks/useAuth";
-import { getLocalItem } from "@/utils/storage/localStorageUtils";
-import { LOCAL_STORAGE_KEYS } from "@/utils/storage/initLocalData";
 import { calculateUserDiscounts } from "@/utils/discounts/userDiscounts";
-import type { StoredUser } from "@/types/user";
 
 interface Props {
   children: ReactNode;
@@ -22,15 +25,11 @@ export const CartProvider = ({ children }: Props) => {
   const { user: authUser } = useAuth();
   const userId = authUser?.id ?? null;
 
-  /** Usuario completo desde localStorage (StoredUser) */
-  const storedUser: StoredUser | null = authUser
-    ? getLocalItem<StoredUser>(LOCAL_STORAGE_KEYS.activeUser)
-    : null;
-
   /* -------------------------------------
         ESTADO INICIAL DEL CARRITO 
      ------------------------------------- */
   const [items, setItems] = useState<CartItem[]>(() => getCart(userId));
+  const [products, setProducts] = useState<Producto[]>([]);
 
   /* -------------------------------------
         CAMBIO DE USUARIO = CAMBIO DE CARRITO
@@ -38,6 +37,21 @@ export const CartProvider = ({ children }: Props) => {
   useEffect(() => {
     setItems(getCart(userId));
   }, [userId]);
+
+  /* -------------------------------------
+        CARGAR PRODUCTOS PARA STOCK
+     ------------------------------------- */
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const data = await menuService.getActive();
+        setProducts(data);
+      } catch (error) {
+        console.error("Error loading products for cart stock check:", error);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   /* -------------------------------------
         SYNC ESTADO 
@@ -53,12 +67,14 @@ export const CartProvider = ({ children }: Props) => {
   /* -------------------------------------
         OBTENER STOCK REAL
      ------------------------------------- */
-  const getStockFor = useCallback((codigo: string): number => {
-    const productos = menuService.getCached();
-    const p = productos.find((prod) => prod.id === codigo);
-    if (!p || p.activo === false) return 0;
-    return p.stock;
-  }, []);
+  const getStockFor = useCallback(
+    (codigo: string): number => {
+      const p = products.find((prod) => prod.id === codigo);
+      if (!p || p.activo === false) return 0;
+      return p.stock;
+    },
+    [products]
+  );
 
   /* -------------------------------------
         SUMA TOTAL DE CANTIDADES
@@ -177,12 +193,13 @@ export const CartProvider = ({ children }: Props) => {
         CALCULAR TOTALES + DESCUENTOS
      ------------------------------------- */
   const totals = useMemo(() => {
-    const subtotal = items.reduce(
-      (acc, i) => acc + i.precio * i.cantidad,
-      0
-    );
+    const subtotal = items.reduce((acc, i) => acc + i.precio * i.cantidad, 0);
 
-    const discounts = calculateUserDiscounts(storedUser, items, subtotal);
+    const discounts = calculateUserDiscounts(
+      authUser?.discountInfo ?? null,
+      items,
+      subtotal
+    );
 
     return {
       subtotal,
@@ -192,7 +209,7 @@ export const CartProvider = ({ children }: Props) => {
       discountDescription: discounts.description,
       totalPagar: discounts.finalPrice,
     };
-  }, [items, storedUser]);
+  }, [items, authUser]);
 
   return (
     <CartContext.Provider

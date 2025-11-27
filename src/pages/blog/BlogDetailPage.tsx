@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useBlogDetails } from "@/hooks/blog/useBlogDetails";
+import useAuth from "@/hooks/useAuth";
 import { useState } from "react";
 import { Button } from "@/components/common";
 import { resolveBlogCover } from "@/utils/blog/constants";
@@ -8,6 +9,7 @@ const BlogDetailPage = () => {
   const { id } = useParams();
   const { blog, comments, addComment, liked, toggleLike, likesCount } =
     useBlogDetails(id || "");
+  const { isAuthenticated } = useAuth();
 
   const [text, setText] = useState("");
 
@@ -79,9 +81,7 @@ const BlogDetailPage = () => {
         }}
       >
         {liked ? "❤️" : "🤍"}{" "}
-        <span style={{ fontSize: "1.3rem", color: "#888" }}>
-          {likesCount}
-        </span>
+        <span style={{ fontSize: "1.3rem", color: "#888" }}>{likesCount}</span>
       </button>
 
       {/* COMENTARIOS */}
@@ -91,22 +91,28 @@ const BlogDetailPage = () => {
         </h3>
 
         {/* FORM COMENTAR */}
-        <form
-          className="d-flex gap-2 align-items-center mb-4"
-          onSubmit={handleSubmit}
-        >
-          <input
-            className="form-control shadow-sm"
-            placeholder="Escribe un comentario..."
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            style={{ borderRadius: "14px" }}
-          />
+        {isAuthenticated ? (
+          <form
+            className="d-flex gap-2 align-items-center mb-4"
+            onSubmit={handleSubmit}
+          >
+            <input
+              className="form-control shadow-sm"
+              placeholder="Escribe un comentario..."
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              style={{ borderRadius: "14px" }}
+            />
 
-          <Button type="submit" variant="mint">
-            Publicar
-          </Button>
-        </form>
+            <Button type="submit" variant="mint">
+              Publicar
+            </Button>
+          </form>
+        ) : (
+          <div className="alert alert-warning mb-4" role="alert">
+            Debes iniciar sesión para comentar.
+          </div>
+        )}
 
         {/* LISTA COMENTARIOS */}
         {comments.length === 0 ? (

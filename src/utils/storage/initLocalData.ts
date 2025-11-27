@@ -1,24 +1,13 @@
-import { defaultProfileImage } from "@/assets";
-import usuariosSeed from "@/data/usuarios.json";
-import region_comunas from "@/data/region_comuna.json";
-
-import type { StoredUser, UserRoleName } from "@/types/user";
-
-import { readArray, writeJSON } from "./localStorageUtils";
-import { ensureHashedPassword } from "@/utils/security/password";
-import type { BlogPost } from "@/types/blog";
-import { DEFAULT_BLOG_COVER } from "@/utils/blog/constants";
-
 const isBrowser = typeof window !== "undefined";
 
 export const LOCAL_STORAGE_KEYS = {
-  usuarios: "dataUsuarios",
-  regiones: "dataRegiones",
-  comunas: "dataComunas",
+  usuarios: "dataUsuarios", // DEPRECATED: No longer used
+  regiones: "dataRegiones", // DEPRECATED: No longer used
+  comunas: "dataComunas", // DEPRECATED: No longer used
   activeUser: "usuarioActivo",
   contactMessages: "contactMessages",
   menuFilters: "menuFilters",
-  blogs: "dataBlogs", // <<--- AGREGADO
+  blogs: "dataBlogs",
 } as const;
 
 export type RegionSeed = {
@@ -27,53 +16,7 @@ export type RegionSeed = {
   comunas: string[];
 };
 
-type UsuarioSeed = {
-  id: string;
-  run: number;
-  dv: string;
-  nombre: string;
-  apellidos: string;
-  correo: string;
-  fechaNacimiento?: string;
-  tipoUsuario: string;
-  regionId: string;
-  regionNombre: string;
-  comuna: string;
-  direccion: string;
-  password: string;
-  avatarUrl?: string;
-  codigoDescuento?: string;
-  activo?: boolean;
-};
-
-type ComunaSeed = {
-  id: string;
-  regionId: string;
-  regionNombre: string;
-  nombre: string;
-};
-
 let initialized = false;
-
-const buildComunasSeed = (regions: RegionSeed[]): ComunaSeed[] =>
-  regions.flatMap((region) =>
-    region.comunas.map((nombre) => ({
-      id: `${region.id}-${nombre}`,
-      regionId: region.id,
-      regionNombre: region.region,
-      nombre,
-    }))
-  );
-
-const normalizedSeedRegions: RegionSeed[] = region_comunas
-  .map((entry) => ({
-    id: entry.id,
-    region: entry.region.trim(),
-    comunas: entry.comunas
-      .map((comuna) => comuna.trim())
-      .filter((c) => c.length > 0),
-  }))
-  .filter((r) => r.region.length > 0);
 
 export const initLocalData = (force = false) => {
   if (!isBrowser || (initialized && !force)) return;
@@ -82,105 +25,21 @@ export const initLocalData = (force = false) => {
 
   try {
     // -------------------------------------------------------
-    // USUARIOS
+    // CLEANUP DEPRECATED DATA
     // -------------------------------------------------------
-    const usuarios = readArray<StoredUser>(LOCAL_STORAGE_KEYS.usuarios);
-
-    if (!usuarios.length) {
-      const normalized = (usuariosSeed as UsuarioSeed[]).map(
-        ({ dv, run, tipoUsuario, avatarUrl, password, activo, ...rest }) => {
-          const combinedRun = `${run}${dv}`.toUpperCase();
-          return {
-            ...rest,
-            tipoUsuario: tipoUsuario as UserRoleName,
-            run: combinedRun,
-            avatarUrl: avatarUrl ?? defaultProfileImage,
-            password: ensureHashedPassword(password ?? ""),
-            activo: activo ?? true,
-          };
-        }
-      );
-
-      writeJSON(LOCAL_STORAGE_KEYS.usuarios, normalized);
-    } else {
-      const sanitizedUsuarios = usuarios.map((user) => ({
-        ...user,
-        password: ensureHashedPassword(user.password ?? ""),
-        activo: user.activo ?? true,
-      }));
-
-      const hasChanges = sanitizedUsuarios.some((u, i) => {
-        const original = usuarios[i];
-        return (
-          u.password !== original?.password ||
-          (u.activo ?? true) !== (original?.activo ?? true)
-        );
-      });
-
-      if (hasChanges) {
-        writeJSON(LOCAL_STORAGE_KEYS.usuarios, sanitizedUsuarios);
-      }
+    if (isBrowser) {
+      localStorage.removeItem(LOCAL_STORAGE_KEYS.usuarios);
+      localStorage.removeItem(LOCAL_STORAGE_KEYS.regiones);
+      localStorage.removeItem(LOCAL_STORAGE_KEYS.comunas);
+      localStorage.removeItem(LOCAL_STORAGE_KEYS.blogs);
+      localStorage.removeItem("likes-v1");
+      localStorage.removeItem("menu_cache_v1");
     }
 
     // -------------------------------------------------------
-    // REGIONES
+    // BLOGS (SEED) - DEPRECATED
     // -------------------------------------------------------
-    const storedRegions = readArray<RegionSeed>(LOCAL_STORAGE_KEYS.regiones);
-
-    const shouldResetRegions =
-      force ||
-      storedRegions.length !== normalizedSeedRegions.length ||
-      storedRegions.some((region) => {
-        const seed = normalizedSeedRegions.find((r) => r.id === region.id);
-        return (
-          !seed ||
-          seed.comunas.length !== region.comunas.length ||
-          region.comunas.length === 0
-        );
-      });
-
-    const effectiveRegions = shouldResetRegions
-      ? normalizedSeedRegions
-      : storedRegions;
-
-    if (shouldResetRegions) {
-      writeJSON(LOCAL_STORAGE_KEYS.regiones, normalizedSeedRegions);
-    }
-
-    // -------------------------------------------------------
-    // COMUNAS
-    // -------------------------------------------------------
-    const storedComunas = readArray<ComunaSeed>(LOCAL_STORAGE_KEYS.comunas);
-
-    if (force || shouldResetRegions || !storedComunas.length) {
-      writeJSON(
-        LOCAL_STORAGE_KEYS.comunas,
-        buildComunasSeed(effectiveRegions)
-      );
-    }
-
-    // -------------------------------------------------------
-    // BLOGS (SEED)
-    // -------------------------------------------------------
-    const existingBlogs = readArray<BlogPost>(LOCAL_STORAGE_KEYS.blogs);
-
-    if (!existingBlogs.length) {
-      const exampleBlog: BlogPost = {
-        id: "blog-ejemplo-1",
-        titulo: "Bienvenidos al Blog de Mil Sabores",
-        descripcion:
-          "Este es un artículo de ejemplo creado automáticamente para mostrar cómo funciona el blog.",
-        contenido:
-          "En Mil Sabores compartimos recetas, tips, novedades y trucos de pastelería. Este post sirve como demostración inicial.",
-        autorId: "sistema",
-        autorNombre: "Pastelería Mil Sabores",
-        createdAt: new Date().toISOString(),
-        portada: DEFAULT_BLOG_COVER,
-        status: "aprobado",
-      };
-
-      writeJSON(LOCAL_STORAGE_KEYS.blogs, [exampleBlog]);
-    }
+    // Logic removed. Blogs are now managed by the backend.
   } catch (error) {
     console.error("No fue posible inicializar los datos locales", error);
   }

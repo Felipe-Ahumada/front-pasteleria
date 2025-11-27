@@ -1,152 +1,225 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import type { ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useState } from "react";
+import type { ReactNode } from "react";
 
-import AuthContext from './AuthContext'
-import type { AuthContextValue, AuthCredentials, AuthUser, UserRole } from './types'
-import { authenticateCredentials } from '@/utils/validations/authValidations'
-import { LOCAL_STORAGE_KEYS } from '@/utils/storage/initLocalData'
-import { getLocalItem, removeLocalItem, setLocalItem } from '@/utils/storage/localStorageUtils'
-import type { StoredUser } from '@/types/user'
-import { USERS_CACHE_UPDATED_EVENT } from '@/service/userService'
+import AuthContext from "./AuthContext";
+import type {
+  AuthContextValue,
+  AuthCredentials,
+  AuthUser,
+  UserRole,
+} from "./types";
+import { authService, type UserResponse } from "@/service/authService";
+import type { StoredUser } from "@/types/user";
+import { LOCAL_STORAGE_KEYS } from "@/utils/storage/initLocalData";
+import {
+  getAge,
+  isBirthdayToday,
+  isDuocStudent,
+} from "@/utils/discounts/userDiscounts";
 
-export type { AuthCredentials, AuthUser, UserRole } from './types'
+export type { AuthCredentials, AuthUser, UserRole } from "./types";
 
-const ACTIVE_USER_KEY = LOCAL_STORAGE_KEYS.activeUser
+// Map backend role to frontend role
+const mapBackendRole = (backendRole: string): UserRole => {
+  switch (backendRole) {
+    case "ROLE_SUPERADMIN":
+      return "superadmin";
+    case "ROLE_ADMIN":
+      return "admin";
+    case "ROLE_SELLER":
+      return "seller";
+    case "ROLE_CUSTOMER":
+    default:
+      return "customer";
+  }
+};
 
-const mapStoredRole = (role: StoredUser['tipoUsuario']): UserRole => {
-	switch (role) {
-		case 'SuperAdmin':
-			return 'superadmin'
-		case 'Administrador':
-			return 'admin'
-		case 'Vendedor':
-			return 'seller'
-		default:
-			return 'customer'
-	}
-}
+// Map backend role to StoredUser role
+const mapBackendRoleToStoredUser = (
+  backendRole: string
+): StoredUser["tipoUsuario"] => {
+  switch (backendRole) {
+    case "ROLE_SUPERADMIN":
+      return "SuperAdmin";
+    case "ROLE_ADMIN":
+      return "Administrador";
+    case "ROLE_SELLER":
+      return "Vendedor";
+    case "ROLE_CUSTOMER":
+    default:
+      return "Cliente";
+  }
+};
 
 const extractFirstSegment = (value?: string) => {
-	if (!value) {
-		return ''
-	}
+  if (!value) {
+    return "";
+  }
 
-	const [first = ''] = value.trim().split(/\s+/)
-	return first
-}
+  const [first = ""] = value.trim().split(/\s+/);
+  return first;
+};
 
-const buildAuthUser = (stored: StoredUser): AuthUser => {
-	const firstName = extractFirstSegment(stored.nombre)
-	const lastName = extractFirstSegment(stored.apellidos)
+const buildAuthUser = (userResponse: UserResponse): AuthUser => {
+  const firstName = extractFirstSegment(userResponse.nombre);
+  const lastName = extractFirstSegment(userResponse.apellidos);
 
-	return {
-		id: stored.id,
-		name: `${stored.nombre} ${stored.apellidos}`.trim(),
-		firstName,
-		lastName,
-		email: stored.correo,
-		role: mapStoredRole(stored.tipoUsuario),
-	}
-}
+  return {
+    id: userResponse.id.toString(),
+    name: `${userResponse.nombre} ${userResponse.apellidos}`.trim(),
+    firstName,
+    lastName,
+    email: userResponse.correo,
+    role: mapBackendRole(userResponse.tipoUsuario),
+    discountInfo: {
+      isDuocStudent: isDuocStudent(userResponse.correo),
+      isBirthday: isBirthdayToday(userResponse.fechaNacimiento),
+      age: getAge(userResponse.fechaNacimiento),
+      discountCode: userResponse.codigoDescuento,
+    },
+  };
+};
 
-const readPersistedUser = (): AuthUser | null => {
-	const stored = getLocalItem<StoredUser>(ACTIVE_USER_KEY)
-	if (!stored) {
-		return null
-	}
-
-	try {
-		if (stored.activo === false) {
-			removeLocalItem(ACTIVE_USER_KEY)
-			return null
-		}
-		return buildAuthUser(stored)
-	} catch {
-		return null
-	}
-}
+const buildStoredUser = (userResponse: UserResponse): StoredUser => {
+  return {
+    id: userResponse.id.toString(),
+    // Sensitive data excluded from localStorage
+    nombre: userResponse.nombre,
+    apellidos: userResponse.apellidos,
+    tipoUsuario: mapBackendRoleToStoredUser(userResponse.tipoUsuario),
+    avatarUrl: userResponse.avatarUrl || "",
+    activo: userResponse.activo,
+  };
+};
 
 type AuthProviderProps = {
-	children: ReactNode
-}
+  children: ReactNode;
+};
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-	const [user, setUser] = useState<AuthUser | null>(() => readPersistedUser())
-	const [loading, setLoading] = useState<boolean>(false)
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
-	useEffect(() => {
-		if (!user) {
-			removeLocalItem(ACTIVE_USER_KEY)
-		}
-	}, [user])
+  // On mount, check if there's a token and fetch current user
+  useEffect(() => {
+    const initializeAuth = async () => {
+      if (authService.isAuthenticated()) {
+        try {
+          const userResponse = await authService.getCurrentUser();
+          const authUser = buildAuthUser(userResponse);
+          const storedUser = buildStoredUser(userResponse);
 
-	const login = useCallback(async ({ email, password }: AuthCredentials) => {
-		setLoading(true)
+          // Save to localStorage for ProfilePage
+          localStorage.setItem(
+            LOCAL_STORAGE_KEYS.activeUser,
+            JSON.stringify(storedUser)
+          );
 
-		try {
-			await new Promise((resolve) => setTimeout(resolve, 350))
+          setUser(authUser);
+        } catch (error) {
+          console.error("Failed to fetch current user:", error);
+          authService.logout();
+        }
+      }
+      setLoading(false);
+    };
 
-			const result = authenticateCredentials({ email, password })
-			if (!result.success || !result.user) {
-				throw new Error(result.error ?? 'Credenciales invalidas')
-			}
+    initializeAuth();
+  }, []);
 
-			setLocalItem(ACTIVE_USER_KEY, result.user)
-			setUser(buildAuthUser(result.user))
-		} finally {
-			setLoading(false)
-		}
-	}, [])
+  const login = useCallback(async ({ email, password }: AuthCredentials) => {
+    setLoading(true);
 
-	const logout = useCallback(() => {
-		setUser(null)
-		removeLocalItem(ACTIVE_USER_KEY)
-	}, [])
+    try {
+      // Call backend API
+      await authService.login({ email, password });
 
-	const refreshUser = useCallback((stored: StoredUser) => {
-		if (stored.activo === false) {
-			logout()
-			return
-		}
-		setLocalItem(ACTIVE_USER_KEY, stored)
-		setUser(buildAuthUser(stored))
-	}, [logout])
+      // Fetch full user data
+      const userResponse = await authService.getCurrentUser();
+      const authUser = buildAuthUser(userResponse);
+      const storedUser = buildStoredUser(userResponse);
 
-	useEffect(() => {
-		if (typeof window === 'undefined') {
-			return
-		}
+      // Save to localStorage for ProfilePage
+      localStorage.setItem(
+        LOCAL_STORAGE_KEYS.activeUser,
+        JSON.stringify(storedUser)
+      );
 
-		const syncFromStorage = () => {
-			setUser(() => readPersistedUser())
-		}
+      setUser(authUser);
+    } catch (error) {
+      setLoading(false);
+      throw new Error(error instanceof Error ? error.message : "Login failed");
+    }
 
-		const handleStorage = (event: StorageEvent) => {
-			if (!event.key || event.key === ACTIVE_USER_KEY || event.key === LOCAL_STORAGE_KEYS.usuarios) {
-				syncFromStorage()
-			}
-		}
+    setLoading(false);
+  }, []);
 
-		window.addEventListener(USERS_CACHE_UPDATED_EVENT, syncFromStorage)
-		window.addEventListener('storage', handleStorage)
+  const logout = useCallback(() => {
+    authService.logout();
+    setUser(null);
+  }, []);
 
-		return () => {
-			window.removeEventListener(USERS_CACHE_UPDATED_EVENT, syncFromStorage)
-			window.removeEventListener('storage', handleStorage)
-		}
-	}, [])
+  const refreshUser = useCallback(
+    async (updatedUser?: StoredUser) => {
+      // Si se pasa un usuario actualizado desde ProfilePage, actualizar el estado
+      if (updatedUser) {
+        localStorage.setItem(
+          LOCAL_STORAGE_KEYS.activeUser,
+          JSON.stringify(updatedUser)
+        );
 
-	const value = useMemo<AuthContextValue>(
-		() => ({
-			user,
-			loading,
-			isAuthenticated: Boolean(user),
-			login,
-			logout,
-			refreshUser,
-		}),
-		[loading, login, logout, refreshUser, user],
-	)
+        // NOTE: When updating from ProfilePage (StoredUser), we might miss sensitive data
+        // needed for discount calculation if StoredUser doesn't have it.
+        // However, ProfilePage fetches full data now, so we should probably fetch from backend here too
+        // to ensure we have the correct discount info.
+        // For now, let's re-fetch from backend to be safe and consistent.
+        if (authService.isAuthenticated()) {
+          try {
+            const userResponse = await authService.getCurrentUser();
+            const authUser = buildAuthUser(userResponse);
+            setUser(authUser);
+          } catch (error) {
+            console.error("Failed to refresh user from backend:", error);
+          }
+        }
+        return;
+      }
 
-	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-}
+      // Si no, obtener desde el backend
+      if (authService.isAuthenticated()) {
+        try {
+          const userResponse = await authService.getCurrentUser();
+          const authUser = buildAuthUser(userResponse);
+          const storedUser = buildStoredUser(userResponse);
+
+          localStorage.setItem(
+            LOCAL_STORAGE_KEYS.activeUser,
+            JSON.stringify(storedUser)
+          );
+
+          setUser(authUser);
+        } catch (error) {
+          console.error("Failed to refresh user:", error);
+          logout();
+        }
+      }
+    },
+    [logout]
+  );
+
+  const value = useMemo<AuthContextValue>(
+    () => ({
+      user,
+      loading,
+      isAuthenticated: Boolean(user),
+      login,
+      logout,
+      refreshUser: async (updatedUser?: StoredUser) => {
+        await refreshUser(updatedUser);
+      },
+    }),
+    [loading, login, logout, refreshUser, user]
+  );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};

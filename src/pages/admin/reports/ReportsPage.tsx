@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Bar, Doughnut, Line } from "react-chartjs-2";
 
 import {
@@ -13,9 +13,9 @@ import {
   Legend,
 } from "chart.js";
 
-import { menuService } from "@/service/menuService";
+import apiClient from "@/config/axiosConfig";
 import { userService } from "@/service/userService";
-import { getLocalOrders } from "@/utils/storage/orderStorage";
+import { orderService } from "@/service/orderService";
 
 // Registrar módulos
 ChartJS.register(
@@ -61,9 +61,54 @@ const Section = ({
    PÁGINA PRINCIPAL
 ============================================================ */
 const ReportsPage = () => {
-  const productos = menuService.getCached();
-  const pedidos = getLocalOrders();
-  const usuarios = userService.getCached();
+  const [productos, setProductos] = useState<any[]>([]);
+  const [pedidos, setPedidos] = useState<any[]>([]);
+  const [usuarios, setUsuarios] = useState<any[]>([]);
+  const [comentariosCount, setComentariosCount] = useState(0);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const users = await userService.getAll();
+        setUsuarios(users);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+
+      try {
+        // Assuming commentService is available and has getAll
+        const { commentService } = await import("@/service/commentService");
+        const comments = await commentService.getAll();
+        setComentariosCount(comments.length);
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+      }
+
+      try {
+        const { data: categories } = await apiClient.get<any[]>("/categorias");
+        const allProducts = categories.flatMap((cat) =>
+          cat.productos.map((p: any) => ({
+            ...p,
+            id: p.id.toString(),
+            categoria: cat.nombre,
+            stock_critico: p.stockCritico,
+          }))
+        );
+        setProductos(allProducts);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+
+      try {
+        const orders = await orderService.getAll();
+        setPedidos(orders);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   /* ============================
      Normalización de fechas
@@ -122,7 +167,13 @@ const ReportsPage = () => {
   /* ============================================================
      CHART 2: Pedidos por estado
   ============================================================= */
-  const estados = ["pendiente", "preparando", "en_camino", "entregado", "cancelado"];
+  const estados = [
+    "pendiente",
+    "preparando",
+    "en_camino",
+    "entregado",
+    "cancelado",
+  ];
 
   const doughnutData = {
     labels: estados,
@@ -166,7 +217,6 @@ const ReportsPage = () => {
       ============================================================= */}
       <Section title="📦 Productos">
         <div className="row g-4">
-
           <div className="col-md-6">
             <h6 className="mb-3">Productos por Categoría</h6>
             <Bar data={barData} />
@@ -179,9 +229,9 @@ const ReportsPage = () => {
                 <thead>
                   <tr>
                     <th>Categoría</th>
-                    <th>Productos</th>
-                    <th>Agotados</th>
-                    <th>Stock crítico</th>
+                    <th>Variedades</th>
+                    <th>Sin Stock</th>
+                    <th>Con Stock Bajo</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -197,7 +247,6 @@ const ReportsPage = () => {
               </table>
             </div>
           </div>
-
         </div>
       </Section>
 
@@ -206,7 +255,6 @@ const ReportsPage = () => {
       ============================================================= */}
       <Section title="🛒 Pedidos">
         <div className="row g-4">
-
           {/* KPI pedidos hoy */}
           <div className="col-md-4">
             <div className="card p-3 shadow-sm">
@@ -226,7 +274,6 @@ const ReportsPage = () => {
             <h6 className="mb-3">Ventas por Día</h6>
             <Line data={lineData} />
           </div>
-
         </div>
       </Section>
 
@@ -245,9 +292,7 @@ const ReportsPage = () => {
           <div className="col-md-4">
             <div className="card p-3 shadow-sm">
               <span className="text-muted">Comentarios registrados</span>
-              <h3 className="fw-bold">
-                {JSON.parse(localStorage.getItem("comments-v1") || "[]").length}
-              </h3>
+              <h3 className="fw-bold">{comentariosCount}</h3>
             </div>
           </div>
         </div>

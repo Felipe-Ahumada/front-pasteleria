@@ -9,7 +9,7 @@ export const useBlogDetails = (blogId: string) => {
   const { blogs } = useBlogs();
   const { user } = useAuth();
 
-  const blog = blogs.find((b) => b.id === blogId);
+  const blog = blogs.find((b) => String(b.id) === blogId);
 
   const [comments, setComments] = useState<BlogComment[]>([]);
   const [liked, setLiked] = useState(false);
@@ -17,14 +17,26 @@ export const useBlogDetails = (blogId: string) => {
 
   // Cargar comentarios y likes
   useEffect(() => {
-    setComments(commentService.getByBlogId(blogId));
-    if (user) {
-      setLiked(likeService.hasLiked(blogId, user.id));
-    }
-    setLikesCount(likeService.count(blogId));
+    const loadData = async () => {
+      // Comments
+      const blogComments = await commentService.getByBlogId(blogId);
+      setComments(blogComments);
+
+      // Likes count
+      const count = await likeService.count(blogId);
+      setLikesCount(count);
+
+      // User like status
+      if (user) {
+        const likedStatus = await likeService.hasLiked(blogId);
+        setLiked(likedStatus);
+      }
+    };
+
+    loadData();
   }, [blogId, user]);
 
-  const addComment = (text: string) => {
+  const addComment = async (text: string) => {
     if (!user) return;
 
     const comment: BlogComment = {
@@ -36,15 +48,21 @@ export const useBlogDetails = (blogId: string) => {
       createdAt: new Date().toISOString(),
     };
 
-    commentService.add(comment);
-    setComments((prev) => [...prev, comment]);
+    const createdComment = await commentService.add(comment);
+    setComments((prev) => [...prev, createdComment]);
   };
 
-  const toggleLike = () => {
+  const toggleLike = async () => {
     if (!user) return;
-    const nowLiked = likeService.toggleLike(blogId, user.id);
-    setLiked(nowLiked);
-    setLikesCount(likeService.count(blogId));
+    try {
+      const nowLiked = await likeService.toggleLike(blogId);
+      setLiked(nowLiked);
+      // Refresh count
+      const count = await likeService.count(blogId);
+      setLikesCount(count);
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    }
   };
 
   return {

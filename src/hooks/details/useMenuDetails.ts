@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import { menuService, MENU_CACHE_UPDATED_EVENT } from "@/service/menuService";
+import { menuService } from "@/service/menuService";
 import type { Producto } from "@/service/menuService";
 
 import { useDetailQuantity } from "./useDetailQuantity";
@@ -16,26 +16,20 @@ export function useMenuDetails() {
   const { productCode } = useParams<{ productCode: string }>();
   const code = (productCode ?? "").toUpperCase();
 
-  // Todos los productos desde el service (cacheado)
-  const [productosActivos, setProductosActivos] = useState<Producto[]>(() =>
-    menuService.getActive()
-  );
+  const [productosActivos, setProductosActivos] = useState<Producto[]>([]);
 
-  const refreshProductos = useCallback(() => {
-    setProductosActivos(menuService.getActive());
+  // Todos los productos desde el service (cacheado)
+  const refreshProductos = useCallback(async () => {
+    try {
+      const data = await menuService.getActive();
+      setProductosActivos(data);
+    } catch (error) {
+      console.error("Error loading details products:", error);
+    }
   }, []);
 
   useEffect(() => {
     refreshProductos();
-
-    if (typeof window === "undefined") return;
-
-    const handler = () => refreshProductos();
-    window.addEventListener(MENU_CACHE_UPDATED_EVENT, handler);
-
-    return () => {
-      window.removeEventListener(MENU_CACHE_UPDATED_EVENT, handler);
-    };
   }, [refreshProductos]);
 
   // Producto activo
@@ -51,7 +45,7 @@ export function useMenuDetails() {
   const stockRestante = cart.getRemainingStock();
   const isOutOfStock = stockRestante <= 0;
 
-  // CANTIDAD 
+  // CANTIDAD
   const quantity = useDetailQuantity(stockRestante);
 
   // MENSAJE
@@ -85,7 +79,9 @@ export function useMenuDetails() {
     cart.addToCart(cantidad, msg);
 
     feedback.scheduleFeedback({
-      text: `${cantidad} ${cantidad === 1 ? "unidad" : "unidades"} añadidas al carrito`,
+      text: `${cantidad} ${
+        cantidad === 1 ? "unidad" : "unidades"
+      } añadidas al carrito`,
       tone: "success",
     });
 

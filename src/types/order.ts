@@ -20,6 +20,7 @@ export type OrderShipping = {
   apellidos: string;
   correo: string;
   regionId: string;
+  regionNombre?: string;
   comuna: string;
   direccion: string;
   tipoEntrega: string;
@@ -34,5 +35,5 @@ export type Order = {
   fechaEntrega: string;
   total: number;
   status: OrderStatus;
-  envio: OrderShipping;   // ← AHORA SÍ EXISTE
+  envio: OrderShipping; // ← AHORA SÍ EXISTE
 };

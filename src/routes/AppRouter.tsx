@@ -5,7 +5,6 @@ import {
   createBrowserRouter,
 } from "react-router-dom";
 
-import LoginRoute from "@/routes/LoginRoute";
 import AdminRoute from "@/routes/AdminRoute";
 import ProtectedRoute from "@/routes/ProtectedRoute";
 
@@ -28,6 +27,7 @@ const BlogPage = lazy(() => import("@/pages/blog/BlogPage"));
 const BlogDetailPage = lazy(() => import("@/pages/blog/BlogDetailPage"));
 const BlogCreatePage = lazy(() => import("@/pages/blog/BlogCreatePage"));
 const CartPage = lazy(() => import("@/pages/cart/CartPage"));
+
 const RegisterUserPage = lazy(() => import("@/pages/auth/RegisterUserPage"));
 const ResetPasswordPage = lazy(() => import("@/pages/auth/ResetPasswordPage"));
 const PrivacyPage = lazy(() => import("@/pages/legal/PrivacyPage"));
@@ -37,8 +37,8 @@ const TermsPage = lazy(() => import("@/pages/legal/TermsPage"));
    Checkout
 ================================= */
 const CheckoutPage = lazy(() => import("@/pages/checkout/CheckoutPage"));
-const OrderSuccessPage = lazy(() =>
-  import("@/pages/checkout/OrderSuccessPage")
+const OrderSuccessPage = lazy(
+  () => import("@/pages/checkout/OrderSuccessPage")
 );
 
 /* ================================
@@ -55,12 +55,10 @@ const ProductsPage = lazy(() => import("@/pages/admin/products/ProductsPage"));
 const UsersPage = lazy(() => import("@/pages/admin/users/UsersPage"));
 const CommentsPage = lazy(() => import("@/pages/admin/comments/CommentsPage"));
 const BlogAdminPage = lazy(() => import("@/pages/admin/blog/BlogAdminPage"));
-const OrdersAdminPage = lazy(() =>
-  import("@/pages/admin/orders/OrdersAdminPage")
+const OrdersAdminPage = lazy(
+  () => import("@/pages/admin/orders/OrdersAdminPage")
 );
-const ReportsPage = lazy(() =>
-  import("@/pages/admin/reports/ReportsPage")
-);
+const ReportsPage = lazy(() => import("@/pages/admin/reports/ReportsPage"));
 
 /* ================================
    Router
@@ -176,7 +174,7 @@ const router = createBrowserRouter(
     /* =============================
          AUTH
     ============================= */
-    { path: "/login", element: <LoginRoute /> },
+
     { path: "/register", element: <RegisterUserPage /> },
 
     /* =============================

@@ -1,6 +1,6 @@
 // useAdminProducts.ts
 import { useCallback, useEffect, useState } from "react";
-import { menuService, MENU_CACHE_UPDATED_EVENT, type Producto } from "@/service/menuService";
+import { menuService, type Producto } from "@/service/menuService";
 
 import { exportCSV, exportExcel, exportPDF } from "@/utils/exporters";
 
@@ -12,46 +12,42 @@ export const useAdminProducts = () => {
   // -------------------------
   // CARGAR PRODUCTOS
   // -------------------------
-  const cargarProductos = useCallback(() => {
+  const cargarProductos = useCallback(async () => {
     setCargando(true);
-    const data = menuService.getCached();
-    setProductos(data);
-    setCargando(false);
+    try {
+      const data = await menuService.getAll();
+      setProductos(data);
+    } catch (error) {
+      console.error("Error loading products:", error);
+    } finally {
+      setCargando(false);
+    }
   }, []);
 
   useEffect(() => {
     cargarProductos();
-
-    if (typeof window === "undefined") return;
-
-    const handler = () => cargarProductos();
-    window.addEventListener(MENU_CACHE_UPDATED_EVENT, handler);
-
-    return () => {
-      window.removeEventListener(MENU_CACHE_UPDATED_EVENT, handler);
-    };
   }, [cargarProductos]);
 
   // -------------------------
   // CRUD (delegado al service)
   // -------------------------
-  const crearProducto = (nuevo: Producto) => {
-    menuService.create(nuevo);
+  const crearProducto = async (nuevo: Producto) => {
+    await menuService.create(nuevo);
     cargarProductos();
   };
 
-  const actualizarProducto = (id: string, data: Producto) => {
-    menuService.update(id, data);
+  const actualizarProducto = async (id: string, data: Producto) => {
+    await menuService.update(id, data);
     cargarProductos();
   };
 
-  const bloquearProducto = (id: string) => {
-    menuService.block(id);
+  const bloquearProducto = async (id: string) => {
+    await menuService.block(id);
     cargarProductos();
   };
 
-  const desbloquearProducto = (id: string) => {
-    menuService.unblock(id);
+  const desbloquearProducto = async (id: string) => {
+    await menuService.unblock(id);
     cargarProductos();
   };
 

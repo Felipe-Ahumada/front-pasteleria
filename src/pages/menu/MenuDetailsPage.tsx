@@ -100,11 +100,17 @@ const MenuDetailsPage = () => {
             <div className="card-body p-3 d-flex flex-column flex-lg-row gap-3 h-100">
               <div className="flex-grow-1 d-flex align-items-center justify-content-center">
                 <div className="ratio ratio-4x3 w-100">
-                  <img
-                    src={selectedImage ?? primaryImage ?? ""}
-                    alt={producto.nombre}
-                    className="w-100 h-100 object-fit-cover rounded"
-                  />
+                  {selectedImage ?? primaryImage ? (
+                    <img
+                      src={selectedImage ?? primaryImage}
+                      alt={producto.nombre}
+                      className="w-100 h-100 object-fit-cover rounded"
+                    />
+                  ) : (
+                    <div className="w-100 h-100 d-flex align-items-center justify-content-center bg-secondary-subtle rounded">
+                      <i className="bi bi-image text-secondary fs-1" />
+                    </div>
+                  )}
                 </div>
               </div>
 

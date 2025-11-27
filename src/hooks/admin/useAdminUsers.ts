@@ -1,9 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import {
-  userService,
-  type Usuario,
-  USERS_CACHE_UPDATED_EVENT,
-} from "@/service/userService";
+import { userService, type Usuario } from "@/service/userService";
 import {
   exportUsersCSV,
   exportUsersExcel,
@@ -16,42 +12,34 @@ export const useAdminUsers = () => {
 
   const [search, setSearch] = useState("");
 
-  const load = () => {
-    setUsuarios(userService.getAll());
+  const load = async () => {
+    const data = await userService.getAll();
+    setUsuarios(data);
     setLoading(false);
   };
 
   useEffect(() => {
     load();
-
-    if (typeof window === "undefined") return;
-
-    const handleUpdate = () => load();
-    window.addEventListener(USERS_CACHE_UPDATED_EVENT, handleUpdate);
-
-    return () => {
-      window.removeEventListener(USERS_CACHE_UPDATED_EVENT, handleUpdate);
-    };
   }, []);
 
-  const addUser = (user: Usuario) => {
-    userService.add(user);
-    load();
+  const addUser = async (user: Usuario) => {
+    await userService.add(user);
+    await load();
   };
 
-  const updateUser = (updated: Usuario) => {
-    userService.update(updated);
-    load();
+  const updateUser = async (updated: Usuario) => {
+    await userService.update(updated);
+    await load();
   };
 
-  const blockUser = (id: string) => {
-    userService.block(id);
-    load();
+  const blockUser = async (id: string) => {
+    await userService.block(id);
+    await load();
   };
 
-  const unblockUser = (id: string) => {
-    userService.unblock(id);
-    load();
+  const unblockUser = async (id: string) => {
+    await userService.unblock(id);
+    await load();
   };
 
   const exportCSV = () => exportUsersCSV(usuarios);
@@ -69,7 +57,7 @@ export const useAdminUsers = () => {
         u.apellidos.toLowerCase(),
         u.correo.toLowerCase(),
         u.tipoUsuario.toLowerCase(),
-        (u.activo !== false ? "activo" : "bloqueado"),
+        u.activo !== false ? "activo" : "bloqueado",
         u.regionNombre.toLowerCase(),
         u.comuna.toLowerCase(),
         `${u.run}-${u.dv}`.toLowerCase(),

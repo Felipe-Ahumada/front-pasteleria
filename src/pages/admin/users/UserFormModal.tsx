@@ -1,11 +1,8 @@
 import { useEffect, useState } from "react";
 import { Modal, Button, Input } from "@/components/common";
-import regionesData from "@/data/region_comuna.json";
+import { useLocations } from "@/hooks/useLocations";
 
-import {
-  userService,
-  type Usuario,
-} from "@/service/userService";
+import { type Usuario } from "@/service/userService";
 
 import { validateUserForm } from "@/utils/validations/userValidations";
 
@@ -14,18 +11,6 @@ import { validateUserForm } from "@/utils/validations/userValidations";
 // ==================================================
 const DEFAULT_PASSWORD_HASH =
   "fbd77bc68717f45eedbf71d09826c4a64c0447da1f42c7a6dbf608fa7c97f710";
-
-const getNextUserId = (): string => {
-  const all = userService.getCached();
-  if (all.length === 0) return "1";
-
-  const max = all
-    .map((u) => Number(u.id))
-    .filter((n) => !Number.isNaN(n))
-    .reduce((m, n) => (n > m ? n : m), 0);
-
-  return String(max + 1);
-};
 
 const emptyUser: Usuario = {
   id: "",
@@ -57,7 +42,7 @@ interface Props {
 const UserFormModal = ({ open, onClose, usuario, onSaved }: Props) => {
   const [form, setForm] = useState<Usuario>(emptyUser);
   const [errors, setErrors] = useState<Partial<Record<string, string>>>({});
-  const [comunasDisponibles, setComunasDisponibles] = useState<string[]>([]);
+  const { regions, comunas, fetchComunas } = useLocations();
 
   // ==================================================
   // Cargar datos al abrir
@@ -73,15 +58,18 @@ const UserFormModal = ({ open, onClose, usuario, onSaved }: Props) => {
         activo: usuario.activo ?? true,
       });
 
-      const region = regionesData.find((r) => r.id === usuario.regionId);
-      setComunasDisponibles(region?.comunas ?? []);
+      if (usuario.regionId) {
+        fetchComunas(usuario.regionId);
+      }
     } else {
       setForm({
         ...emptyUser,
-        id: getNextUserId(),
+        id: "", // Let backend handle ID
         activo: true,
       });
-      setComunasDisponibles([]);
+      // Clear comunas? useLocations doesn't have clearComunas, but fetching with empty string might work or we just ignore.
+      // Actually fetchComunas("") clears it in useLocations.
+      fetchComunas("");
     }
 
     setErrors({});
@@ -95,13 +83,17 @@ const UserFormModal = ({ open, onClose, usuario, onSaved }: Props) => {
   };
 
   const handleRegionChange = (regionId: string) => {
-    const region = regionesData.find((r) => r.id === regionId);
+    const region = regions.find((r) => r.codigo === regionId);
 
     handleChange("regionId", regionId);
-    handleChange("regionNombre", region?.region ?? "");
+    handleChange("regionNombre", region?.nombre ?? "");
     handleChange("comuna", "");
 
-    setComunasDisponibles(region?.comunas ?? []);
+    fetchComunas(regionId);
+  };
+
+  const handleComunaChange = (comunaNombre: string) => {
+    handleChange("comuna", comunaNombre);
   };
 
   // ==================================================
@@ -129,7 +121,7 @@ const UserFormModal = ({ open, onClose, usuario, onSaved }: Props) => {
         confirmPassword: "",
         termsAccepted: true,
       },
-      { mode: "update" }
+      { mode: "update", regions }
     );
 
     setErrors(validationErrors);
@@ -178,9 +170,7 @@ const UserFormModal = ({ open, onClose, usuario, onSaved }: Props) => {
             value={form.dv}
             errorText={errors.runDigit}
             maxLength={1}
-            onChange={(e) =>
-              handleChange("dv", e.target.value.toUpperCase())
-            }
+            onChange={(e) => handleChange("dv", e.target.value.toUpperCase())}
           />
         </div>
 
@@ -249,9 +239,9 @@ const UserFormModal = ({ open, onClose, usuario, onSaved }: Props) => {
             onChange={(e) => handleRegionChange(e.target.value)}
           >
             <option value="">Seleccione región...</option>
-            {regionesData.map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.region}
+            {regions.map((r) => (
+              <option key={r.id} value={r.codigo}>
+                {r.nombre}
               </option>
             ))}
           </select>
@@ -266,13 +256,13 @@ const UserFormModal = ({ open, onClose, usuario, onSaved }: Props) => {
           <select
             className="form-select"
             value={form.comuna}
-            onChange={(e) => handleChange("comuna", e.target.value)}
-            disabled={comunasDisponibles.length === 0}
+            onChange={(e) => handleComunaChange(e.target.value)}
+            disabled={comunas.length === 0}
           >
             <option value="">Seleccione comuna...</option>
-            {comunasDisponibles.map((c) => (
-              <option key={c} value={c}>
-                {c}
+            {comunas.map((c) => (
+              <option key={c.id} value={c.nombre}>
+                {c.nombre}
               </option>
             ))}
           </select>

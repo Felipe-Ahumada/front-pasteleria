@@ -25,7 +25,9 @@ const UsersPage = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isViewOpen, setIsViewOpen] = useState(false);
   const [isStatusOpen, setIsStatusOpen] = useState(false);
-  const [statusAction, setStatusAction] = useState<"block" | "unblock" | null>(null);
+  const [statusAction, setStatusAction] = useState<"block" | "unblock" | null>(
+    null
+  );
 
   const handleNew = () => {
     setSelected(null);
@@ -146,7 +148,7 @@ const UsersPage = () => {
             <tbody>
               {filteredUsers.map((u) => {
                 const isActive = u.activo !== false;
-                const canToggle = u.tipoUsuario !== "SuperAdmin";
+                const canToggle = u.tipoUsuario !== "ROLE_SUPERADMIN";
 
                 return (
                   <tr key={u.id}>
@@ -161,7 +163,9 @@ const UsersPage = () => {
                     <td>{u.tipoUsuario}</td>
                     <td>
                       <span
-                        className={`badge ${isActive ? "bg-success" : "bg-secondary"}`}
+                        className={`badge ${
+                          isActive ? "bg-success" : "bg-secondary"
+                        }`}
                       >
                         {isActive ? "Activo" : "Bloqueado"}
                       </span>
@@ -177,19 +181,24 @@ const UsersPage = () => {
                         >
                           Ver
                         </Button>
-                        <Button
-                          variant="strawberry"
-                          size="sm"
-                          onClick={() => handleEdit(u)}
-                        >
-                          Editar
-                        </Button>
+                        {canToggle && (
+                          <Button
+                            variant="strawberry"
+                            size="sm"
+                            onClick={() => handleEdit(u)}
+                          >
+                            Editar
+                          </Button>
+                        )}
                         {canToggle && (
                           <Button
                             variant={isActive ? "strawberry" : "mint"}
                             size="sm"
                             onClick={() =>
-                              handleStatusChange(u, isActive ? "block" : "unblock")
+                              handleStatusChange(
+                                u,
+                                isActive ? "block" : "unblock"
+                              )
                             }
                           >
                             {isActive ? "Bloquear" : "Activar"}

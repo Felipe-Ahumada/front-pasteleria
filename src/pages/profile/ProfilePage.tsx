@@ -1,30 +1,25 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ChangeEvent, FocusEvent, FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
 
 import { Button, Input } from "@/components/common";
 import { defaultProfileImage } from "@/assets";
 import useAuth from "@/hooks/useAuth";
+import { useLocations } from "@/hooks/useLocations";
 import { cleanupOffcanvas, remountLoginOffcanvas } from "@/utils/offcanvas";
-import {
-  LOCAL_STORAGE_KEYS,
-  type RegionSeed,
-} from "@/utils/storage/initLocalData";
-import {
-  getLocalData,
-  getLocalItem,
-  setLocalItem,
-} from "@/utils/storage/localStorageUtils";
+import { LOCAL_STORAGE_KEYS } from "@/utils/storage/initLocalData";
+import { setLocalItem } from "@/utils/storage/localStorageUtils";
 import { normalizeAvatarUrl } from "@/utils/storage/avatarUrl";
 import {
   mapFormToStoredUser,
   sanitizeNameField,
-  saveUserRecord,
   validateUserForm,
 } from "@/utils/validations/userValidations";
+import { userService } from "@/service/userService";
+import { authService } from "@/service/authService";
 import type { UserFormValues } from "@/utils/validations/userValidations";
 import type { ValidationErrors } from "@/utils/validations/types";
 import type { StoredUser } from "@/types/user";
+import type { UserResponse } from "@/service/authService";
 
 const splitRun = (value: string) => {
   const sanitized = value.replace(/[^0-9kK]/g, "").toUpperCase();
@@ -40,18 +35,40 @@ const splitRun = (value: string) => {
   };
 };
 
-const ROLE_OPTIONS: StoredUser["tipoUsuario"][] = [
-  "SuperAdmin",
-  "Administrador",
-  "Vendedor",
-  "Cliente",
-];
+const mapBackendRoleToStoredUser = (
+  backendRole: string
+): StoredUser["tipoUsuario"] => {
+  switch (backendRole) {
+    case "ROLE_SUPERADMIN":
+      return "SuperAdmin";
+    case "ROLE_ADMIN":
+      return "Administrador";
+    case "ROLE_SELLER":
+      return "Vendedor";
+    case "ROLE_CUSTOMER":
+    default:
+      return "Cliente";
+  }
+};
 
-const ROLE_LABELS: Record<StoredUser["tipoUsuario"], string> = {
-  SuperAdmin: "Super administradora",
-  Administrador: "Administradora",
-  Vendedor: "Vendedora",
-  Cliente: "Cliente",
+const mapUserResponseToStoredUser = (user: UserResponse): StoredUser => {
+  return {
+    id: user.id.toString(),
+    run: user.run || "",
+    nombre: user.nombre,
+    apellidos: user.apellidos,
+    correo: user.correo,
+    fechaNacimiento: user.fechaNacimiento || "",
+    codigoDescuento: user.codigoDescuento || "",
+    tipoUsuario: mapBackendRoleToStoredUser(user.tipoUsuario),
+    regionId: user.regionId || "",
+    regionNombre: user.regionNombre || "",
+    comuna: user.comuna || "",
+    direccion: user.direccion || "",
+    password: "",
+    avatarUrl: user.avatarUrl || "",
+    activo: user.activo,
+  };
 };
 
 const createInitialValues = (user?: StoredUser | null): UserFormValues => {
@@ -101,10 +118,9 @@ const calculateAge = (isoDate?: string) => {
 };
 
 const ProfilePage = () => {
-  const navigate = useNavigate();
   const { logout, refreshUser } = useAuth();
+  const { regions, comunas: comunaOptions, fetchComunas } = useLocations();
   const [avatarUrl, setAvatarUrl] = useState<string>(normalizeAvatarUrl());
-  const [regions, setRegions] = useState<RegionSeed[]>([]);
   const [currentUser, setCurrentUser] = useState<StoredUser | null>(null);
   const [values, setValues] = useState<UserFormValues>(createInitialValues());
   const [errors, setErrors] = useState<ValidationErrors<UserFormValues>>({});
@@ -115,7 +131,8 @@ const ProfilePage = () => {
     type: "success" | "danger";
     text: string;
   } | null>(null);
-  const isSuperAdmin = currentUser?.tipoUsuario === "SuperAdmin";
+  const [loading, setLoading] = useState(true);
+
   const [showToast, setShowToast] = useState(false);
 
   const benefits = useMemo(() => {
@@ -170,7 +187,21 @@ const ProfilePage = () => {
       validationOverride?: ReturnType<typeof validateUserForm>
     ) => {
       const validation =
-        validationOverride ?? validateUserForm(nextValues, { mode: "update" });
+        validationOverride ??
+        validateUserForm(nextValues, { mode: "update", regions });
+
+      // Ignore errors for read-only fields
+      delete validation.errors.run;
+      delete validation.errors.runBody;
+      delete validation.errors.runDigit;
+      delete validation.errors.nombre;
+      delete validation.errors.apellidos;
+      delete validation.errors.correo;
+      delete validation.errors.fechaNacimiento;
+
+      // Re-evaluate validity
+      validation.isValid = Object.keys(validation.errors).length === 0;
+
       const filtered: ValidationErrors<UserFormValues> = {};
       (Object.keys(nextTouched) as Array<keyof UserFormValues>).forEach(
         (key) => {
@@ -186,7 +217,7 @@ const ProfilePage = () => {
       setErrors(filtered);
       return validation;
     },
-    [setErrors]
+    [setErrors, regions]
   );
 
   const roleShortcut = useMemo(() => {
@@ -205,44 +236,42 @@ const ProfilePage = () => {
         label: "Ir a la vista de vendedor",
         to: "/admin",
         icon: "bi-shop",
-      }
+      };
     }
 
     return null;
   }, [currentUser?.tipoUsuario]);
 
   useEffect(() => {
-    const regionData = getLocalData<RegionSeed>(LOCAL_STORAGE_KEYS.regiones);
-    setRegions(regionData);
-  }, []);
+    const fetchUserData = async () => {
+      try {
+        setLoading(true);
+        const userResponse = await authService.getCurrentUser();
+        const normalizedUser = mapUserResponseToStoredUser(userResponse);
 
-  useEffect(() => {
-    const stored = getLocalItem<StoredUser>(LOCAL_STORAGE_KEYS.activeUser);
-    if (!stored) {
-      setFeedback({
-        type: "danger",
-        text: "No encontramos tu sesión. Inicia sesión nuevamente.",
-      });
-      return;
-    }
+        setCurrentUser(normalizedUser);
+        setAvatarUrl(normalizeAvatarUrl(normalizedUser.avatarUrl));
+        setValues(createInitialValues(normalizedUser));
+        setErrors({});
+        setTouched({});
 
-    const normalizedUser: StoredUser = {
-      ...stored,
-      avatarUrl: normalizeAvatarUrl(stored.avatarUrl),
+        // Fetch comunas if user has a region selected
+        if (normalizedUser.regionId) {
+          fetchComunas(normalizedUser.regionId);
+        }
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+        setFeedback({
+          type: "danger",
+          text: "No pudimos cargar tu información. Por favor inicia sesión nuevamente.",
+        });
+      } finally {
+        setLoading(false);
+      }
     };
-    setLocalItem<StoredUser>(LOCAL_STORAGE_KEYS.activeUser, normalizedUser);
-    setCurrentUser(normalizedUser);
-    setAvatarUrl(normalizedUser.avatarUrl ?? defaultProfileImage);
-    setValues(createInitialValues(normalizedUser));
-    setErrors({});
-    setTouched({});
-  }, []);
 
-  const comunaOptions = useMemo(
-    () =>
-      regions.find((region) => region.id === values.regionId)?.comunas ?? [],
-    [regions, values.regionId]
-  );
+    fetchUserData();
+  }, []);
 
   const handleAvatarChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.currentTarget.files?.[0];
@@ -303,6 +332,9 @@ const ProfilePage = () => {
       regionId: true,
       comuna: true,
     };
+
+    fetchComunas(nextRegion); // Fetch comunas for the selected region
+
     runValidation(nextValues, nextTouched);
     setValues(nextValues);
     setTouched(nextTouched);
@@ -315,22 +347,6 @@ const ProfilePage = () => {
     const nextTouched: Partial<Record<keyof UserFormValues, boolean>> = {
       ...touched,
       comuna: true,
-    };
-    runValidation(nextValues, nextTouched);
-    setValues(nextValues);
-    setTouched(nextTouched);
-    setFeedback(null);
-  };
-
-  const handleRoleChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const nextRole = event.currentTarget.value as StoredUser["tipoUsuario"];
-    if (!ROLE_OPTIONS.includes(nextRole)) {
-      return;
-    }
-    const nextValues = { ...values, tipoUsuario: nextRole };
-    const nextTouched: Partial<Record<keyof UserFormValues, boolean>> = {
-      ...touched,
-      tipoUsuario: true,
     };
     runValidation(nextValues, nextTouched);
     setValues(nextValues);
@@ -383,19 +399,48 @@ const ProfilePage = () => {
 
     const record = mapFormToStoredUser(
       { ...values, avatarUrl, password: values.password || "" },
-      currentUser
+      currentUser,
+      regions
     );
-    saveUserRecord(record);
-    setLocalItem(LOCAL_STORAGE_KEYS.activeUser, record);
-    setCurrentUser(record);
-    setAvatarUrl(normalizeAvatarUrl(record.avatarUrl));
-    setValues(createInitialValues(record));
-    setErrors({});
-    setTouched({});
-    setFeedback({ type: "success", text: "Datos actualizados con éxito." });
-    refreshUser(record);
-    setShowToast(true);
+    try {
+      // Convert StoredUser to Usuario for userService
+      const usuarioUpdate: any = {
+        ...record,
+        // Ensure types match what backend expects if needed
+      };
+
+      await userService.update(usuarioUpdate);
+
+      // Update local session cache
+      setLocalItem(LOCAL_STORAGE_KEYS.activeUser, record);
+      setCurrentUser(record);
+      setAvatarUrl(normalizeAvatarUrl(record.avatarUrl));
+      setValues(createInitialValues(record));
+      setErrors({});
+      setTouched({});
+      setFeedback({ type: "success", text: "Datos actualizados con éxito." });
+      refreshUser(record);
+      setShowToast(true);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      setFeedback({
+        type: "danger",
+        text: "Error al actualizar el perfil. Inténtalo más tarde.",
+      });
+    }
   };
+
+  if (loading) {
+    return (
+      <main className="py-5 bg-light-subtle">
+        <div className="container text-center">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Cargando...</span>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="py-5 bg-light-subtle">
@@ -442,35 +487,6 @@ const ProfilePage = () => {
                     style={{ objectFit: "cover" }}
                   />
 
-                  {isSuperAdmin ? (
-                    <span className="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle mb-3">
-                      Super administradora
-                    </span>
-                  ) : null}
-
-                  {isSuperAdmin ? (
-                    <div className="mb-3 text-start">
-                      <label className="form-label" htmlFor="profileRole">
-                        Tipo de perfil
-                      </label>
-                      <select
-                        id="profileRole"
-                        className="form-select"
-                        value={values.tipoUsuario ?? "SuperAdmin"}
-                        onChange={handleRoleChange}
-                      >
-                        {ROLE_OPTIONS.map((roleOption) => (
-                          <option key={roleOption} value={roleOption}>
-                            {ROLE_LABELS[roleOption]}
-                          </option>
-                        ))}
-                      </select>
-                      <small className="form-text text-muted">
-                        Solo la cuenta principal puede modificar este valor.
-                      </small>
-                    </div>
-                  ) : null}
-
                   <div className="d-grid gap-2">
                     <label
                       className="btn btn-outline-secondary"
@@ -516,9 +532,9 @@ const ProfilePage = () => {
                     type="button"
                     variant="strawberry"
                     onClick={() => {
-                      cleanupOffcanvas('offcanvasLogin')
-                      logout()
-                      remountLoginOffcanvas()
+                      cleanupOffcanvas("offcanvasLogin");
+                      logout();
+                      remountLoginOffcanvas();
                     }}
                   >
                     <i
@@ -636,7 +652,7 @@ const ProfilePage = () => {
                   </div>
                   <div className="col-12 col-md-6">
                     <label className="form-label" htmlFor="birthdate">
-                      Fecha de nacimiento (opcional)
+                      Fecha de nacimiento
                     </label>
                     <input
                       type="date"
@@ -648,7 +664,8 @@ const ProfilePage = () => {
                       value={values.fechaNacimiento ?? ""}
                       onChange={handleInputChange}
                       onBlur={handleInputBlur}
-                      /* superadmin puede editar excepto RUN */
+                      disabled
+                      readOnly
                     />
                     {errors.fechaNacimiento ? (
                       <div className="invalid-feedback d-block">
@@ -665,7 +682,8 @@ const ProfilePage = () => {
                       onChange={handleInputChange}
                       onBlur={handleInputBlur}
                       errorText={errors.nombre}
-                      /* editable por superadmin */
+                      disabled
+                      readOnly
                     />
                   </div>
                   <div className="col-12 col-md-6">
@@ -677,7 +695,8 @@ const ProfilePage = () => {
                       onChange={handleInputChange}
                       onBlur={handleInputBlur}
                       errorText={errors.apellidos}
-                      /* editable por superadmin */
+                      disabled
+                      readOnly
                     />
                   </div>
                   <div className="col-12">
@@ -690,7 +709,8 @@ const ProfilePage = () => {
                       onChange={handleInputChange}
                       onBlur={handleInputBlur}
                       errorText={errors.correo}
-                      /* editable por superadmin */
+                      disabled
+                      readOnly
                     />
                     <Input
                       label="Código promocional (opcional)"
@@ -719,8 +739,8 @@ const ProfilePage = () => {
                     >
                       <option value="">Selecciona una región</option>
                       {regions.map((region) => (
-                        <option key={region.id} value={region.id}>
-                          {region.region}
+                        <option key={region.id} value={region.codigo}>
+                          {region.nombre}
                         </option>
                       ))}
                     </select>
@@ -745,8 +765,8 @@ const ProfilePage = () => {
                     >
                       <option value="">Selecciona una comuna</option>
                       {comunaOptions.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
+                        <option key={option.id} value={option.nombre}>
+                          {option.nombre}
                         </option>
                       ))}
                     </select>

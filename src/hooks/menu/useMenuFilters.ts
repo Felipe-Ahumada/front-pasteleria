@@ -1,10 +1,6 @@
 import { useMemo, useState } from "react";
 
-export type OrderOption =
-  | "name-asc"
-  | "name-desc"
-  | "price-asc"
-  | "price-desc";
+export type OrderOption = "name-asc" | "name-desc" | "price-asc" | "price-desc";
 
 export interface FilterValues {
   category: number | null;
@@ -26,7 +22,7 @@ export interface EnrichedProduct {
   categoriaId: number;
   categoriaNombre: string;
 
-  stock: number; 
+  stock: number;
 }
 
 export function useMenuFilters(
@@ -35,9 +31,9 @@ export function useMenuFilters(
 ) {
   // Estado de filtros
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-  const [selectedProductCode, setSelectedProductCode] = useState<
-    string | null
-  >(null);
+  const [selectedProductCode, setSelectedProductCode] = useState<string | null>(
+    null
+  );
   const [minPrice, setMinPrice] = useState<number | "">("");
   const [maxPrice, setMaxPrice] = useState<number | "">("");
   const [sortOrder, setSortOrder] = useState<OrderOption>("name-asc");
@@ -47,11 +43,15 @@ export function useMenuFilters(
 
   // Opciones de productos
   const productOptions = useMemo(() => {
-    return all.map((p) => ({
+    let products = all;
+    if (selectedCategory !== null) {
+      products = all.filter((p) => p.categoriaId === selectedCategory);
+    }
+    return products.map((p) => ({
       codigo_producto: p.codigo_producto,
       nombre_producto: p.nombre_producto,
     }));
-  }, [all]);
+  }, [all, selectedCategory]);
 
   // Aplicar filtros
   const filteredProducts = useMemo(() => {
@@ -129,6 +129,11 @@ export function useMenuFilters(
     setErrors({});
   };
 
+  const handleCategoryChange = (categoryId: number | null) => {
+    setSelectedCategory(categoryId);
+    setSelectedProductCode(null);
+  };
+
   return {
     // estados
     selectedCategory,
@@ -145,7 +150,7 @@ export function useMenuFilters(
     // handlers
     setSelectedProductCode,
     setSortOrder,
-    handleCategoryChange: setSelectedCategory,
+    handleCategoryChange,
     handleMinPriceChange: setMinPrice,
     handleMaxPriceChange: setMaxPrice,
     handleProductChange: setSelectedProductCode,

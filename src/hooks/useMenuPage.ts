@@ -1,6 +1,6 @@
 // hooks/useMenuPage.ts
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { menuService, MENU_CACHE_UPDATED_EVENT } from "@/service/menuService";
+import { menuService } from "@/service/menuService";
 import type { Producto } from "@/service/menuService";
 import { validatePriceFilters } from "@/utils/validations/filtersValidations";
 import type { ValidationErrors } from "@/utils/validations/types";
@@ -29,7 +29,9 @@ export function useMenuPage() {
   /* -----------------------------
     Filtros
    ----------------------------- */
-  const [selectedCategory, setSelectedCategory] = useState<string | "all">("all");
+  const [selectedCategory, setSelectedCategory] = useState<string | "all">(
+    "all"
+  );
   const [selectedProduct, setSelectedProduct] = useState<string | "all">("all");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
@@ -42,29 +44,25 @@ export function useMenuPage() {
   /** -----------------------------
    * 1) Cargar productos del service
    * ----------------------------- */
-  const loadProductos = useCallback(() => {
+  /* -----------------------------
+    1) Cargar productos del service
+    ----------------------------- */
+  const loadProductos = useCallback(async () => {
     try {
-      const data = menuService.getActive();
+      setLoading(true);
+      const data = await menuService.getActive();
       setProductos(data);
       setError(null);
-      setLoading(false);
-    } catch {
+    } catch (err) {
+      console.error(err);
       setError("No fue posible cargar el menú.");
+    } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
     loadProductos();
-
-    if (typeof window === "undefined") return;
-
-    const handler = () => loadProductos();
-    window.addEventListener(MENU_CACHE_UPDATED_EVENT, handler);
-
-    return () => {
-      window.removeEventListener(MENU_CACHE_UPDATED_EVENT, handler);
-    };
   }, [loadProductos]);
 
   /** -----------------------------
@@ -192,8 +190,8 @@ export function useMenuPage() {
     filteredProducts: normalizedProducts,
     totalProductos,
 
-    categories,       // string[]
-    productOptions,   // Producto[]
+    categories, // string[]
+    productOptions, // Producto[]
 
     selectedCategory,
     selectedProduct,

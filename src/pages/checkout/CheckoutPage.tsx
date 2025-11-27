@@ -1,30 +1,22 @@
 // pages/cart/CheckoutPage.tsx
-import { useState, type ChangeEvent } from "react";
+import { useState, useEffect, type ChangeEvent } from "react";
 import { useCart } from "@/hooks/useCart";
 import useAuth from "@/hooks/useAuth";
 import { useOrders } from "@/context/orders";
 import { Button } from "@/components/common";
-import regionesData from "@/data/region_comuna.json";
-import { generateOrderCode } from "@/utils/storage/generateOrderCode";
+import { useLocations } from "@/hooks/useLocations";
+
 import { formatPrice } from "@/utils/format/priceFormatter";
 import { getLocalItem } from "@/utils/storage/localStorageUtils";
 import { LOCAL_STORAGE_KEYS } from "@/utils/storage/initLocalData";
 import type { StoredUser } from "@/types/user";
 import type { Order } from "@/types/order";
-import { menuService } from "@/service/menuService";
-
-type RegionData = {
-  id: string;
-  region: string;
-  comunas: string[];
-};
-
-const regiones = regionesData as RegionData[];
 
 const CheckoutPage = () => {
   const { items, totals, clear } = useCart();
   const { user } = useAuth();
   const { createOrder } = useOrders();
+  const { regions, comunas, fetchComunas } = useLocations();
 
   // Usuario completo
   const storedUser = getLocalItem<StoredUser>(LOCAL_STORAGE_KEYS.activeUser);
@@ -45,32 +37,45 @@ const CheckoutPage = () => {
     pago: "Webpay",
   });
 
+  // Cargar comunas si ya hay una región seleccionada (ej: usuario guardado)
+  useEffect(() => {
+    if (form.regionId) {
+      // Necesitamos el código de la región, no el ID.
+      // Pero storedUser.regionId probablemente guarda el código (ej: "13")
+      // Vamos a asumir que guarda el código por ahora.
+      fetchComunas(form.regionId);
+    }
+  }, [form.regionId]); // Solo al montar o si cambia externamente
+
   // ===========================
   // FORM HANDLER
   // ===========================
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
 
-  // ===========================
-  // COMUNAS SEGÚN REGIÓN
-  // ===========================
-  const comunas =
-    regiones.find((r) => r.id === form.regionId)?.comunas ?? [];
+    if (name === "regionId") {
+      fetchComunas(value);
+      setForm((prev) => ({ ...prev, regionId: value, comuna: "" }));
+    }
+  };
 
   // ===========================
   // CONFIRMAR PEDIDO
   // ===========================
-  const confirmar = () => {
+  // ===========================
+  // CONFIRMAR PEDIDO
+  // ===========================
+  const confirmar = async () => {
     if (!form.fecha || !form.regionId || !form.comuna || !form.direccion) {
       alert("Completa todos los campos obligatorios");
       return;
     }
 
     const order: Order = {
-      id: generateOrderCode(),
+      id: "", // Backend generates ID
       userId: storedUser?.id ?? user!.id,
       items: items.map((i) => ({
         codigo: i.codigo,
@@ -81,15 +86,19 @@ const CheckoutPage = () => {
         mensaje: i.mensaje ?? null,
       })),
       fechaPedido: new Date().toISOString(),
-      fechaEntrega: form.fecha,
+      fechaEntrega: form.fecha, // Mapped to backend field
       total: totals.totalPagar, // total con descuento aplicado
-      status: "pendiente",
+      status: "pendiente", // Frontend type expects lowercase
+
+      // Keep these for frontend display if needed, but backend stores flattened
       envio: {
         run: form.run,
         nombres: form.nombres,
         apellidos: form.apellidos,
         correo: form.correo,
         regionId: form.regionId,
+        regionNombre:
+          regions.find((r) => r.codigo === form.regionId)?.nombre || "",
         comuna: form.comuna,
         direccion: form.direccion,
         tipoEntrega: form.tipoEntrega,
@@ -97,10 +106,15 @@ const CheckoutPage = () => {
       },
     };
 
-    createOrder(order);
-    menuService.consumeStock(order.items);
-    clear();
-    window.location.href = `/order-success?id=${order.id}`;
+    try {
+      const createdOrder = await createOrder(order);
+      // menuService.consumeStock(order.items); // Handled by backend now
+      clear();
+      window.location.href = `/order-success?id=${createdOrder.id}`;
+    } catch (error) {
+      console.error("Error creating order:", error);
+      alert("Hubo un error al crear el pedido. Inténtalo nuevamente.");
+    }
   };
 
   // ===========================
@@ -133,42 +147,42 @@ const CheckoutPage = () => {
             </tr>
           </thead>
 
-        <tbody>
-          {items.map((i) => (
-            <tr key={`${i.codigo}-${i.mensaje ?? ""}`}>
-              <td>{i.nombre}</td>
-              <td>{i.cantidad}</td>
-              <td>{formatPrice(i.precio)}</td>
-              <td>{formatPrice(i.precio * i.cantidad)}</td>
-            </tr>
-          ))}
+          <tbody>
+            {items.map((i) => (
+              <tr key={`${i.codigo}-${i.mensaje ?? ""}`}>
+                <td>{i.nombre}</td>
+                <td>{i.cantidad}</td>
+                <td>{formatPrice(i.precio)}</td>
+                <td>{formatPrice(i.precio * i.cantidad)}</td>
+              </tr>
+            ))}
 
-          {/* SUBTOTAL */}
-          <tr>
-            <td colSpan={3} className="text-end fw-semibold">
-              Subtotal
-            </td>
-            <td>{formatPrice(totals.subtotal)}</td>
-          </tr>
-
-          {/* DESCUENTO SI EXISTE */}
-          {totals.discountAmount > 0 && totals.discountDescription && (
-            <tr className="text-success fw-bold">
-              <td colSpan={3} className="text-end">
-                {totals.discountDescription}
+            {/* SUBTOTAL */}
+            <tr>
+              <td colSpan={3} className="text-end fw-semibold">
+                Subtotal
               </td>
-              <td>-{formatPrice(totals.discountAmount)}</td>
+              <td>{formatPrice(totals.subtotal)}</td>
             </tr>
-          )}
 
-          {/* TOTAL FINAL */}
-          <tr className="fw-bold">
-            <td colSpan={3} className="text-end">
-              Total a pagar
-            </td>
-            <td>{formatPrice(totals.totalPagar)}</td>
-          </tr>
-        </tbody>
+            {/* DESCUENTO SI EXISTE */}
+            {totals.discountAmount > 0 && totals.discountDescription && (
+              <tr className="text-success fw-bold">
+                <td colSpan={3} className="text-end">
+                  {totals.discountDescription}
+                </td>
+                <td>-{formatPrice(totals.discountAmount)}</td>
+              </tr>
+            )}
+
+            {/* TOTAL FINAL */}
+            <tr className="fw-bold">
+              <td colSpan={3} className="text-end">
+                Total a pagar
+              </td>
+              <td>{formatPrice(totals.totalPagar)}</td>
+            </tr>
+          </tbody>
         </table>
       </div>
 
@@ -189,7 +203,7 @@ const CheckoutPage = () => {
               placeholder="12345678-9"
               value={form.run}
               onChange={handleChange}
-              readOnly 
+              readOnly
             />
           </div>
 
@@ -202,7 +216,7 @@ const CheckoutPage = () => {
               className="form-control"
               value={form.correo}
               onChange={handleChange}
-              readOnly 
+              readOnly
             />
           </div>
 
@@ -240,11 +254,13 @@ const CheckoutPage = () => {
               onChange={handleChange}
             >
               <option value="">Selecciona una región</option>
-              {regiones.map((r) => (
-                <option key={r.id} value={r.id}>
-                  {r.region}
-                </option>
-              ))}
+              {regions
+                .filter((r) => r.nombre.includes("Biobío"))
+                .map((r) => (
+                  <option key={r.id} value={r.codigo}>
+                    {r.nombre}
+                  </option>
+                ))}
             </select>
           </div>
 
@@ -259,11 +275,27 @@ const CheckoutPage = () => {
               disabled={!form.regionId}
             >
               <option value="">Selecciona una comuna...</option>
-              {comunas.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
+              {comunas
+                .filter((c) =>
+                  [
+                    "Concepción",
+                    "Talcahuano",
+                    "Hualpén",
+                    "San Pedro de la Paz",
+                    "Chiguayante",
+                    "Coronel",
+                    "Lota",
+                    "Penco",
+                    "Hualqui",
+                    "Tomé",
+                    "Santa Juana",
+                  ].includes(c.nombre)
+                )
+                .map((c) => (
+                  <option key={c.id} value={c.nombre}>
+                    {c.nombre}
+                  </option>
+                ))}
             </select>
           </div>
 
@@ -326,7 +358,8 @@ const CheckoutPage = () => {
 
         {/* MENSAJE */}
         <div className="alert alert-warning mt-4">
-          Lo sentimos, por el momento solo realizamos entregas en el Gran Concepción.
+          Lo sentimos, por el momento solo realizamos entregas en el Gran
+          Concepción.
         </div>
 
         {/* BOTONES */}

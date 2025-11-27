@@ -1,35 +1,10 @@
-import menuData from "@/data/menu_datos.json";
+import apiClient from "@/config/axiosConfig";
 import {
   detailImageMap,
   fallbackProductImage,
   formatImagePath,
   toSlug,
 } from "@/utils/storage/imageHelpers";
-
-/* ===========================================================
-   TIPOS BASE DEL JSON
-=========================================================== */
-export interface ProductoJSON {
-  codigo_producto: string;
-  nombre_producto: string;
-  precio_producto: number;
-  descripción_producto: string;
-  imagen_producto: string;
-  imagenes_detalle?: string[];
-  stock: number;
-  stock_critico: number;
-}
-
-export interface CategoriaJSON {
-  id_categoria: number;
-  nombre_categoria: string;
-  productos: ProductoJSON[];
-}
-
-export interface MenuJSON {
-  nombre_pasteleria: string;
-  categorias: CategoriaJSON[];
-}
 
 /* ===========================================================
    TIPO NORMALIZADO (DOMINIO)
@@ -46,44 +21,25 @@ export interface Producto {
   stock_critico?: number;
   activo: boolean;
 }
+
 const FALLBACK_IMAGE = fallbackProductImage;
 
-type ProductoCache = Omit<Producto, "activo"> & {
-  activo?: boolean;
-  imagenes_detalle?: string[];
-};
-
-export const MENU_CACHE_UPDATED_EVENT = "menu:cache-updated";
-
-const notifyCacheUpdate = () => {
-  if (typeof window !== "undefined") {
-    window.dispatchEvent(new CustomEvent(MENU_CACHE_UPDATED_EVENT));
-  }
-};
-
-const groupQuantities = (
-  items: Array<{ codigo: string; cantidad: number }>
-): Map<string, number> => {
-  const grouped = new Map<string, number>();
-
-  items.forEach(({ codigo, cantidad }) => {
-    const normalizedCode = codigo.trim();
-    if (!normalizedCode) return;
-
-    const safeQty = Number.isFinite(cantidad) ? Math.max(0, cantidad) : 0;
-    if (safeQty <= 0) return;
-
-    const prev = grouped.get(normalizedCode) ?? 0;
-    grouped.set(normalizedCode, prev + safeQty);
-  });
-
-  return grouped;
-};
 const mergeDetailImages = (
   slug: string,
-  raw?: string[]
+  raw?: string[] | string // Backend might send JSON string or array
 ): string[] => {
-  const fromJson = (raw ?? []).map(formatImagePath).filter(Boolean);
+  let parsedRaw: string[] = [];
+  if (typeof raw === "string") {
+    try {
+      parsedRaw = JSON.parse(raw);
+    } catch {
+      parsedRaw = [];
+    }
+  } else if (Array.isArray(raw)) {
+    parsedRaw = raw;
+  }
+
+  const fromJson = (parsedRaw ?? []).map(formatImagePath).filter(Boolean);
   const fromAssets = detailImageMap[slug] ?? [];
 
   const combined = [...fromJson, ...fromAssets];
@@ -93,187 +49,111 @@ const mergeDetailImages = (
 };
 
 /* ===========================================================
-   NORMALIZACIÓN JSON PRODUCTOS
-=========================================================== */
-const mapJsonToProductos = (data: MenuJSON): Producto[] => {
-  const result: Producto[] = [];
-
-  for (const categoria of data.categorias) {
-    for (const p of categoria.productos) {
-      const slug = toSlug(p.nombre_producto);
-      const imagenPrincipal = formatImagePath(p.imagen_producto);
-      const imagenesDetalle = mergeDetailImages(slug, p.imagenes_detalle);
-
-      result.push({
-        id: p.codigo_producto,
-        nombre: p.nombre_producto,
-        descripcion: p.descripción_producto,
-        precio: p.precio_producto,
-        imagen: imagenPrincipal || FALLBACK_IMAGE,
-        imagenes_detalle: imagenesDetalle,
-        categoria: categoria.nombre_categoria,
-        stock: p.stock,
-        stock_critico: p.stock_critico,
-        activo: true,
-      });
-    }
-  }
-
-  return result;
-};
-
-/* ===========================================================
-   CACHE LOCAL
-=========================================================== */
-const CACHE_KEY = "menu_cache_v1";
-
-const normalizeProductos = (productos: ProductoCache[]): Producto[] =>
-  productos.map((p) => ({
-    ...p,
-    imagenes_detalle: Array.isArray(p.imagenes_detalle)
-      ? p.imagenes_detalle
-      : [],
-    activo: p.activo ?? true,
-  }));
-
-const saveCache = (productos: Producto[]) => {
-  localStorage.setItem(
-    CACHE_KEY,
-    JSON.stringify(normalizeProductos(productos))
-  );
-  notifyCacheUpdate();
-};
-
-const loadCache = (): Producto[] | null => {
-  const raw = localStorage.getItem(CACHE_KEY);
-  if (!raw) return null;
-
-  try {
-    const parsed = JSON.parse(raw) as ProductoCache[];
-    return normalizeProductos(parsed);
-  } catch {
-    localStorage.removeItem(CACHE_KEY);
-    return null;
-  }
-};
-
-/* ===========================================================
    SERVICE
 =========================================================== */
 export const menuService = {
-  getAll(): Producto[] {
-    return this.getCached();
+  async getAll(): Promise<Producto[]> {
+    try {
+      // Fetch categories to get products with their category name
+      const { data: categories } = await apiClient.get<any[]>("/categorias");
+
+      const allProducts: Producto[] = categories.flatMap((cat) =>
+        cat.productos.map((p: any) => {
+          const slug = toSlug(p.nombre);
+          const imagenPrincipal = formatImagePath(p.imagenPrincipal);
+          const imagenesDetalle = mergeDetailImages(slug, p.imagenesDetalle);
+
+          return {
+            id: p.id.toString(),
+            nombre: p.nombre,
+            descripcion: p.descripcion,
+            precio: p.precio,
+            imagen: imagenPrincipal || FALLBACK_IMAGE,
+            imagenes_detalle: imagenesDetalle,
+            categoria: cat.nombre,
+            stock: p.stock,
+            stock_critico: p.stockCritico,
+            activo: true, // Backend doesn't seem to have 'activo' flag exposed yet, assume true
+          };
+        })
+      );
+      return allProducts;
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      return [];
+    }
   },
 
-  getCached(): Producto[] {
-    const cached = loadCache();
-    if (cached) return cached;
-
-    const productos = mapJsonToProductos(menuData as MenuJSON);
-    saveCache(productos);
-    return productos;
+  // Deprecated: Alias to getAll for backward compatibility during refactor
+  // but now returns Promise, so calling code MUST await.
+  async getCached(): Promise<Producto[]> {
+    return this.getAll();
   },
 
-  getActive(): Producto[] {
-    return this.getCached().filter((p) => p.activo !== false);
+  async getActive(): Promise<Producto[]> {
+    const products = await this.getAll();
+    return products.filter((p) => p.activo !== false);
   },
 
-  getById(id: string): Producto | undefined {
-    const productos = this.getCached();
-    return productos.find((p) => p.id === id);
+  async getById(id: string): Promise<Producto | undefined> {
+    try {
+      // Try fetching specific product.
+      // Note: Backend /productos/{id} response might not include category name if JsonBackReference is used.
+      // So we might need to fetch all or adjust backend.
+      // For now, fetching all is safer to get category name.
+      const products = await this.getAll();
+      return products.find((p) => p.id === id);
+    } catch (error) {
+      console.error("Error fetching product by id:", error);
+      return undefined;
+    }
   },
 
-  getActiveById(id: string): Producto | undefined {
-    return this.getActive().find((p) => p.id === id);
+  async getActiveById(id: string): Promise<Producto | undefined> {
+    const products = await this.getActive();
+    return products.find((p) => p.id === id);
   },
 
-  create(producto: Producto): void {
-    const productos = this.getCached();
-    if (productos.some((p) => p.id === producto.id))
-      throw new Error("Ya existe un producto con este ID");
-
-    const nuevo: Producto = {
-      ...producto,
-      activo: producto.activo ?? true,
-      imagenes_detalle: producto.imagenes_detalle ?? [],
-    };
-
-    const nuevos = [...productos, nuevo];
-    saveCache(nuevos);
+  async create(producto: Producto): Promise<void> {
+    // This would require mapping frontend Producto to backend structure
+    // and calling POST /productos.
+    // For now, leaving as placeholder or implementing if needed for Admin.
+    console.warn(
+      "create product not fully implemented in frontend service yet"
+    );
   },
 
-  update(id: string, data: Producto): void {
-    const productos = this.getCached();
-    const index = productos.findIndex((p) => p.id === id);
-    if (index === -1) throw new Error("Producto no encontrado");
-
-    productos[index] = {
-      ...data,
-      activo: data.activo ?? productos[index].activo ?? true,
-      imagenes_detalle: data.imagenes_detalle ?? [],
-    };
-    saveCache(productos);
+  async update(id: string, data: Producto): Promise<void> {
+    // Placeholder
+    console.warn(
+      "update product not fully implemented in frontend service yet"
+    );
   },
 
-  setStatus(id: string, activo: boolean): void {
-    const productos = this.getCached();
-    const index = productos.findIndex((p) => p.id === id);
-    if (index === -1) throw new Error("Producto no encontrado");
-
-    productos[index] = {
-      ...productos[index],
-      activo,
-    };
-
-    saveCache(productos);
+  async setStatus(id: string, activo: boolean): Promise<void> {
+    // Placeholder
   },
 
-  block(id: string): void {
-    this.setStatus(id, false);
+  async block(id: string): Promise<void> {
+    await this.setStatus(id, false);
   },
 
-  unblock(id: string): void {
-    this.setStatus(id, true);
+  async unblock(id: string): Promise<void> {
+    await this.setStatus(id, true);
   },
 
-  delete(id: string): void {
-    // Compatibilidad retro: el "delete" ahora actúa como bloqueo.
-    this.block(id);
+  async delete(id: string): Promise<void> {
+    await this.block(id);
   },
 
   clearCache() {
-    localStorage.removeItem(CACHE_KEY);
-    notifyCacheUpdate();
+    // No-op
   },
 
-  consumeStock(orderItems: Array<{ codigo: string; cantidad: number }>) {
-    if (!Array.isArray(orderItems) || orderItems.length === 0) {
-      return;
-    }
-
-    const byProduct = groupQuantities(orderItems);
-    if (byProduct.size === 0) return;
-
-    const productos = this.getCached();
-    let hasChanges = false;
-
-    const updated = productos.map((producto) => {
-      const qty = byProduct.get(producto.id);
-      if (!qty) return producto;
-
-      const nextStock = Math.max(0, producto.stock - qty);
-      if (nextStock === producto.stock) return producto;
-
-      hasChanges = true;
-      return {
-        ...producto,
-        stock: nextStock,
-      };
-    });
-
-    if (hasChanges) {
-      saveCache(updated);
-    }
+  async consumeStock(orderItems: Array<{ codigo: string; cantidad: number }>) {
+    // Stock deduction is now handled by the backend when creating the order.
+    // We don't need to do anything here.
+    console.log("Stock deduction handled by backend.");
   },
 };
 

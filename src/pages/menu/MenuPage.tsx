@@ -13,7 +13,7 @@ import {
 } from "@/hooks/menu/useMenuFilters";
 
 import { useMenuShare } from "@/hooks/menu/useMenuShare";
-import { menuService, MENU_CACHE_UPDATED_EVENT, type Producto } from "@/service/menuService";
+import { menuService, type Producto } from "@/service/menuService";
 import { formatImagePath } from "@/utils/storage/imageHelpers";
 const formatPrice = (value: number) =>
   value.toLocaleString("es-CL", {
@@ -51,26 +51,15 @@ const mapToEnrichedProducts = (productos: Producto[]): EnrichedProduct[] =>
 =========================================================== */
 
 const MenuPage = () => {
-  const [allProducts, setAllProducts] = useState<EnrichedProduct[]>(() =>
-    mapToEnrichedProducts(menuService.getActive())
-  );
+  const [allProducts, setAllProducts] = useState<EnrichedProduct[]>([]);
 
-  const refreshProducts = useCallback(() => {
-    const activos = menuService.getActive();
+  const refreshProducts = useCallback(async () => {
+    const activos = await menuService.getActive();
     setAllProducts(mapToEnrichedProducts(activos));
   }, []);
 
   useEffect(() => {
     refreshProducts();
-
-    if (typeof window === "undefined") return;
-
-    const handler = () => refreshProducts();
-    window.addEventListener(MENU_CACHE_UPDATED_EVENT, handler);
-
-    return () => {
-      window.removeEventListener(MENU_CACHE_UPDATED_EVENT, handler);
-    };
   }, [refreshProducts]);
 
   const collator = useMemo(
@@ -103,7 +92,10 @@ const MenuPage = () => {
   >({});
   const timeouts = useRef<Record<string, number | null>>({});
 
-  const scheduleCardFeedback = (key: string, next: { text: string; tone: "success" | "danger" }) => {
+  const scheduleCardFeedback = (
+    key: string,
+    next: { text: string; tone: "success" | "danger" }
+  ) => {
     setCardFeedbacks((prev) => ({ ...prev, [key]: next }));
 
     if (timeouts.current[key]) clearTimeout(timeouts.current[key]!);
@@ -114,19 +106,13 @@ const MenuPage = () => {
   };
 
   const getCantidadEnCarrito = (codigo: string) =>
-    items.filter((i) => i.codigo === codigo).reduce((acc, i) => acc + i.cantidad, 0);
+    items
+      .filter((i) => i.codigo === codigo)
+      .reduce((acc, i) => acc + i.cantidad, 0);
 
   const handleAddToCart = (item: EnrichedProduct) => {
-    const productos = menuService.getCached();
-    const real = productos.find((p) => p.id === item.codigo_producto);
-    if (!real || real.activo === false) {
-      scheduleCardFeedback(item.codigo_producto, {
-        text: "Producto no disponible",
-        tone: "danger",
-      });
-      return;
-    }
-    const stockReal = real?.stock ?? 0;
+    // Check stock directly from the item (which comes from backend)
+    const stockReal = item.stock;
 
     const enCarrito = getCantidadEnCarrito(item.codigo_producto);
     const disponible = stockReal - enCarrito;
@@ -171,7 +157,9 @@ const MenuPage = () => {
       <div className="container">
         <header className="text-center mb-4 mb-lg-5">
           <h1 className="section-title mb-2">Nuestra Carta</h1>
-          <p className="mb-0">Explora nuestras categorías y encuentra el postre ideal.</p>
+          <p className="mb-0">
+            Explora nuestras categorías y encuentra el postre ideal.
+          </p>
         </header>
 
         {/* FILTROS */}
@@ -204,7 +192,9 @@ const MenuPage = () => {
             {totalProductos === 0
               ? "Sin productos visibles."
               : `${totalProductos} ${
-                  totalProductos === 1 ? "producto disponible" : "productos disponibles"
+                  totalProductos === 1
+                    ? "producto disponible"
+                    : "productos disponibles"
                 }`}
           </p>
         </div>
@@ -212,22 +202,30 @@ const MenuPage = () => {
         {/* LISTADO */}
         {totalProductos === 0 ? (
           <div className="menu-empty card-soft text-center py-5">
-            <p className="mb-2 fw-semibold">No encontramos productos con los filtros aplicados.</p>
-            <Button variant="mint" onClick={resetFilters}>Ver carta completa</Button>
+            <p className="mb-2 fw-semibold">
+              No encontramos productos con los filtros aplicados.
+            </p>
+            <Button variant="mint" onClick={resetFilters}>
+              Ver carta completa
+            </Button>
           </div>
         ) : (
           <div className="row g-4">
             {filteredProducts.map((item) => {
-              const productos = menuService.getCached();
-              const real = productos.find((p) => p.id === item.codigo_producto);
-              const stockReal = real?.activo === false ? 0 : (real?.stock ?? 0);
+              const stockReal = item.stock;
               const enCarrito = getCantidadEnCarrito(item.codigo_producto);
               const disponible = stockReal - enCarrito;
 
               return (
-                <div className="col-12 col-md-6 col-lg-4" key={item.codigo_producto}>
+                <div
+                  className="col-12 col-md-6 col-lg-4"
+                  key={item.codigo_producto}
+                >
                   <div className="card card-soft shadow-soft h-100 product-card">
-                    <Link to={`/menu/${item.codigo_producto}`} className="ratio ratio-4x3">
+                    <Link
+                      to={`/menu/${item.codigo_producto}`}
+                      className="ratio ratio-4x3"
+                    >
                       <img
                         src={formatImagePath(item.imagen_producto)}
                         alt={item.nombre_producto}
@@ -237,13 +235,19 @@ const MenuPage = () => {
                     </Link>
 
                     <div className="card-body d-flex flex-column text-center gap-2">
-                      <p className="text-uppercase small text-muted mb-1">{item.categoriaNombre}</p>
+                      <p className="text-uppercase small text-muted mb-1">
+                        {item.categoriaNombre}
+                      </p>
 
                       <h3 className="h5 mb-0">{item.nombre_producto}</h3>
 
-                      <p className="fw-semibold mb-0">{formatPrice(item.precio_producto)}</p>
+                      <p className="fw-semibold mb-0">
+                        {formatPrice(item.precio_producto)}
+                      </p>
 
-                      <p className="text-muted flex-grow-1">{item.descripción_producto}</p>
+                      <p className="text-muted flex-grow-1">
+                        {item.descripción_producto}
+                      </p>
 
                       <div className="d-grid gap-2">
                         <Button
@@ -264,11 +268,13 @@ const MenuPage = () => {
                         >
                           {disponible <= 0 ? (
                             <>
-                              <i className="bi bi-x-circle" /> Sin stock disponible
+                              <i className="bi bi-x-circle" /> Sin stock
+                              disponible
                             </>
                           ) : (
                             <>
-                              <i className="bi bi-cart-plus" /> Añadir al carrito
+                              <i className="bi bi-cart-plus" /> Añadir al
+                              carrito
                             </>
                           )}
                         </Button>
@@ -279,14 +285,19 @@ const MenuPage = () => {
                           </p>
                         )}
 
-                        <Button variant="mint" block onClick={() => handleShare(item)}>
+                        <Button
+                          variant="mint"
+                          block
+                          onClick={() => handleShare(item)}
+                        >
                           <i className="bi bi-share" /> Compartir
                         </Button>
 
                         {cardFeedbacks[item.codigo_producto] && (
                           <div
                             className={`small ${
-                              cardFeedbacks[item.codigo_producto]?.tone === "danger"
+                              cardFeedbacks[item.codigo_producto]?.tone ===
+                              "danger"
                                 ? "text-danger"
                                 : "text-success"
                             }`}

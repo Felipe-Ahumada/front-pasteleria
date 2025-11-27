@@ -1,25 +1,28 @@
-import type { StoredUser } from '@/types/user'
-export type UserRole = 'superadmin' | 'admin' | 'customer' | 'seller'
+import type { StoredUser } from "@/types/user";
+export type UserRole = "superadmin" | "admin" | "customer" | "seller";
+
+import type { DiscountInfo } from "@/utils/discounts/userDiscounts";
 
 export interface AuthUser {
-	id: string
-	name: string
-	firstName: string
-	lastName: string
-	email: string
-	role: UserRole
+  id: string;
+  name: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: UserRole;
+  discountInfo: DiscountInfo;
 }
 
 export interface AuthCredentials {
-	email: string
-	password: string
+  email: string;
+  password: string;
 }
 
 export interface AuthContextValue {
-	user: AuthUser | null
-	loading: boolean
-	isAuthenticated: boolean
-	login: (credentials: AuthCredentials) => Promise<void>
-	logout: () => void
-	refreshUser: (stored: StoredUser) => void
+  user: AuthUser | null;
+  loading: boolean;
+  isAuthenticated: boolean;
+  login: (credentials: AuthCredentials) => Promise<void>;
+  logout: () => void;
+  refreshUser: (updatedUser?: StoredUser) => Promise<void>;
 }

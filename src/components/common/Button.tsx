@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 import cx from "@/utils/cx";
 
 type ButtonSize = "sm" | "lg";
-type ButtonVariant = "strawberry" | "mint" | "danger"; // ← NUEVA variante
+type ButtonVariant = "strawberry" | "mint" | "danger" | "secondary"; // ← NUEVA variante
 
 type BaseProps = {
   children: ReactNode;
@@ -43,13 +43,24 @@ type RouterButtonProps = BaseProps &
 type ButtonProps = NativeButtonProps | AnchorButtonProps | RouterButtonProps;
 
 const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
-  ({ children, size, block, className, variant = "strawberry", as = "button", ...rest }, ref) => {
-    
+  (
+    {
+      children,
+      size,
+      block,
+      className,
+      variant = "strawberry",
+      as = "button",
+      ...rest
+    },
+    ref
+  ) => {
     /** Variantes actualizadas */
     const variantClasses: Record<ButtonVariant, string> = {
       strawberry: "btn-pastel btn-strawberry",
       mint: "btn-pastel btn-mint",
       danger: "btn-pastel btn-danger", // ← NUEVA CLASE
+      secondary: "btn-pastel btn-secondary",
     };
 
     const baseClass = cx(
@@ -57,12 +68,13 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
       variantClasses[variant],
       size ? `btn-${size}` : null,
       block ? "w-100" : null,
-      className,
+      className
     );
 
     // ---- RENDER: <a> ----
     if (as === "a") {
-      const { href, ...anchorRest } = rest as AnchorHTMLAttributes<HTMLAnchorElement> & { href: string };
+      const { href, ...anchorRest } =
+        rest as AnchorHTMLAttributes<HTMLAnchorElement> & { href: string };
       return (
         <a
           className={baseClass}

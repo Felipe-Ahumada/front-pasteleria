@@ -1,8 +1,14 @@
 import type { CartItem } from "@/context/cart/CartContext";
-import type { StoredUser } from "@/types/user";
+
+export interface DiscountInfo {
+  isDuocStudent: boolean;
+  isBirthday: boolean;
+  age: number;
+  discountCode?: string;
+}
 
 /** Verifica si hoy es cumpleaños */
-const isBirthdayToday = (fechaNacimiento?: string): boolean => {
+export const isBirthdayToday = (fechaNacimiento?: string): boolean => {
   if (!fechaNacimiento) return false;
 
   const birthday = new Date(fechaNacimiento);
@@ -15,7 +21,7 @@ const isBirthdayToday = (fechaNacimiento?: string): boolean => {
 };
 
 /** Calcula edad del usuario */
-const getAge = (fechaNacimiento?: string): number => {
+export const getAge = (fechaNacimiento?: string): number => {
   if (!fechaNacimiento) return 0;
 
   const today = new Date();
@@ -32,25 +38,27 @@ const getAge = (fechaNacimiento?: string): number => {
 };
 
 /** Devuelve true si el usuario tiene correo DUOC */
-const isDuocStudent = (email: string): boolean => {
-  return (
-    email.endsWith("@duoc.cl") ||
-    email.endsWith("@profesor.duoc.cl")
-  );
+export const isDuocStudent = (email: string): boolean => {
+  if (!email) return false;
+  return email.endsWith("@duoc.cl") || email.endsWith("@profesor.duoc.cl");
 };
 
 /** Devuelve true si el producto es torta */
 const isTorta = (codigo: string): boolean => {
-  return codigo.startsWith("TC") || codigo.startsWith("TT") || codigo.startsWith("TE");
+  return (
+    codigo.startsWith("TC") ||
+    codigo.startsWith("TT") ||
+    codigo.startsWith("TE")
+  );
 };
 
 /** DESCUENTOS PRINCIPALES */
 export const calculateUserDiscounts = (
-  user: StoredUser | null,
+  userInfo: DiscountInfo | null,
   items: CartItem[],
   subtotal: number
 ) => {
-  if (!user) {
+  if (!userInfo) {
     return {
       totalDiscount: 0,
       finalPrice: subtotal,
@@ -61,9 +69,7 @@ export const calculateUserDiscounts = (
   const descriptions: string[] = [];
   let discount = 0;
 
-  const age = getAge(user.fechaNacimiento);
-  const birthday = isBirthdayToday(user.fechaNacimiento);
-  const isDuoc = isDuocStudent(user.correo);
+  const { age, isBirthday, isDuocStudent: isDuoc, discountCode } = userInfo;
 
   /* ----------------------------
    1) DESCUENTO: MAYORES DE 50
@@ -77,8 +83,8 @@ export const calculateUserDiscounts = (
   /* ----------------------------
    2) DESCUENTO: CÓDIGO FELICES50
   ----------------------------- */
-  if (user.codigoDescuento === "FELICES50") {
-    const d = subtotal * 0.10;
+  if (discountCode === "FELICES50") {
+    const d = subtotal * 0.1;
     discount += d;
     descriptions.push("Descuento 10% por usar código FELICES50");
   }
@@ -86,11 +92,14 @@ export const calculateUserDiscounts = (
   /* ----------------------------
    3) TORTA GRATIS POR CUMPLEAÑOS
   ----------------------------- */
-  if (birthday && isDuoc) {
+  if (isBirthday && isDuoc) {
     const tortas = items.filter((i) => isTorta(i.codigo));
 
     if (tortas.length > 0) {
-      const tortaValue = tortas.reduce((acc, t) => acc + t.precio * t.cantidad, 0);
+      const tortaValue = tortas.reduce(
+        (acc, t) => acc + t.precio * t.cantidad,
+        0
+      );
       discount += tortaValue;
       descriptions.push("Torta GRATIS por cumpleaños (correo DUOC)");
     }

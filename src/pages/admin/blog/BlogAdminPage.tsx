@@ -12,15 +12,15 @@ const BlogAdminPage = () => {
   // Blog seleccionado para ver en popup
   const [selected, setSelected] = useState<BlogPost | null>(null);
 
-  const handleApprove = () => {
+  const handleApprove = async () => {
     if (!selected) return;
-    updateStatus(selected.id, "aprobado");
+    await updateStatus(selected.id, "aprobado");
     setSelected(null); // cerrar popup
   };
 
-  const handleReject = () => {
+  const handleReject = async () => {
     if (!selected) return;
-    updateStatus(selected.id, "rechazado");
+    await updateStatus(selected.id, "rechazado");
     setSelected(null); // cerrar popup
   };
 
@@ -81,7 +81,11 @@ const BlogAdminPage = () => {
                 src={selected.portada}
                 alt="Portada"
                 className="img-fluid rounded mb-3"
-                style={{ maxHeight: "260px", objectFit: "cover", width: "100%" }}
+                style={{
+                  maxHeight: "260px",
+                  objectFit: "cover",
+                  width: "100%",
+                }}
               />
             )}
 

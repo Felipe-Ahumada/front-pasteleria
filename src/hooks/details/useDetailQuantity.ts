@@ -6,7 +6,11 @@ export function useDetailQuantity(stockRestante: number) {
   const [quantity, setQuantity] = useState<string>("");
 
   useEffect(() => {
-    setQuantity("");
+    if (stockRestante > 0) {
+      setQuantity("1");
+    } else {
+      setQuantity("");
+    }
   }, [stockRestante]);
 
   const handleQuantityChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -32,11 +36,14 @@ export function useDetailQuantity(stockRestante: number) {
   };
 
   const handleQuantityBlur = () => {
-    if (quantity === "") return;
-
     const num = Number(quantity);
-    if (Number.isNaN(num) || num <= 0) {
-      setQuantity("");
+
+    if (quantity === "" || Number.isNaN(num) || num <= 0) {
+      if (maxQuantity > 0) {
+        setQuantity("1");
+      } else {
+        setQuantity("");
+      }
       return;
     }
 
@@ -44,7 +51,13 @@ export function useDetailQuantity(stockRestante: number) {
     setQuantity(String(normalized));
   };
 
-  const resetQuantity = () => setQuantity("");
+  const resetQuantity = () => {
+    if (maxQuantity > 0) {
+      setQuantity("1");
+    } else {
+      setQuantity("");
+    }
+  };
 
   return {
     quantity,

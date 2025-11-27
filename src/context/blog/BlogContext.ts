@@ -3,8 +3,8 @@ import type { BlogPost, BlogStatus } from "@/types/blog";
 
 export type BlogContextType = {
   blogs: BlogPost[];
-  createBlog: (post: BlogPost) => void;
-  updateStatus: (id: string, status: BlogStatus) => void;
+  createBlog: (post: BlogPost) => Promise<void>;
+  updateStatus: (id: string, status: BlogStatus) => Promise<void>;
 };
 
 export const BlogContext = createContext<BlogContextType | null>(null);

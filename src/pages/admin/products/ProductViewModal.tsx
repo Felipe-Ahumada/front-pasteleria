@@ -13,21 +13,34 @@ const ProductViewModal = ({ open, onClose, producto }: Props) => {
   return (
     <Modal open={open} onClose={onClose} title="Detalle del Producto">
       <div className="d-flex flex-column gap-4">
-
         {/* IMAGEN PRINCIPAL */}
         <div className="text-center">
-          <img
-            src={producto.imagen}
-            alt={producto.nombre}
-            className="rounded shadow-sm"
-            style={{
-              width: "100%",
-              maxWidth: "260px",
-              height: "260px",
-              objectFit: "cover",
-              margin: "0 auto",
-            }}
-          />
+          {producto.imagen ? (
+            <img
+              src={producto.imagen}
+              alt={producto.nombre}
+              className="rounded shadow-sm"
+              style={{
+                width: "100%",
+                maxWidth: "260px",
+                height: "260px",
+                objectFit: "cover",
+                margin: "0 auto",
+              }}
+            />
+          ) : (
+            <div
+              className="rounded shadow-sm d-flex align-items-center justify-content-center bg-secondary-subtle"
+              style={{
+                width: "100%",
+                maxWidth: "260px",
+                height: "260px",
+                margin: "0 auto",
+              }}
+            >
+              <i className="bi bi-image text-secondary fs-1" />
+            </div>
+          )}
         </div>
 
         {/* MINI GALERÍA DETALLE */}
@@ -50,7 +63,10 @@ const ProductViewModal = ({ open, onClose, producto }: Props) => {
         )}
 
         {/* INFORMACIÓN */}
-        <div className="section p-3" style={{ background: "var(--surface-alt)" }}>
+        <div
+          className="section p-3"
+          style={{ background: "var(--surface-alt)" }}
+        >
           <h4 className="mb-2" style={{ color: "var(--title-secondary)" }}>
             {producto.nombre}
           </h4>
@@ -58,8 +74,12 @@ const ProductViewModal = ({ open, onClose, producto }: Props) => {
           <p className="mb-2 text-muted">{producto.descripcion}</p>
 
           <div className="d-flex flex-column gap-1">
-            <span><strong>Categoría:</strong> {producto.categoria}</span>
-            <span><strong>Código:</strong> {producto.id}</span>
+            <span>
+              <strong>Categoría:</strong> {producto.categoria}
+            </span>
+            <span>
+              <strong>Código:</strong> {producto.id}
+            </span>
             <span>
               <strong>Precio:</strong> ${producto.precio.toLocaleString()}
             </span>
@@ -79,12 +99,12 @@ const ProductViewModal = ({ open, onClose, producto }: Props) => {
             </span>
 
             <span>
-              <strong>Stock crítico:</strong>{" "}
-              {producto.stock_critico ?? 3}
+              <strong>Stock crítico:</strong> {producto.stock_critico ?? 3}
             </span>
 
             <span>
-              <strong>Estado:</strong> {producto.activo === false ? "Bloqueado" : "Activo"}
+              <strong>Estado:</strong>{" "}
+              {producto.activo === false ? "Bloqueado" : "Activo"}
             </span>
           </div>
         </div>

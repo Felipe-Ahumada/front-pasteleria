@@ -74,9 +74,7 @@ const MenuFilters = ({
           <select
             className="form-select"
             value={selectedProductCode ?? ""}
-            onChange={(e) =>
-              onProductChange(e.target.value || null)
-            }
+            onChange={(e) => onProductChange(e.target.value || null)}
           >
             <option value="">Todos</option>
             {productOptions.map((p) => (
@@ -92,12 +90,19 @@ const MenuFilters = ({
           <label className="form-label fw-semibold">Precio mínimo</label>
           <input
             type="number"
-            min={0}
+            min={1}
             className={`form-control ${errors.minPrice ? "is-invalid" : ""}`}
             value={minPrice}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
               const v = e.target.value;
-              onMinPriceChange(v === "" ? "" : Number(v));
+              if (v === "") {
+                onMinPriceChange("");
+                return;
+              }
+              const num = Number(v);
+              if (num > 0) {
+                onMinPriceChange(num);
+              }
             }}
           />
           {errors.minPrice && (
@@ -110,12 +115,19 @@ const MenuFilters = ({
           <label className="form-label fw-semibold">Precio máximo</label>
           <input
             type="number"
-            min={0}
+            min={1}
             className={`form-control ${errors.maxPrice ? "is-invalid" : ""}`}
             value={maxPrice}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
               const v = e.target.value;
-              onMaxPriceChange(v === "" ? "" : Number(v));
+              if (v === "") {
+                onMaxPriceChange("");
+                return;
+              }
+              const num = Number(v);
+              if (num > 0) {
+                onMaxPriceChange(num);
+              }
             }}
           />
           {errors.maxPrice && (

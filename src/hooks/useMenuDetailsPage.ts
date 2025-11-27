@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { menuService, MENU_CACHE_UPDATED_EVENT, type Producto } from "@/service/menuService";
+import { menuService, type Producto } from "@/service/menuService";
 
 export interface FeedbackState {
   text: string;
@@ -18,9 +18,11 @@ export const useMenuDetailsPage = () => {
   const [feedback, setFeedback] = useState<FeedbackState | null>(null);
   const feedbackTimeout = useRef<number | null>(null);
 
-  const refreshProducto = useCallback(() => {
-    const all = menuService.getActive();
-    const found = all.find((p) => p.id.toLowerCase() === productCode?.toLowerCase()) ?? null;
+  const refreshProducto = useCallback(async () => {
+    const all = await menuService.getActive();
+    const found =
+      all.find((p) => p.id.toLowerCase() === productCode?.toLowerCase()) ??
+      null;
     setProducto(found);
 
     const others = all.filter((p) => p.id !== found?.id);
@@ -29,17 +31,6 @@ export const useMenuDetailsPage = () => {
 
   useEffect(() => {
     refreshProducto();
-  }, [refreshProducto]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const handler = () => refreshProducto();
-    window.addEventListener(MENU_CACHE_UPDATED_EVENT, handler);
-
-    return () => {
-      window.removeEventListener(MENU_CACHE_UPDATED_EVENT, handler);
-    };
   }, [refreshProducto]);
 
   useEffect(() => {
@@ -85,7 +76,10 @@ export const useMenuDetailsPage = () => {
 
     localStorage.setItem(CART_KEY, JSON.stringify(current));
 
-    scheduleFeedback({ text: "Producto agregado al carrito 🎂", tone: "success" });
+    scheduleFeedback({
+      text: "Producto agregado al carrito 🎂",
+      tone: "success",
+    });
     setQuantity("");
     setMensaje("");
   }, [producto, quantity, scheduleFeedback]);

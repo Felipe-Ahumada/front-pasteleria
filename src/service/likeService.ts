@@ -1,34 +1,32 @@
-import { loadLikes, saveLikes} from "@/utils/storage/likeStorage";
+import apiClient from "@/config/axiosConfig";
 
 export const likeService = {
-  hasLiked(blogId: string, userId: string) {
-    return loadLikes().some((l) => l.blogId === blogId && l.userId === userId);
-  },
-
-  toggleLike(blogId: string, userId: string) {
-    const likes = loadLikes();
-
-    const exists = likes.find(
-      (l) => l.blogId === blogId && l.userId === userId
-    );
-
-    let updated;
-
-    if (exists) {
-      // quitar like
-      updated = likes.filter(
-        (l) => !(l.blogId === blogId && l.userId === userId)
+  async hasLiked(blogId: string): Promise<boolean> {
+    try {
+      const { data } = await apiClient.get<boolean>(
+        `/blogs/${blogId}/likes/status`
       );
-    } else {
-      // agregar like
-      updated = [...likes, { blogId, userId }];
+      return data;
+    } catch (error) {
+      // If 401/403 (not logged in), return false
+      return false;
     }
-
-    saveLikes(updated);
-    return !exists; // true si ahora está likeado
   },
 
-  count(blogId: string) {
-    return loadLikes().filter((l) => l.blogId === blogId).length;
+  async toggleLike(blogId: string): Promise<boolean> {
+    const { data } = await apiClient.post<boolean>(`/blogs/${blogId}/like`);
+    return data;
+  },
+
+  async count(blogId: string): Promise<number> {
+    try {
+      const { data } = await apiClient.get<number>(
+        `/blogs/${blogId}/likes/count`
+      );
+      return data;
+    } catch (error) {
+      console.error("Error counting likes:", error);
+      return 0;
+    }
   },
 };

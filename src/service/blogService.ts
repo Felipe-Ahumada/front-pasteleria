@@ -1,21 +1,31 @@
+import apiClient from "@/config/axiosConfig";
 import type { BlogPost, BlogStatus } from "@/types/blog";
-import { loadBlogs, saveBlogs } from "@/utils/storage/blogStorage";
 
 export const blogService = {
-  getAll(): BlogPost[] {
-    return loadBlogs();
+  async getAll(): Promise<BlogPost[]> {
+    const { data } = await apiClient.get<BlogPost[]>("/blogs");
+    return data;
   },
 
-  create(post: BlogPost) {
-    const all = loadBlogs();
-    all.push(post);
-    saveBlogs(all);
+  async create(blog: BlogPost): Promise<void> {
+    // Exclude ID (backend generates it) and ensure autorId is string
+    const { id, ...blogData } = blog;
+    await apiClient.post("/blogs", {
+      ...blogData,
+      autorId: String(blogData.autorId),
+    });
   },
 
-  updateStatus(id: string, status: BlogStatus) {
-    const all = loadBlogs().map(p =>
-      p.id === id ? { ...p, status } : p
+  async updateStatus(id: string, status: BlogStatus): Promise<BlogPost> {
+    const { data } = await apiClient.put<BlogPost>(
+      `/blogs/${id}/status`,
+      status,
+      {
+        headers: {
+          "Content-Type": "text/plain", // Send as plain string
+        },
+      }
     );
-    saveBlogs(all);
+    return data;
   },
 };

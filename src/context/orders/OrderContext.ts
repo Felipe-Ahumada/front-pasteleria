@@ -3,7 +3,7 @@ import type { Order } from "@/types/order";
 
 export type OrderContextValue = {
   orders: Order[];
-  createOrder: (order: Order) => void;
+  createOrder: (order: Order) => Promise<Order>;
   updateStatus: (id: string, status: Order["status"]) => void;
 };
 

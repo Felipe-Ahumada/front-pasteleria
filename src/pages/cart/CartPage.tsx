@@ -1,9 +1,11 @@
 import { Button } from "@/components/common";
 import { useCart } from "@/hooks/useCart";
+import useAuth from "@/hooks/useAuth";
 import { formatPrice } from "@/utils/format/priceFormatter";
 
 const CartPage = () => {
   const { items, totals, removeItem, updateQuantity, clear } = useCart();
+  const { isAuthenticated } = useAuth();
 
   if (items.length === 0) {
     return (
@@ -148,9 +150,25 @@ const CartPage = () => {
             </div>
 
             <div className="d-grid gap-2">
-              <Button as="link" to="/checkout" variant="mint" size="lg">
-                Proceder al pago
-              </Button>
+              {isAuthenticated ? (
+                <Button as="link" to="/checkout" variant="mint" size="lg">
+                  Proceder al pago
+                </Button>
+              ) : (
+                <div className="text-center">
+                  <Button
+                    disabled
+                    variant="mint"
+                    size="lg"
+                    className="w-100 mb-2"
+                  >
+                    Proceder al pago
+                  </Button>
+                  <small className="text-danger fw-semibold">
+                    Debes iniciar sesión para realizar una compra
+                  </small>
+                </div>
+              )}
 
               <Button variant="strawberry" size="sm" onClick={clear}>
                 Vaciar carrito

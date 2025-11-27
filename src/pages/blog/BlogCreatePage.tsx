@@ -29,7 +29,7 @@ const BlogCreatePage = () => {
     reader.readAsDataURL(file);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const newBlog = {
@@ -47,7 +47,7 @@ const BlogCreatePage = () => {
       createdAt: new Date().toISOString(),
     };
 
-    createBlog(newBlog);
+    await createBlog(newBlog);
     navigate("/blog", { replace: true });
   };
 
