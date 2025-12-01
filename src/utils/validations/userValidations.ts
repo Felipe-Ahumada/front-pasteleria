@@ -291,14 +291,11 @@ export const validateResetPasswordForm = (
   };
 };
 
-const generateUserId = () => {
-  if (
-    typeof crypto !== "undefined" &&
-    typeof crypto.randomUUID === "function"
-  ) {
-    return crypto.randomUUID();
-  }
-  return `user-${Date.now()}`;
+const ROLE_MAPPING: Record<UserRoleName, string> = {
+  SuperAdmin: "ROLE_SUPERADMIN",
+  Administrador: "ROLE_ADMIN",
+  Vendedor: "ROLE_SELLER",
+  Cliente: "ROLE_CUSTOMER",
 };
 
 export const mapFormToStoredUser = (
@@ -313,7 +310,10 @@ export const mapFormToStoredUser = (
   const resolvedPassword = rawPassword
     ? ensureHashedPassword(rawPassword)
     : ensureHashedPassword(existingPassword);
-  const identifier = values.id ?? current?.id ?? generateUserId();
+  
+  // Only use existing ID, do not generate one
+  const identifier = values.id ?? current?.id;
+
   const avatar = normalizeAvatarUrl(
     values.avatarUrl ?? current?.avatarUrl,
     defaultProfileImage
@@ -342,7 +342,7 @@ export const mapFormToStoredUser = (
     correo: values.correo.trim().toLowerCase(),
     fechaNacimiento:
       values.fechaNacimiento || current?.fechaNacimiento || undefined,
-    tipoUsuario: role,
+    tipoUsuario: ROLE_MAPPING[role] as any,
     regionId: values.regionId,
     regionNombre: region?.nombre ?? values.regionId,
     comuna: values.comuna.trim(),

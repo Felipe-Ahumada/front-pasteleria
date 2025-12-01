@@ -3,18 +3,13 @@ import type { ChangeEvent, FocusEvent, FormEvent, MouseEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import { Button, Input } from '@/components/common'
-import { LOCAL_STORAGE_KEYS } from '@/utils/storage/initLocalData'
-import { getLocalItem, setLocalItem } from '@/utils/storage/localStorageUtils'
-import type { StoredUser } from '@/types/user'
+
 import type { ValidationErrors } from '@/utils/validations/types'
 import {
-	findUserByEmail,
-	saveUserRecord,
 	validateResetPasswordForm,
 	type ResetPasswordFormValues,
 } from '@/utils/validations/userValidations'
-import { errorMessages } from '@/utils/validations/errorMessages'
-import { ensureHashedPassword } from '@/utils/security/password'
+import { userService } from '@/service/userService'
 
 const createInitialValues = (): ResetPasswordFormValues => ({
 	email: '',
@@ -103,26 +98,14 @@ const ResetPasswordPage = () => {
 			return
 		}
 
-		const normalizedEmail = values.email.trim().toLowerCase()
-		const existingUser = findUserByEmail(normalizedEmail)
-		if (!existingUser) {
-			setFormMessage({ type: 'danger', text: errorMessages.userNotFound })
-			return
-		}
-
 		setLoading(true)
 		try {
-			const updatedUser: StoredUser = {
-				...existingUser,
-				password: ensureHashedPassword(values.password),
-				updatedAt: new Date().toISOString(),
-			}
-			saveUserRecord(updatedUser)
-
-			const activeUser = getLocalItem<StoredUser>(LOCAL_STORAGE_KEYS.activeUser)
-			if (activeUser?.id === updatedUser.id) {
-				setLocalItem(LOCAL_STORAGE_KEYS.activeUser, updatedUser)
-			}
+			// Call backend to reset password
+			// Note: We send the plain password because the backend handles hashing.
+			// However, if we want to be consistent with registration (where we sent plain password),
+			// we should send plain password here too.
+			// The backend resetPassword method encodes it.
+			await userService.resetPassword(values.email, values.password);
 
 			setValues(createInitialValues())
 			setErrors({})
@@ -132,6 +115,16 @@ const ResetPasswordPage = () => {
 			setFormMessage({
 				type: 'success',
 				text: 'Contraseña actualizada con éxito. Ya puedes iniciar sesión con tu nueva contraseña.',
+			})
+		} catch (error: any) {
+			console.error("Error resetting password:", error);
+			const errorMessage =
+				error.response?.data && typeof error.response.data === "string"
+					? error.response.data
+					: "Error al restablecer la contraseña. Verifica que el correo sea correcto.";
+			setFormMessage({
+				type: 'danger',
+				text: errorMessage,
 			})
 		} finally {
 			setLoading(false)

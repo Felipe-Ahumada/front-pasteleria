@@ -136,4 +136,8 @@ export const userService = {
   async delete(id: string): Promise<void> {
     await this.block(id);
   },
+
+  async resetPassword(email: string, password: string): Promise<void> {
+    await apiClient.post("/auth/reset-password", { email, password });
+  },
 };

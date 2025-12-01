@@ -5,7 +5,7 @@ export type UserRoleName =
   | "Cliente";
 
 export type StoredUser = {
-  id: string;
+  id?: string;
   run?: string;
   nombre: string;
   apellidos: string;

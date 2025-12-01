@@ -282,11 +282,15 @@ const RegisterUserPage = () => {
 
       await login({ email: values.correo, password: values.password });
       navigate("/", { replace: true });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error registering user:", error);
+      const errorMessage =
+        error.response?.data && typeof error.response.data === "string"
+          ? error.response.data
+          : "Error al crear la cuenta. Inténtalo nuevamente.";
       setFormMessage({
         type: "danger",
-        text: "Error al crear la cuenta. Inténtalo nuevamente.",
+        text: errorMessage,
       });
     }
   };
