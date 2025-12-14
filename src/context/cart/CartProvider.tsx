@@ -10,8 +10,11 @@ import { CartContext, type CartItem } from "./CartContext";
 import {
   getCart,
   setCart,
+
   clearCart as clearStorage,
 } from "@/utils/storage/cartStorage";
+
+import { cartService } from "@/service/cartService";
 
 import { menuService, type Producto } from "@/service/menuService";
 import useAuth from "@/hooks/useAuth";
@@ -34,8 +37,15 @@ export const CartProvider = ({ children }: Props) => {
   /* -------------------------------------
         CAMBIO DE USUARIO = CAMBIO DE CARRITO
      ------------------------------------- */
+  /* -------------------------------------
+        CAMBIO DE USUARIO = CAMBIO DE CARRITO
+     ------------------------------------- */
   useEffect(() => {
-    setItems(getCart(userId));
+    if (userId) {
+      cartService.getCart().then(setItems).catch(console.error);
+    } else {
+      setItems(getCart(userId));
+    }
   }, [userId]);
 
   /* -------------------------------------
@@ -92,6 +102,14 @@ export const CartProvider = ({ children }: Props) => {
      ------------------------------------- */
   const addItem = useCallback(
     (item: CartItem) => {
+      if (userId) {
+        cartService
+          .addItem(item.codigo, item.cantidad, item.mensaje || undefined)
+          .then(setItems)
+          .catch(console.error);
+        return;
+      }
+
       const stockReal = getStockFor(item.codigo);
       if (stockReal <= 0) return;
 
@@ -132,6 +150,22 @@ export const CartProvider = ({ children }: Props) => {
      ------------------------------------- */
   const updateQuantity = useCallback(
     (codigo: string, mensaje: string | null, cantidad: number) => {
+      if (userId) {
+        const msgNorm = (mensaje ?? "").trim().toLowerCase();
+        const itemToUpdate = items.find(
+          (i) =>
+            i.codigo === codigo &&
+            (i.mensaje ?? "").trim().toLowerCase() === msgNorm
+        );
+        if (itemToUpdate?.backendId) {
+          cartService
+            .updateItem(itemToUpdate.backendId, cantidad)
+            .then(setItems)
+            .catch(console.error);
+        }
+        return;
+      }
+
       const stockReal = getStockFor(codigo);
       if (stockReal <= 0) return;
 
@@ -169,6 +203,22 @@ export const CartProvider = ({ children }: Props) => {
      ------------------------------------- */
   const removeItem = useCallback(
     (codigo: string, mensaje?: string | null) => {
+      if (userId) {
+        const msgNorm = (mensaje ?? "").trim().toLowerCase();
+        const itemToRemove = items.find(
+          (i) =>
+            i.codigo === codigo &&
+            (i.mensaje ?? "").trim().toLowerCase() === msgNorm
+        );
+        if (itemToRemove?.backendId) {
+          cartService
+            .removeItem(itemToRemove.backendId)
+            .then(setItems)
+            .catch(console.error);
+        }
+        return;
+      }
+
       const msgNorm = (mensaje ?? "").trim().toLowerCase();
 
       const updated = items.filter((i) => {
@@ -185,6 +235,10 @@ export const CartProvider = ({ children }: Props) => {
         LIMPIAR EL CARRITO (POR USUARIO)
      ------------------------------------- */
   const clear = useCallback(() => {
+    if (userId) {
+      cartService.clearCart().then(() => setItems([])).catch(console.error);
+      return;
+    }
     sync([]);
     clearStorage(userId); // <<--- LIMPIA SOLO ESTE USUARIO
   }, [sync, userId]);

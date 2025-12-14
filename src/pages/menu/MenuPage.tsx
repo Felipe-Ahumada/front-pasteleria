@@ -15,12 +15,45 @@ import {
 import { useMenuShare } from "@/hooks/menu/useMenuShare";
 import { menuService, type Producto } from "@/service/menuService";
 import { formatImagePath } from "@/utils/storage/imageHelpers";
+
 const formatPrice = (value: number) =>
   value.toLocaleString("es-CL", {
     style: "currency",
     currency: "CLP",
     maximumFractionDigits: 0,
   });
+
+
+const ScrollRevealSection = ({ children }: { children: React.ReactNode }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className={`reveal-hidden ${isVisible ? "reveal-visible" : "slide-from-bottom"}`}
+      style={{ transition: "all 1s ease-out" }}
+    >
+      {children}
+    </div>
+  );
+};
+
+const MENU_HERO_IMAGE = "https://res.cloudinary.com/dx83p4455/image/upload/v1762263515/carrusel_carta_oznheh.jpg";
 
 /* ===========================================================
    NORMALIZAR PRODUCTOS PARA FILTROS
@@ -153,168 +186,200 @@ const MenuPage = () => {
   ============================================================ */
 
   return (
-    <section className="py-4 py-lg-5">
-      <div className="container">
-        <header className="text-center mb-4 mb-lg-5">
-          <h1 className="section-title mb-2">Nuestra Carta</h1>
-          <p className="mb-0">
-            Explora nuestras categorías y encuentra el postre ideal.
-          </p>
-        </header>
-
-        {/* FILTROS */}
-        <MenuFilters
-          categories={menuData.categorias}
-          productOptions={productOptions}
-          orderOptions={[
-            { value: "name-asc", label: "Nombre: A → Z" },
-            { value: "name-desc", label: "Nombre: Z → A" },
-            { value: "price-asc", label: "Precio: menor a mayor" },
-            { value: "price-desc", label: "Precio: mayor a menor" },
-          ]}
-          selectedCategory={selectedCategory}
-          selectedProductCode={selectedProductCode}
-          minPrice={minPrice}
-          maxPrice={maxPrice}
-          sortOrder={sortOrder}
-          errors={errors}
-          onCategoryChange={handleCategoryChange}
-          onProductChange={onProductChange}
-          onMinPriceChange={handleMinPriceChange}
-          onMaxPriceChange={handleMaxPriceChange}
-          onSortChange={onSortChange}
-          onReset={resetFilters}
-        />
-
-        {/* CONTADOR */}
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <p className="mb-0">
-            {totalProductos === 0
-              ? "Sin productos visibles."
-              : `${totalProductos} ${
-                  totalProductos === 1
-                    ? "producto disponible"
-                    : "productos disponibles"
-                }`}
-          </p>
+    <main className="p-0">
+      {/* Hero Section */}
+      <div className="about-hero" style={{ backgroundImage: `url(${MENU_HERO_IMAGE})` }}>
+        <div className="about-hero-content">
+          <h1 className="about-hero-title">CARTA</h1>
         </div>
 
-        {/* LISTADO */}
-        {totalProductos === 0 ? (
-          <div className="menu-empty card-soft text-center py-5">
-            <p className="mb-2 fw-semibold">
-              No encontramos productos con los filtros aplicados.
-            </p>
-            <Button variant="mint" onClick={resetFilters}>
-              Ver carta completa
-            </Button>
-          </div>
-        ) : (
-          <div className="row g-4">
-            {filteredProducts.map((item) => {
-              const stockReal = item.stock;
-              const enCarrito = getCantidadEnCarrito(item.codigo_producto);
-              const disponible = stockReal - enCarrito;
+        <div className="about-sidebar-decoration">
+          <a
+            href="https://www.instagram.com/pasteleria1000sabores"
+            target="_blank"
+            rel="noreferrer"
+            className="about-sidebar-link"
+          >
+            <i className="bi bi-instagram"></i>
+            <span>Síguenos</span>
+          </a>
+          <div className="about-sidebar-line"></div>
+        </div>
+      </div>
 
-              return (
-                <div
-                  className="col-12 col-md-6 col-lg-4"
-                  key={item.codigo_producto}
-                >
-                  <div className="card card-soft shadow-soft h-100 product-card">
-                    <Link
-                      to={`/menu/${item.codigo_producto}`}
-                      className="ratio ratio-4x3"
+      <section className="bg-cocoa-dark py-5 position-relative">
+        <ScrollRevealSection>
+          <div className="container">
+            <div className="bg-cocoa-glass p-4 rounded-4 mb-5 border-gold shadow-lg text-center">
+              <h1 className="section-title mb-2 text-gold">Nuestras Delicias</h1>
+              <p className="mb-0 text-premium-body">
+                Explora nuestras categorías y encuentra el postre ideal.
+              </p>
+            </div>
+
+            {/* FILTROS */}
+            <MenuFilters
+              categories={menuData.categorias}
+              productOptions={productOptions}
+              orderOptions={[
+                { value: "name-asc", label: "Nombre: A → Z" },
+                { value: "name-desc", label: "Nombre: Z → A" },
+                { value: "price-asc", label: "Precio: menor a mayor" },
+                { value: "price-desc", label: "Precio: mayor a menor" },
+              ]}
+              selectedCategory={selectedCategory}
+              selectedProductCode={selectedProductCode}
+              minPrice={minPrice}
+              maxPrice={maxPrice}
+              sortOrder={sortOrder}
+              errors={errors}
+              onCategoryChange={handleCategoryChange}
+              onProductChange={onProductChange}
+              onMinPriceChange={handleMinPriceChange}
+              onMaxPriceChange={handleMaxPriceChange}
+              onSortChange={onSortChange}
+              onReset={resetFilters}
+            />
+
+            {/* CONTADOR */}
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <p className="mb-0 text-white-50">
+                {totalProductos === 0
+                  ? "Sin productos visibles."
+                  : `${totalProductos} ${
+                      totalProductos === 1
+                        ? "producto disponible"
+                        : "productos disponibles"
+                    }`}
+              </p>
+            </div>
+
+            {/* LISTADO */}
+            {totalProductos === 0 ? (
+              <div className="menu-empty bg-cocoa-glass rounded-4 border-gold text-center py-5">
+                <p className="mb-2 fw-semibold text-white">
+                  No encontramos productos con los filtros aplicados.
+                </p>
+                <Button variant="mint" onClick={resetFilters}>
+                  Ver carta completa
+                </Button>
+              </div>
+            ) : (
+              <div
+                className="row g-4"
+                key={`${selectedCategory}-${selectedProductCode}-${sortOrder}-${minPrice}-${maxPrice}`}
+              >
+                {filteredProducts.map((item, index) => {
+                  const stockReal = item.stock;
+                  const enCarrito = getCantidadEnCarrito(item.codigo_producto);
+                  const disponible = stockReal - enCarrito;
+
+                  return (
+                    <div
+                      className="col-12 col-md-6 col-lg-4"
+                      key={item.codigo_producto}
+                      style={{
+                        animation: "fadeInUp 0.6s ease-out forwards",
+                        animationDelay: `${index * 0.1}s`,
+                        opacity: 0,
+                      }}
                     >
-                      <img
-                        src={formatImagePath(item.imagen_producto)}
-                        alt={item.nombre_producto}
-                        className="w-100 h-100 object-fit-cover"
-                        loading="lazy"
-                      />
-                    </Link>
-
-                    <div className="card-body d-flex flex-column text-center gap-2">
-                      <p className="text-uppercase small text-muted mb-1">
-                        {item.categoriaNombre}
-                      </p>
-
-                      <h3 className="h5 mb-0">{item.nombre_producto}</h3>
-
-                      <p className="fw-semibold mb-0">
-                        {formatPrice(item.precio_producto)}
-                      </p>
-
-                      <p className="text-muted flex-grow-1">
-                        {item.descripción_producto}
-                      </p>
-
-                      <div className="d-grid gap-2">
-                        <Button
-                          as="link"
+                      <div className="card bg-cocoa-glass border-gold shadow-lg h-100 product-card">
+                        <Link
                           to={`/menu/${item.codigo_producto}`}
-                          variant="strawberry"
-                          block
+                          className="ratio ratio-4x3"
                         >
-                          Ver detalle y personalizar
-                        </Button>
+                          <img
+                            src={formatImagePath(item.imagen_producto)}
+                            alt={item.nombre_producto}
+                            className="w-100 h-100 object-fit-cover rounded-top-4"
+                            loading="lazy"
+                          />
+                        </Link>
 
-                        <Button
-                          variant="mint"
-                          block
-                          disabled={disponible <= 0}
-                          onClick={() => handleAddToCart(item)}
-                          className={disponible <= 0 ? "opacity-75" : ""}
-                        >
-                          {disponible <= 0 ? (
-                            <>
-                              <i className="bi bi-x-circle" /> Sin stock
-                              disponible
-                            </>
-                          ) : (
-                            <>
-                              <i className="bi bi-cart-plus" /> Añadir al
-                              carrito
-                            </>
-                          )}
-                        </Button>
-
-                        {disponible <= 0 && (
-                          <p className="small text-danger mb-0">
-                            No hay stock disponible para este producto.
+                        <div className="card-body d-flex flex-column text-center gap-2">
+                          <p className="text-uppercase small text-white-50 mb-1">
+                            {item.categoriaNombre}
                           </p>
-                        )}
 
-                        <Button
-                          variant="mint"
-                          block
-                          onClick={() => handleShare(item)}
-                        >
-                          <i className="bi bi-share" /> Compartir
-                        </Button>
+                          <h3 className="h5 mb-0 text-gold">{item.nombre_producto}</h3>
 
-                        {cardFeedbacks[item.codigo_producto] && (
-                          <div
-                            className={`small ${
-                              cardFeedbacks[item.codigo_producto]?.tone ===
-                              "danger"
-                                ? "text-danger"
-                                : "text-success"
-                            }`}
-                          >
-                            {cardFeedbacks[item.codigo_producto]?.text}
+                          <p className="fw-semibold mb-0 text-white">
+                            {formatPrice(item.precio_producto)}
+                          </p>
+
+                          <p className="text-premium-body flex-grow-1">
+                            {item.descripción_producto}
+                          </p>
+
+                          <div className="d-grid gap-2">
+                            <Button
+                              as="link"
+                              to={`/menu/${item.codigo_producto}`}
+                              variant="strawberry"
+                              block
+                            >
+                              Ver detalle y personalizar
+                            </Button>
+
+                            <Button
+                              variant="mint"
+                              block
+                              disabled={disponible <= 0}
+                              onClick={() => handleAddToCart(item)}
+                              className={disponible <= 0 ? "opacity-75" : ""}
+                            >
+                              {disponible <= 0 ? (
+                                <>
+                                  <i className="bi bi-x-circle" /> Sin stock
+                                  disponible
+                                </>
+                              ) : (
+                                <>
+                                  <i className="bi bi-cart-plus" /> Añadir al
+                                  carrito
+                                </>
+                              )}
+                            </Button>
+
+                            {disponible <= 0 && (
+                              <p className="small text-danger mb-0">
+                                No hay stock disponible para este producto.
+                              </p>
+                            )}
+
+                            <Button
+                              variant="mint"
+                              block
+                              onClick={() => handleShare(item)}
+                            >
+                              <i className="bi bi-share" /> Compartir
+                            </Button>
+
+                            {cardFeedbacks[item.codigo_producto] && (
+                              <div
+                                className={`small ${
+                                  cardFeedbacks[item.codigo_producto]?.tone ===
+                                  "danger"
+                                    ? "text-danger"
+                                    : "text-success"
+                                }`}
+                              >
+                                {cardFeedbacks[item.codigo_producto]?.text}
+                              </div>
+                            )}
                           </div>
-                        )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              );
-            })}
+                  );
+                })}
+              </div>
+            )}
           </div>
-        )}
-      </div>
-    </section>
+        </ScrollRevealSection>
+      </section>
+    </main>
   );
 };
 

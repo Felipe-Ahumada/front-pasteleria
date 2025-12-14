@@ -1,4 +1,112 @@
-@import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Pacifico&display=swap");
+
+/* Rest of the file... */
+
+/* ========================================= */
+/*            SCROLL ANIMATIONS              */
+/* ========================================= */
+
+/* Base class for hidden elements */
+.reveal-hidden {
+  opacity: 0;
+  transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, opacity;
+}
+
+/* Active state - forces reset */
+.reveal-visible {
+  opacity: 1 !important;
+  transform: translateX(0) !important;
+}
+
+/* Initial States */
+.slide-from-left {
+  transform: translateX(-100px);
+}
+
+.slide-from-right {
+  transform: translateX(100px);
+}
+
+/* Optional vertical slide */
+.slide-from-bottom {
+  transform: translateY(100px);
+}
+
+/* ========================================= */
+/*            ABOUT PAGE HERO                */
+/* ========================================= */
+
+.about-hero {
+  position: relative;
+  height: 80vh;
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-top: -20px; /* Counteract generic padding if needed, but safer to handle in component */
+}
+
+.about-hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(40, 28, 24, 0.6); /* Deep Cocoa Overlay */
+  z-index: 1;
+}
+
+.about-hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+.about-hero-title {
+  font-family: 'Pacifico', cursive;
+  font-size: 5rem;
+  color: #fff; /* White as per reference usually, or keep Gold? User said 'siguiendo nuestro estilo'. Gold on dark is our style. But reference is clean. Let's try White with Gold shadow? Or just Gold. Let's stick to Gold for Brand. */
+  color: var(--title-tertiary);
+  text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  opacity: 0;
+  animation: fadeInUp 1s ease-out 0.3s forwards;
+}
+
+.about-sidebar-decoration {
+    position: absolute;
+    left: 60px;
+    bottom: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    z-index: 2;
+    color: var(--title-tertiary);
+}
+
+.about-sidebar-line {
+    width: 2px;
+    height: 100px;
+    background-color: var(--title-tertiary);
+}
+
+.about-sidebar-text {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+@media (min-width: 992px) {
+    .about-hero-title {
+        font-size: 9rem;
+    }
+}
 
 :root {
   --radius-lg: 18px;
@@ -60,21 +168,7 @@ svg {
 
 .app-shell main {
   flex: 1;
-  padding-top: 0.75rem;
-}
-
-.app-shell main > .hero-carousel:first-child {
-  margin-top: -1.5rem;
-}
-
-@supports selector(main:has(*)) {
-  .app-shell main:has(> .hero-carousel) {
-    padding-top: 0;
-  }
-
-  .app-shell main:has(> .hero-carousel) > .hero-carousel:first-child {
-    margin-top: 0;
-  }
+  padding-top: calc(var(--nav-h) + 1rem);
 }
 
 .contact-card {
@@ -246,6 +340,30 @@ pre {
   }
 }
 
+/* Navbar Pastel Pill Style */
+.nav-link-pill {
+  border-radius: 99px;
+  padding: 0.5rem 1rem !important;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  margin: 0 2px;
+  color: var(--ink);
+}
+
+.nav-link-pill:hover,
+.nav-link-pill:focus-visible {
+  background-color: #fff4b1; /* Light yellow/cream for hover contrast */
+  color: var(--title-main) !important;
+  transform: translateY(-1px);
+}
+
+.nav-link-pill.active {
+  background-color: var(--pastel-strawberry);
+  color: var(--ink) !important;
+  box-shadow: 0 4px 10px rgba(247, 183, 209, 0.4);
+  font-weight: 600;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -377,6 +495,14 @@ small,
   background-color: var(--pastel-mint) !important;
 }
 
+.text-mint {
+  color: var(--pastel-mint) !important;
+}
+
+.border-mint {
+  border-color: var(--pastel-mint) !important;
+}
+
 /* Breadcrumb pink links */
 .breadcrumb a.breadcrumb-link--pink {
   color: var(--title-main) !important;
@@ -404,3 +530,639 @@ small,
   transform: translateY(0);
   box-shadow: none;
 }
+
+/* =========================================
+   REBRANDING: TACO TOPEKA STYLE
+   ========================================= */
+
+/* Navbar Transitions */
+.transition-base {
+  transition: background-color 0.3s ease, padding 0.3s ease;
+}
+
+/* Navbar Theme (Solid Brand Color - Dark Cocoa) */
+.navbar-theme {
+  background-color: #4A342E; /* Dark Cocoa - Complements Pink/Brown Logo */
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  border-bottom: 4px solid var(--title-tertiary); /* Gold Border for Premium feel */
+}
+
+/* Brand Overflow Logic */
+.brand-container-overflow {
+  position: relative !important;
+  overflow: visible !important; 
+  /* Don't restrict height too much, allow children to hang */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-right: 1rem;
+  margin-left: 1.5rem; /* Fix cutoff at edge */
+}
+
+.logo-nav {
+  width: 70px;
+  height: auto;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+  transition: transform 0.3s ease;
+  z-index: 20; /* Above text */
+}
+
+.brand-container-overflow:hover .logo-nav {
+  transform: scale(1.1) rotate(-5deg);
+}
+
+.brand-text-container {
+  position: absolute;
+  top: 68px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); /* Shadow behind the white outline */
+}
+
+.brand-line-1 {
+  font-family: 'Pacifico', cursive;
+  font-size: 1.1rem;
+  color: var(--pastel-strawberry); /* Soft Pink on Dark Brown */
+  line-height: 1.2;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+  margin-bottom: 2px;
+}
+
+.brand-line-2 {
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+}
+
+/* Navbar Links */
+.navbar-theme .nav-link {
+  color: rgba(255,255,255,0.95) !important;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+  border: 1px solid transparent; /* Prevent jump on border change if any */
+}
+
+.navbar-theme .nav-link:hover {
+  color: var(--title-tertiary) !important; /* Gold Text */
+  transform: translateY(-1px);
+}
+
+.navbar-theme .nav-link.active {
+  background-color: var(--title-tertiary) !important; /* Gold Background */
+  color: #4A342E !important; /* Dark Cocoa Text */
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  transform: translateY(0);
+}
+
+/* Links on the Brand Navbar (Commented out due to missing selector)
+   transform: translateY(-1px);
+   box-shadow: 0 4px 8px rgba(214, 123, 168, 0.2);
+*/
+
+.navbar-theme .nav-link-pill.active {
+  background-color: rgba(255, 255, 255, 0.6);
+  color: var(--title-main) !important;
+  box-shadow: none;
+}
+
+/* Remove old specific overrides if they conflict but let's just use .navbar-theme as primary selector */
+
+/* Hero Section */
+.hero-container {
+  height: calc(100vh - var(--nav-h)); /* Fit remaining space */
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  margin-top: 0 !important; /* Override potential offsets */
+}
+
+.hero-carousel,
+.hero-carousel .carousel,
+.hero-carousel .carousel-inner,
+.hero-carousel .carousel-item {
+  height: 100%;
+}
+
+/* Darken images slightly so text pops */
+.hero-carousel .carousel-item::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.35); /* Overlay darkness */
+  z-index: 1;
+}
+
+.hero-carousel .carousel-item img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.hero-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+/* Static Overlay on top of Carousel */
+.hero-static-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: #fff;
+  pointer-events: none; /* Let clicks pass through if needed, but we have buttons inside */
+}
+
+.hero-content {
+  pointer-events: auto;
+  padding: 1rem;
+  max-width: 800px;
+}
+
+/* Floating Animation */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0px); }
+}
+
+.hero-brand-logo {
+  max-width: 280px;
+  margin-bottom: 2rem;
+  filter: drop-shadow(0 8px 25px rgba(0,0,0,0.6));
+  animation: float 6s ease-in-out infinite;
+}
+
+.hero-title {
+  font-family: 'Pacifico', cursive;
+  font-size: clamp(3rem, 8vw, 6rem);
+  line-height: 1.1;
+  color: #fff;
+  text-shadow: 
+    0 2px 4px rgba(0,0,0,1), 
+    0 0 10px rgba(0,0,0,0.8),
+    0 0 30px rgba(0,0,0,0.6);
+  margin-bottom: 0.5rem;
+}
+
+.hero-subtitle {
+  font-size: clamp(1.4rem, 4vw, 2.2rem);
+  font-weight: 700; /* Extra Bold */
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 3rem;
+  color: #fff;
+  text-shadow: 
+    0 2px 4px rgba(0,0,0,1), 
+    0 0 10px rgba(0,0,0,0.8),
+    0 0 30px rgba(0,0,0,0.6); /* Multi-layer shadow for maximum pop */
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 2rem; /* Push buttons down */
+}
+
+.btn-hero {
+  padding: 0.8rem 2rem; /* Smaller padding */
+  font-size: 1rem; /* Smaller font */
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-radius: 4px; 
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.btn-hero-primary {
+  background-color: var(--title-tertiary); /* Gold/Yellowish */
+  color: #fff;
+  border: 2px solid var(--title-tertiary);
+}
+
+.btn-hero-primary:hover {
+  background-color: transparent;
+  color: var(--title-tertiary);
+  background-color: rgba(196, 163, 90, 0.2); /* Slight bg on hover for readability */
+}
+
+.btn-hero-secondary {
+  background-color: var(--title-secondary); /* Greenish - Solid color now */
+  color: #fff;
+  border: 2px solid var(--title-secondary);
+}
+
+.btn-hero-secondary:hover {
+  background-color: transparent;
+  color: #fff;
+  border-color: #fff; /* Switch to white border on hover for style */
+  background-color: rgba(90, 165, 141, 0.2);
+}
+/* ========================================= */
+/*       HALL OF FAME CATEGORIES (LANDO)     */
+/* ========================================= */
+
+.bg-cocoa-dark {
+  background-color: #3e2b26; /* Slightly darker than navbar for depth */
+  color: #fff;
+  position: relative;
+  overflow: hidden; /* Needed for animations popping in */
+}
+
+.category-hall-of-fame-title {
+  font-family: 'Pacifico', cursive;
+  color: var(--title-tertiary); /* Gold */
+  font-size: 3rem;
+  margin-bottom: 3rem;
+  text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  position: relative;
+  z-index: 10;
+}
+
+.category-circle-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  text-decoration: none;
+  opacity: 0; /* Hidden initially for animation */
+  transform: translateY(30px);
+}
+
+.category-circle-wrapper.visible {
+  animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.category-circle-img-container {
+  width: 100%;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid rgba(255,255,255,0.1); /* Subtle border initially */
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5); /* Deep shadow */
+  transition: all 0.4s ease;
+  position: relative;
+  background-color: #2a1e1b;
+}
+
+.category-circle-img-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+/* Hover Effects */
+.category-circle-wrapper:hover .category-circle-img-container {
+  border-color: var(--title-tertiary); /* Gold Border on Hover */
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(196, 163, 90, 0.2); /* Gold glow */
+}
+
+.category-circle-wrapper:hover img {
+  transform: scale(1.15) rotate(2deg); /* Adding Lando-ish subtle rotation */
+}
+
+.category-circle-label {
+  font-family: 'Pacifico', cursive;
+  color: #fff;
+  font-size: 1.8rem;
+  text-transform: capitalize;
+  letter-spacing: 0.5px;
+  transition: color 0.3s ease;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+  margin-bottom: 0;
+}
+
+.category-circle-wrapper:hover .category-circle-label {
+  color: var(--title-tertiary); /* Gold text on hover */
+}
+
+.category-count {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 700;
+}
+
+/* Animation Keyframes */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Generic Scroll Animations */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.animate-on-scroll.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.section-gold-divider {
+  height: 4px;
+  width: 0;
+  background-color: var(--title-tertiary); /* Gold */
+  margin: 0 auto 3rem auto;
+  border-radius: 2px;
+  transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 0 10px rgba(196, 163, 90, 0.6);
+}
+
+.section-gold-divider.visible {
+  width: 100px;
+}
+
+/* ========================================= */
+/*            PREMIUM FOOTER (Restyle)       */
+/* ========================================= */
+
+.footer-premium {
+  background-color: #4A342E; /* Dark Cocoa */
+  color: #fff;
+  border-top: 5px solid var(--title-tertiary) !important; /* Gold Border */
+}
+
+.footer-premium .footer-brand-title {
+  font-family: 'Pacifico', cursive;
+  color: var(--title-tertiary); /* Gold */
+  font-size: 1.8rem;
+}
+
+.footer-premium .footer-section-title {
+  color: var(--title-tertiary);
+  font-weight: 700;
+  letter-spacing: 1px;
+  font-family: 'Montserrat', sans-serif; /* Clean contrast */
+  text-transform: uppercase;
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.footer-premium a.link-premium {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-size: 1.1rem;
+  display: inline-block;
+  margin-bottom: 0.5rem;
+}
+
+.footer-premium a.link-premium:hover {
+  color: #fff;
+  padding-left: 5px; /* Slight drift on hover */
+  text-shadow: 0 0 10px rgba(196, 163, 90, 0.5);
+}
+
+.footer-premium .link-body-emphasis {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+.footer-premium .link-body-emphasis:hover {
+    color: var(--title-tertiary) !important;
+}
+
+.footer-premium .footer-divider {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.footer-premium .social-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  color: #fff;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+
+
+/* ========================================= */
+/*            ABOUT PAGE HERO                */
+/* ========================================= */
+
+.about-hero {
+  position: relative;
+  height: 100vh; /* Full Height */
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-top: -90px; /* Pull up behind navbar to eliminate white gap */
+}
+
+.about-hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(46, 30, 26, 0.5);
+  z-index: 1;
+}
+
+.about-hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+.about-hero-title {
+  font-family: 'Montserrat', sans-serif; /* Modern & Clean */
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 4rem;
+  color: var(--title-tertiary);
+  text-shadow: 0 4px 30px rgba(0,0,0,0.5);
+  opacity: 0;
+  animation: fadeInUp 1s ease-out 0.3s forwards;
+  letter-spacing: 8px; /* Elegant spacing */
+}
+
+.about-sidebar-decoration {
+    position: absolute;
+    left: 40px;
+    bottom: 15%;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    z-index: 2;
+    color: #fff;
+}
+
+.about-sidebar-line {
+    width: 2px;
+    height: 80px;
+    background-color: var(--title-tertiary);
+}
+
+.about-sidebar-link {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    text-transform: uppercase;
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: 3px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--title-tertiary);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: color 0.3s ease;
+}
+
+.about-sidebar-link:hover {
+    color: #fff;
+}
+
+.about-sidebar-link i {
+    transform: rotate(90deg); /* Counter-rotate icon if needed, or keep standard */
+    font-size: 1.2rem;
+    margin-bottom: 5px; /* Space in vertical mode */
+}
+
+@media (min-width: 992px) {
+    .about-sidebar-decoration {
+        display: flex;
+    }
+    .about-hero-title {
+        font-size: 7rem;
+    }
+}
+
+/* Premium Utilities */
+.text-gold {
+  color: var(--title-tertiary) !important;
+}
+
+.bg-cocoa-glass {
+  background: rgba(74, 52, 46, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--title-tertiary);
+}
+
+.text-premium-body {
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 300;
+}
+
+.bg-cocoa-strong {
+  background-color: #221513; /* Very dark cocoa for high contrast */
+  border: 1px solid var(--title-tertiary);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.bg-cocoa-input {
+  background-color: #fffaf0; /* Light cream */
+  color: #000 !important;   /* Force black text */
+  border: 1px solid var(--title-tertiary);
+}
+
+.bg-cocoa-input::placeholder {
+  color: rgba(0,0,0,0.5);
+}
+
+/* ========================================= */
+/*            DARK THEME FORMS               */
+/* ========================================= */
+
+.form-control-dark {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  transition: all 0.2s ease;
+}
+
+.form-control-dark:focus {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: var(--title-tertiary); /* Gold border on focus */
+  color: #fff;
+  box-shadow: 0 0 0 0.25rem rgba(196, 163, 90, 0.25);
+}
+
+.form-control-dark::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.form-control-dark:disabled,
+.form-control-dark[readonly] {
+  background-color: rgba(255, 255, 255, 0.02);
+  opacity: 0.7;
+}
+
+.form-select-dark {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px 12px;
+}
+
+.form-select-dark:focus {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--title-tertiary);
+    color: #fff;
+    box-shadow: 0 0 0 0.25rem rgba(196, 163, 90, 0.25);
+}
+
+/* Custom Card for Profile */
+.card-cocoa {
+    background: rgba(40, 28, 24, 0.6); /* Semi-transparent dark cocoa */
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.input-group-text-dark {
+    background-color: rgba(40, 28, 24, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--title-tertiary);
+}
+
+.card-cocoa .form-text {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.border-gold {
+    border: 1px solid var(--title-tertiary) !important;
+}
+

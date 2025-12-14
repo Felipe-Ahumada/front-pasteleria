@@ -1,4 +1,5 @@
 import { defaultProductImage } from "@/assets";
+import { API_BASE_URL } from "@/config/axiosConfig";
 
 /**
  * UTILIDADES DE IMÁGENES
@@ -109,7 +110,13 @@ export const formatImagePath = (rawPath: string): string => {
     return normalizedMatch;
   }
 
-  return FALLBACK_IMAGE;
+  // Si no es remota ni está en assets, asumir que viene del backend
+  // Quitamos /api/v1 para obtener la base limpia (ej: http://localhost:8080)
+  const backendHost = API_BASE_URL.replace(/\/api\/v1\/?$/, "");
+  // Aseguramos que el path empiece con /
+  const path = trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+  
+  return `${backendHost}${path}`;
 };
 
 export const fallbackProductImage = FALLBACK_IMAGE;

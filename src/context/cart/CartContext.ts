@@ -7,6 +7,7 @@ export type CartItem = {
   imagen: string;
   cantidad: number;
   mensaje?: string | null;
+  backendId?: number;
 };
 
 export type CartTotals = {

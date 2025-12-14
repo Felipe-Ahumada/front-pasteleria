@@ -47,13 +47,13 @@ const MenuFilters = ({
   onReset,
 }: MenuFiltersProps) => {
   return (
-    <div className="card card-soft shadow-soft mb-4 p-3">
+    <div className="card bg-cocoa-glass border-gold shadow-lg mb-4 p-3">
       <div className="row g-3">
         {/* Categorías */}
         <div className="col-md-3">
-          <label className="form-label fw-semibold">Categoría</label>
+          <label className="form-label fw-bold text-gold">Categoría</label>
           <select
-            className="form-select"
+            className="form-select bg-cocoa-input"
             value={selectedCategory ?? ""}
             onChange={(e) =>
               onCategoryChange(e.target.value ? Number(e.target.value) : null)
@@ -70,9 +70,9 @@ const MenuFilters = ({
 
         {/* Productos */}
         <div className="col-md-3">
-          <label className="form-label fw-semibold">Producto</label>
+          <label className="form-label fw-bold text-gold">Producto</label>
           <select
-            className="form-select"
+            className="form-select bg-cocoa-input"
             value={selectedProductCode ?? ""}
             onChange={(e) => onProductChange(e.target.value || null)}
           >
@@ -87,21 +87,22 @@ const MenuFilters = ({
 
         {/* Precio mínimo */}
         <div className="col-md-2">
-          <label className="form-label fw-semibold">Precio mínimo</label>
+          <label className="form-label fw-bold text-gold">Precio mínimo</label>
           <input
-            type="number"
-            min={1}
-            className={`form-control ${errors.minPrice ? "is-invalid" : ""}`}
+            type="text"
+            inputMode="numeric"
+            maxLength={7}
+            placeholder="Ej: 5000"
+            className={`form-control bg-cocoa-input ${
+              errors.minPrice ? "is-invalid" : ""
+            }`}
             value={minPrice}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              const v = e.target.value;
-              if (v === "") {
+              const val = e.target.value.replace(/\D/g, "");
+              if (val === "") {
                 onMinPriceChange("");
-                return;
-              }
-              const num = Number(v);
-              if (num > 0) {
-                onMinPriceChange(num);
+              } else {
+                onMinPriceChange(Number(val));
               }
             }}
           />
@@ -112,21 +113,22 @@ const MenuFilters = ({
 
         {/* Precio máximo */}
         <div className="col-md-2">
-          <label className="form-label fw-semibold">Precio máximo</label>
+          <label className="form-label fw-bold text-gold">Precio máximo</label>
           <input
-            type="number"
-            min={1}
-            className={`form-control ${errors.maxPrice ? "is-invalid" : ""}`}
+            type="text"
+            inputMode="numeric"
+            maxLength={7}
+            placeholder="Ej: 20000"
+            className={`form-control bg-cocoa-input ${
+              errors.maxPrice ? "is-invalid" : ""
+            }`}
             value={maxPrice}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              const v = e.target.value;
-              if (v === "") {
+              const val = e.target.value.replace(/\D/g, "");
+              if (val === "") {
                 onMaxPriceChange("");
-                return;
-              }
-              const num = Number(v);
-              if (num > 0) {
-                onMaxPriceChange(num);
+              } else {
+                onMaxPriceChange(Number(val));
               }
             }}
           />
@@ -137,9 +139,9 @@ const MenuFilters = ({
 
         {/* Orden */}
         <div className="col-md-2">
-          <label className="form-label fw-semibold">Ordenar por</label>
+          <label className="form-label fw-bold text-gold">Ordenar por</label>
           <select
-            className="form-select"
+            className="form-select bg-cocoa-input"
             value={sortOrder}
             onChange={(e) => onSortChange(e.target.value as OrderOption)}
           >
@@ -154,7 +156,8 @@ const MenuFilters = ({
 
       {/* Botón reset */}
       <div className="text-end mt-3">
-        <button className="btn btn-mint" onClick={onReset}>
+        <button className="btn btn-mint fw-bold" onClick={onReset}>
+          <i className="bi bi-eraser me-2"></i>
           Limpiar filtros
         </button>
       </div>

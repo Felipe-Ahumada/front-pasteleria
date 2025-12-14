@@ -1,11 +1,12 @@
 import { NavLink, useLocation } from 'react-router-dom'
 
 import { Button } from '@/components/common'
-import { logoImage } from '@/assets'
+import { logoPastelito, logoPasteleria } from '@/assets'
 import cx from '@/utils/cx'
 import MobileNav from './MobileNav'
 import type { PrimaryLink, SecondaryLink } from '@/types/navbar'
 import useAuth from '@/hooks/useAuth'
+import { useCart } from '@/hooks/useCart'
 import { showOffcanvas } from '@/utils/offcanvas'
 
 const primaryLinks: PrimaryLink[] = [
@@ -31,9 +32,14 @@ const renderPrimaryLink = (link: PrimaryLink, currentPath: string) => (
 	<NavLink
 		key={link.label}
 		to={link.to}
-		className={({ isActive }) => cx('nav-link', { active: isActive && !link.icon })}
+		className={({ isActive }) =>
+			cx(
+				'nav-link px-3 py-2 rounded-pill transition-base',
+				isActive && 'active'
+			)
+		}
 		aria-label={link.ariaLabel}
-		end={link.to === '/'}
+		end={link.to === '/' || link.to === '/menu'}
 		onClick={(event) => {
 			if (link.to === '/' && currentPath === '/' && typeof window !== 'undefined') {
 				event.preventDefault()
@@ -41,14 +47,15 @@ const renderPrimaryLink = (link: PrimaryLink, currentPath: string) => (
 			}
 		}}
 	>
-		{link.icon ? <i className={cx('bi', link.icon, 'fs-5')} aria-hidden /> : link.label}
-		{link.icon ? <span className="visually-hidden">{link.label}</span> : null}
+		{link.icon ? <i className={cx('bi', link.icon, 'me-1')} aria-hidden /> : null}
+		<span>{link.label}</span>
 	</NavLink>
 )
 
 const Navbar = () => {
 	const { pathname } = useLocation()
 	const { isAuthenticated, user } = useAuth()
+	const { totals } = useCart()
 
 	const shouldShowAdminPanel =
 		Boolean(isAuthenticated) &&
@@ -96,8 +103,11 @@ const Navbar = () => {
 		}
 	}
 
+	// Rebranding: Always fixed, always brand theme (Taco Topeka style)
+	const navbarClasses = 'navbar navbar-expand-lg navbar-dark fixed-top navbar-theme transition-base'
+
 	return (
-		<nav className="navbar navbar-expand-lg navbar-light bg-white sticky-top primary-nav shadow-sm">
+		<nav className={navbarClasses}>
 			<div className="container-fluid">
 				<NavLink
 					className="navbar-brand d-flex align-items-center"
@@ -115,12 +125,11 @@ const Navbar = () => {
 					}}
 				>
 					<img
-						src={logoImage}
+						src={logoPasteleria}
 						alt="Pastelería Mil Sabores"
-						width={80}
-						className="rounded-pill me-2 logo"
+						height={70}
+						className="d-inline-block align-top"
 					/>
-					<span className="ms-2 fw-semibold d-none d-lg-inline brand-name">Pastelería Mil Sabores</span>
 				</NavLink>
 
 				<button
@@ -145,31 +154,56 @@ const Navbar = () => {
 					</ul>
 
 					<ul className="navbar-nav ms-auto align-items-lg-center gap-2 d-none d-lg-flex">
-						{secondaryLinks.map((link) => (
-							<li className="nav-item" key={link.label}>
-								{link.external ? (
-									<a
-										className="nav-link"
-										href={link.to}
-										target="_blank"
-										rel="noreferrer"
-										aria-label={link.ariaLabel}
-									>
-										<i className={cx('bi', link.icon, 'fs-5')} aria-hidden />
-										<span className="visually-hidden">{link.label}</span>
-									</a>
-								) : (
-									<NavLink
-										to={link.to}
-										className={({ isActive }) => cx('nav-link', { active: isActive })}
-										aria-label={link.ariaLabel}
-									>
-										<i className={cx('bi', link.icon, 'fs-5')} aria-hidden />
-										<span className="visually-hidden">{link.label}</span>
-									</NavLink>
-								)}
-							</li>
-						))}
+						{secondaryLinks.map((link) => {
+							const isCart = link.to === '/cart'
+							return (
+								<li className="nav-item" key={link.label}>
+									{link.external ? (
+										<a
+											className="nav-link nav-link-pill"
+											href={link.to}
+											target="_blank"
+											rel="noreferrer"
+											aria-label={link.ariaLabel}
+										>
+											<i className={cx('bi', link.icon, 'fs-5')} aria-hidden />
+											<span className="visually-hidden">{link.label}</span>
+										</a>
+									) : (
+										<NavLink
+											to={link.to}
+											className={({ isActive }) =>
+												cx(
+													'nav-link px-3 py-2 rounded-pill transition-base position-relative',
+													isActive && 'active'
+												)
+											}
+											aria-label={link.ariaLabel}
+										>
+											<div className="position-relative d-inline-block">
+												<i className={cx('bi', link.icon, 'fs-5')} aria-hidden />
+												{isCart && totals.totalCantidad > 0 && (
+													<span
+														className="position-absolute top-0 start-100 translate-middle badge rounded-pill fw-bold shadow-sm"
+														style={{
+															backgroundColor: 'var(--title-tertiary)',
+															color: '#3e2723', // Dark cocoa color for contrast on gold
+															fontSize: '0.7rem',
+															padding: '0.35em 0.6em',
+															border: '2px solid #3e2723', // Add border to separate from dark background
+														}}
+													>
+														{totals.totalCantidad}
+														<span className="visually-hidden">productos</span>
+													</span>
+												)}
+											</div>
+											<span className="visually-hidden">{link.label}</span>
+										</NavLink>
+									)}
+								</li>
+							)
+						})}
 						{shouldShowAdminPanel ? (
 							<li className="nav-item ms-2">
 								<Button

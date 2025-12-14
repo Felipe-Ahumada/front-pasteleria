@@ -2,9 +2,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Carousel } from "bootstrap";
 import {
   menuService,
-  MENU_CACHE_UPDATED_EVENT,
   type Producto,
 } from "@/service/menuService";
+import menuData from "@/data/menu_datos.json";
 
 export interface CarouselItem {
   id: string;
@@ -131,18 +131,22 @@ export function useHomePage() {
 
     const map: Record<
       string,
-      { id: string; name: string; productCount: number; image: string }
+      { id: string; name: string; productCount: number; image: string; categoryId: number }
     > = {};
 
     for (const producto of productos) {
       const categoria = producto.categoria;
 
       if (!map[categoria]) {
+        const catData = menuData.categorias.find((c) => c.nombre_categoria === categoria);
+        const realId = catData?.id_categoria ?? 0;
+
         map[categoria] = {
           id: categoria,
           name: categoria,
           productCount: 1,
           image: producto.imagen,
+          categoryId: realId,
         };
       } else {
         map[categoria].productCount++;

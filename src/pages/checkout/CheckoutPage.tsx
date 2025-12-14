@@ -123,64 +123,68 @@ const CheckoutPage = () => {
   const today = new Date().toISOString().split("T")[0];
 
   return (
-    <section className="container py-5">
+    <section className="bg-cocoa-dark min-vh-100 py-5">
+      <div className="container">
       {/* ===========================
           TÍTULO
       ============================ */}
-      <h1 className="section-title text-center mb-5">
+      <h1 className="section-title text-center mb-5 text-gold fw-bold font-title display-5">
         Procesamiento de Pedidos
       </h1>
 
       {/* ===========================
           RESUMEN DEL CARRITO
       ============================ */}
-      <div className="card card-soft shadow-soft p-4 mb-4">
-        <h4 className="mb-3">Resumen del carrito</h4>
+      {/* ===========================
+          RESUMEN DEL CARRITO
+      ============================ */}
+      <div className="bg-cocoa-strong border-gold rounded-4 p-4 mb-4 text-white shadow-lg">
+        <h4 className="mb-3 text-gold fw-bold font-title">Resumen del carrito</h4>
 
-        <table className="table">
-          <thead>
+        <table className="table table-borderless" style={{ "--bs-table-bg": "transparent" } as any}>
+          <thead className="border-bottom border-gold">
             <tr>
-              <th>Producto</th>
-              <th>Cant.</th>
-              <th>Precio</th>
-              <th>Subtotal</th>
+              <th className="text-gold">Producto</th>
+              <th className="text-gold">Cant.</th>
+              <th className="text-gold">Precio</th>
+              <th className="text-gold">Subtotal</th>
             </tr>
           </thead>
 
-          <tbody>
+          <tbody className="border-bottom border-gold">
             {items.map((i) => (
               <tr key={`${i.codigo}-${i.mensaje ?? ""}`}>
-                <td>{i.nombre}</td>
-                <td>{i.cantidad}</td>
-                <td>{formatPrice(i.precio)}</td>
-                <td>{formatPrice(i.precio * i.cantidad)}</td>
+                <td className="text-white">{i.nombre}</td>
+                <td className="text-white">{i.cantidad}</td>
+                <td className="text-white">{formatPrice(i.precio)}</td>
+                <td className="text-white">{formatPrice(i.precio * i.cantidad)}</td>
               </tr>
             ))}
 
             {/* SUBTOTAL */}
             <tr>
-              <td colSpan={3} className="text-end fw-semibold">
+              <td colSpan={3} className="text-end fw-semibold text-white">
                 Subtotal
               </td>
-              <td>{formatPrice(totals.subtotal)}</td>
+              <td className="text-white">{formatPrice(totals.subtotal)}</td>
             </tr>
 
             {/* DESCUENTO SI EXISTE */}
             {totals.discountAmount > 0 && totals.discountDescription && (
-              <tr className="text-success fw-bold">
-                <td colSpan={3} className="text-end">
+              <tr className="text-mint fw-bold">
+                <td colSpan={3} className="text-end text-mint">
                   {totals.discountDescription}
                 </td>
-                <td>-{formatPrice(totals.discountAmount)}</td>
+                <td className="text-mint">-{formatPrice(totals.discountAmount)}</td>
               </tr>
             )}
 
             {/* TOTAL FINAL */}
             <tr className="fw-bold">
-              <td colSpan={3} className="text-end">
+              <td colSpan={3} className="text-end text-gold h5">
                 Total a pagar
               </td>
-              <td>{formatPrice(totals.totalPagar)}</td>
+              <td className="text-gold h4">{formatPrice(totals.totalPagar)}</td>
             </tr>
           </tbody>
         </table>
@@ -189,17 +193,17 @@ const CheckoutPage = () => {
       {/* ===========================
           FORMULARIO DE ENTREGA
       ============================ */}
-      <div className="card card-soft shadow-soft p-4">
-        <h4 className="mb-4">Información de Entrega</h4>
+      <div className="bg-cocoa-strong border-gold rounded-4 p-4 shadow-lg text-white">
+        <h4 className="mb-4 text-gold fw-bold font-title">Información de Entrega</h4>
 
         <div className="row g-3">
           {/* RUN */}
           <div className="col-md-6">
-            <label className="form-label">RUN</label>
+            <label className="form-label text-gold fw-bold">RUN</label>
             <input
               type="text"
               name="run"
-              className="form-control"
+              className="form-control bg-cocoa-input border-gold"
               placeholder="12345678-9"
               value={form.run}
               onChange={handleChange}
@@ -209,11 +213,11 @@ const CheckoutPage = () => {
 
           {/* CORREO */}
           <div className="col-md-6">
-            <label className="form-label">Correo</label>
+            <label className="form-label text-gold fw-bold">Correo</label>
             <input
               type="email"
               name="correo"
-              className="form-control"
+              className="form-control bg-cocoa-input border-gold"
               value={form.correo}
               onChange={handleChange}
               readOnly
@@ -222,11 +226,11 @@ const CheckoutPage = () => {
 
           {/* NOMBRES */}
           <div className="col-md-6">
-            <label className="form-label">Nombres</label>
+            <label className="form-label text-gold fw-bold">Nombres</label>
             <input
               type="text"
               name="nombres"
-              className="form-control"
+              className="form-control bg-cocoa-input border-gold"
               value={form.nombres}
               onChange={handleChange}
             />
@@ -234,11 +238,11 @@ const CheckoutPage = () => {
 
           {/* APELLIDOS */}
           <div className="col-md-6">
-            <label className="form-label">Apellidos</label>
+            <label className="form-label text-gold fw-bold">Apellidos</label>
             <input
               type="text"
               name="apellidos"
-              className="form-control"
+              className="form-control bg-cocoa-input border-gold"
               value={form.apellidos}
               onChange={handleChange}
             />
@@ -246,10 +250,10 @@ const CheckoutPage = () => {
 
           {/* REGIÓN */}
           <div className="col-md-6">
-            <label className="form-label">Región</label>
+            <label className="form-label text-gold fw-bold">Región</label>
             <select
               name="regionId"
-              className="form-select"
+              className="form-select bg-cocoa-input border-gold"
               value={form.regionId}
               onChange={handleChange}
             >
@@ -266,10 +270,10 @@ const CheckoutPage = () => {
 
           {/* COMUNA */}
           <div className="col-md-6">
-            <label className="form-label">Comuna</label>
+            <label className="form-label text-gold fw-bold">Comuna</label>
             <select
               name="comuna"
-              className="form-select"
+              className="form-select bg-cocoa-input border-gold"
               value={form.comuna}
               onChange={handleChange}
               disabled={!form.regionId}
@@ -301,11 +305,11 @@ const CheckoutPage = () => {
 
           {/* DIRECCIÓN */}
           <div className="col-12">
-            <label className="form-label">Dirección</label>
+            <label className="form-label text-gold fw-bold">Dirección</label>
             <input
               type="text"
               name="direccion"
-              className="form-control"
+              className="form-control bg-cocoa-input border-gold"
               placeholder="Ej: Pasaje Los Álamos 123"
               value={form.direccion}
               onChange={handleChange}
@@ -314,11 +318,11 @@ const CheckoutPage = () => {
 
           {/* FECHA */}
           <div className="col-md-4">
-            <label className="form-label">Fecha preferida</label>
+            <label className="form-label text-gold fw-bold">Fecha preferida</label>
             <input
               type="date"
               name="fecha"
-              className="form-control"
+              className="form-control bg-cocoa-input border-gold"
               min={today} // evita fechas pasadas
               value={form.fecha}
               onChange={handleChange}
@@ -327,10 +331,10 @@ const CheckoutPage = () => {
 
           {/* TIPO ENTREGA */}
           <div className="col-md-4">
-            <label className="form-label">Tipo de entrega</label>
+            <label className="form-label text-gold fw-bold">Tipo de entrega</label>
             <select
               name="tipoEntrega"
-              className="form-select"
+              className="form-select bg-cocoa-input border-gold"
               value={form.tipoEntrega}
               onChange={handleChange}
             >
@@ -342,10 +346,10 @@ const CheckoutPage = () => {
 
           {/* MÉTODO PAGO */}
           <div className="col-md-4">
-            <label className="form-label">Método de pago</label>
+            <label className="form-label text-gold fw-bold">Método de pago</label>
             <select
               name="pago"
-              className="form-select"
+              className="form-select bg-cocoa-input border-gold"
               value={form.pago}
               onChange={handleChange}
             >
@@ -357,22 +361,25 @@ const CheckoutPage = () => {
         </div>
 
         {/* MENSAJE */}
-        <div className="alert alert-warning mt-4">
+        <div className="alert bg-cocoa-input border-gold text-gold mt-4">
+          <i className="bi bi-info-circle me-2"></i>
           Lo sentimos, por el momento solo realizamos entregas en el Gran
           Concepción.
         </div>
 
         {/* BOTONES */}
         <div className="d-flex justify-content-between mt-4">
-          <Button variant="strawberry" as="link" to="/cart">
-            Volver al carrito
+          <Button variant="strawberry" as="link" to="/cart" className="rounded-pill shadow-soft fw-bold">
+            <i className="bi bi-arrow-left me-2"></i>
+             Volver al carrito
           </Button>
 
-          <Button variant="mint" onClick={confirmar}>
-            Confirmar y Pagar
+          <Button variant="mint" onClick={confirmar} className="rounded-pill shadow-soft fw-bold">
+            Confirmar y Pagar <i className="bi bi-check2-circle ms-2"></i>
           </Button>
         </div>
       </div>
+     </div>
     </section>
   );
 };

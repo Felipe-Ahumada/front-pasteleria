@@ -24,27 +24,27 @@ const BlogDetailPage = () => {
   };
 
   return (
-    <main className="container py-5" style={{ maxWidth: "900px" }}>
-      {/* TÍTULO */}
-      <h1
-        className="mb-3"
-        style={{
-          fontSize: "2.4rem",
-          fontWeight: "700",
-          color: "#d17ca7",
-        }}
-      >
-        {blog.titulo}
-      </h1>
+    <main className="bg-cocoa-dark min-vh-100 py-5">
+      <div className="container" style={{ maxWidth: "900px" }}>
+        {/* TÍTULO */}
+        <h1
+          className="mb-3 font-title text-gold"
+          style={{
+            fontWeight: "700",
+            fontSize: "clamp(2rem, 5vw, 3rem)",
+          }}
+        >
+          {blog.titulo}
+        </h1>
 
-      {/* DESCRIPCIÓN & METADATOS */}
-      <p className="text-secondary" style={{ fontSize: "1.1rem" }}>
-        {blog.descripcion}
-      </p>
-      <p className="small text-muted mb-4">
-        Por <strong>{blog.autorNombre}</strong> ·{" "}
-        {new Date(blog.createdAt).toLocaleDateString()}
-      </p>
+        {/* DESCRIPCIÓN & METADATOS */}
+        <p className="text-white fs-5 mb-2">
+          {blog.descripcion}
+        </p>
+        <p className="small text-white-50 mb-4">
+          Por <strong className="text-gold">{blog.autorNombre}</strong> ·{" "}
+          {new Date(blog.createdAt).toLocaleDateString()}
+        </p>
 
       {/* PORTADA */}
       <img
@@ -53,18 +53,18 @@ const BlogDetailPage = () => {
         style={{
           maxHeight: "420px",
           objectFit: "cover",
-          width: "100%",
+        width: "100%",
         }}
         alt={blog.titulo}
       />
 
       {/* CONTENIDO */}
       <div
-        className="mb-5"
+        className="mb-5 text-premium-body"
         style={{
           whiteSpace: "pre-wrap",
           fontSize: "1.15rem",
-          lineHeight: "1.7",
+          lineHeight: "1.8",
         }}
       >
         {blog.contenido}
@@ -73,69 +73,67 @@ const BlogDetailPage = () => {
       {/* LIKE BTN SOLO CORAZÓN ❤️ */}
       <button
         onClick={toggleLike}
+        className="btn p-0 d-flex align-items-center gap-2 mb-5"
         style={{
           background: "none",
           border: "none",
-          cursor: "pointer",
-          fontSize: "2rem",
         }}
       >
-        {liked ? "❤️" : "🤍"}{" "}
-        <span style={{ fontSize: "1.3rem", color: "#888" }}>{likesCount}</span>
+        <span style={{ fontSize: "2rem" }}>{liked ? "❤️" : "🤍"}</span>
+        <span className="h4 mb-0 text-white-50">{likesCount}</span>
       </button>
 
       {/* COMENTARIOS */}
       <section className="mt-5">
-        <h3 className="mb-3" style={{ color: "#d17ca7" }}>
+        <h3 className="mb-4 text-gold font-title">
           Comentarios
         </h3>
 
         {/* FORM COMENTAR */}
         {isAuthenticated ? (
           <form
-            className="d-flex gap-2 align-items-center mb-4"
+            className="d-flex gap-2 align-items-center mb-5"
             onSubmit={handleSubmit}
           >
             <input
-              className="form-control shadow-sm"
+              className="form-control form-control-dark shadow-sm"
               placeholder="Escribe un comentario..."
               value={text}
               onChange={(e) => setText(e.target.value)}
               style={{ borderRadius: "14px" }}
             />
 
-            <Button type="submit" variant="mint">
+            <Button type="submit" variant="mint" className="px-4 fw-bold">
               Publicar
             </Button>
           </form>
         ) : (
-          <div className="alert alert-warning mb-4" role="alert">
+          <div className="alert bg-cocoa-glass text-white border-gold mb-4" role="alert">
             Debes iniciar sesión para comentar.
           </div>
         )}
 
         {/* LISTA COMENTARIOS */}
         {comments.length === 0 ? (
-          <p className="text-muted">Sé el primero en comentar ✨</p>
+          <p className="text-white-50 fs-5">Sé el primero en comentar ✨</p>
         ) : (
-          comments.map((c) => (
-            <div
-              key={c.id}
-              className="p-3 mb-3 shadow-sm"
-              style={{
-                background: "white",
-                borderRadius: "12px",
-              }}
-            >
-              <p className="fw-bold mb-1">{c.authorName}</p>
-              <p className="mb-1">{c.content}</p>
-              <p className="small text-muted">
-                {new Date(c.createdAt).toLocaleString()}
-              </p>
-            </div>
-          ))
+          <div className="d-flex flex-column gap-3">
+            {comments.map((c) => (
+              <div
+                key={c.id}
+                className="p-3 shadow-sm card-cocoa"
+              >
+                <div className="d-flex justify-content-between align-items-start mb-2">
+                    <span className="fw-bold text-gold">{c.authorName}</span>
+                    <small className="text-white-50">{new Date(c.createdAt).toLocaleString()}</small>
+                </div>
+                <p className="mb-0 text-white">{c.content}</p>
+              </div>
+            ))}
+          </div>
         )}
       </section>
+      </div>
     </main>
   );
 };

@@ -432,9 +432,9 @@ const ProfilePage = () => {
 
   if (loading) {
     return (
-      <main className="py-5 bg-light-subtle">
+      <main className="py-5 bg-cocoa-dark">
         <div className="container text-center">
-          <div className="spinner-border text-primary" role="status">
+          <div className="spinner-border text-gold" role="status">
             <span className="visually-hidden">Cargando...</span>
           </div>
         </div>
@@ -443,7 +443,7 @@ const ProfilePage = () => {
   }
 
   return (
-    <main className="py-5 bg-light-subtle">
+    <main className="py-5 bg-cocoa-dark text-white">
       {showToast ? (
         <div
           className="position-fixed top-0 start-50 translate-middle-x mt-4"
@@ -475,7 +475,7 @@ const ProfilePage = () => {
       <div className="container">
         <div className="row g-4 g-lg-5">
           <div className="col-12 col-lg-4">
-            <div className="card border-0 shadow-sm">
+            <div className="card-cocoa border-0 shadow-lg">
               <div className="card-body p-4">
                 <div className="text-center mb-4">
                   <img
@@ -489,7 +489,7 @@ const ProfilePage = () => {
 
                   <div className="d-grid gap-2">
                     <label
-                      className="btn btn-outline-secondary"
+                      className="btn btn-outline-light"
                       htmlFor="profileAvatarUpload"
                     >
                       <i className="bi bi-image me-1" aria-hidden="true" />{" "}
@@ -548,9 +548,9 @@ const ProfilePage = () => {
             </div>
 
             {benefits.length > 0 ? (
-              <div className="card border-0 shadow-sm mt-4">
+              <div className="card-cocoa border-0 shadow-lg mt-4">
                 <div className="card-body p-4">
-                  <h2 className="h6 text-uppercase text-body-secondary fw-semibold mb-3">
+                  <h2 className="h6 text-uppercase text-gold fw-semibold mb-3">
                     Beneficios disponibles
                   </h2>
                   <ul className="list-unstyled mb-0 small">
@@ -573,9 +573,9 @@ const ProfilePage = () => {
           </div>
 
           <div className="col-12 col-lg-8">
-            <div className="card border-0 shadow-sm mb-4">
+            <div className="card-cocoa border-0 shadow-lg mb-4">
               <div className="card-body p-4 p-lg-5">
-                <h1 className="h4 fw-bold mb-4">Datos personales</h1>
+                <h1 className="h4 fw-bold mb-4 text-gold">Datos personales</h1>
                 <form className="row g-3" onSubmit={handleSave} noValidate>
                   {feedback ? (
                     <div
@@ -598,7 +598,7 @@ const ProfilePage = () => {
                         type="text"
                         id="profileRunBody"
                         name="runBody"
-                        className={`form-control${
+                        className={`form-control form-control-dark${
                           errors.runBody || errors.run ? " is-invalid" : ""
                         }`}
                         inputMode="numeric"
@@ -612,14 +612,14 @@ const ProfilePage = () => {
                         disabled
                         readOnly
                       />
-                      <span className="fw-semibold" aria-hidden="true">
+                      <span className="fw-semibold text-white" aria-hidden="true">
                         -
                       </span>
                       <input
                         type="text"
                         id="profileRunDigit"
                         name="runDigit"
-                        className={`form-control${
+                        className={`form-control form-control-dark${
                           errors.runDigit || errors.run ? " is-invalid" : ""
                         }`}
                         inputMode="text"
@@ -658,7 +658,7 @@ const ProfilePage = () => {
                       type="date"
                       id="birthdate"
                       name="fechaNacimiento"
-                      className={`form-control${
+                      className={`form-control form-control-dark${
                         errors.fechaNacimiento ? " is-invalid" : ""
                       }`}
                       value={values.fechaNacimiento ?? ""}
@@ -684,6 +684,7 @@ const ProfilePage = () => {
                       errorText={errors.nombre}
                       disabled
                       readOnly
+                      className="form-control-dark"
                     />
                   </div>
                   <div className="col-12 col-md-6">
@@ -697,6 +698,7 @@ const ProfilePage = () => {
                       errorText={errors.apellidos}
                       disabled
                       readOnly
+                      className="form-control-dark"
                     />
                   </div>
                   <div className="col-12">
@@ -711,6 +713,7 @@ const ProfilePage = () => {
                       errorText={errors.correo}
                       disabled
                       readOnly
+                      className="form-control-dark"
                     />
                     <Input
                       label="Código promocional (opcional)"
@@ -721,6 +724,7 @@ const ProfilePage = () => {
                       onBlur={handleInputBlur}
                       helperText="Úsalo para activar beneficios disponibles."
                       errorText={errors.codigoDescuento}
+                      className="form-control-dark"
                       /* editable por superadmin */
                     />
                   </div>
@@ -730,7 +734,7 @@ const ProfilePage = () => {
                     </label>
                     <select
                       id="region"
-                      className={`form-select${
+                      className={`form-select form-select-dark${
                         errors.regionId ? " is-invalid" : ""
                       }`}
                       value={values.regionId}
@@ -756,7 +760,7 @@ const ProfilePage = () => {
                     </label>
                     <select
                       id="comuna"
-                      className={`form-select${
+                      className={`form-select form-select-dark${
                         errors.comuna ? " is-invalid" : ""
                       }`}
                       disabled={!values.regionId}
@@ -785,6 +789,7 @@ const ProfilePage = () => {
                       onChange={handleInputChange}
                       onBlur={handleInputBlur}
                       errorText={errors.direccion}
+                      className="form-control-dark"
                       /* editable por superadmin */
                     />
                   </div>
@@ -799,6 +804,7 @@ const ProfilePage = () => {
                       onBlur={handleInputBlur}
                       helperText="Déjalo en blanco para mantener tu contraseña actual."
                       errorText={errors.password}
+                      className="form-control-dark"
                       /* editable por superadmin */
                     />
                   </div>
@@ -812,6 +818,7 @@ const ProfilePage = () => {
                       onChange={handleInputChange}
                       onBlur={handleInputBlur}
                       errorText={errors.confirmPassword}
+                      className="form-control-dark"
                       /* editable por superadmin */
                     />
                   </div>

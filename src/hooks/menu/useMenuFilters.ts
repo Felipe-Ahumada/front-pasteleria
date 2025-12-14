@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 
 export type OrderOption = "name-asc" | "name-desc" | "price-asc" | "price-desc";
 
@@ -29,14 +30,73 @@ export function useMenuFilters(
   all: EnrichedProduct[],
   collator: Intl.Collator
 ) {
-  // Estado de filtros
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-  const [selectedProductCode, setSelectedProductCode] = useState<string | null>(
-    null
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const STORAGE_KEY = "pasteleria-filters";
+
+  const loadInitialState = () => {
+    try {
+      const stored = sessionStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        return JSON.parse(stored) as FilterValues;
+      }
+    } catch (e) {
+      console.warn("Error loading filters", e);
+    }
+    return null;
+  };
+
+  // Only run once on mount
+  const savedState = useMemo(() => loadInitialState(), []);
+
+  // Estado de filtros - Inicializar desde URL (prioridad) o Storage
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(
+    () => {
+      const param = searchParams.get("categoryId");
+      if (param) return Number(param);
+      return savedState?.category ?? null;
+    }
   );
-  const [minPrice, setMinPrice] = useState<number | "">("");
-  const [maxPrice, setMaxPrice] = useState<number | "">("");
-  const [sortOrder, setSortOrder] = useState<OrderOption>("name-asc");
+
+  const [selectedProductCode, setSelectedProductCode] = useState<string | null>(
+    savedState?.productCode ?? null
+  );
+  const [minPrice, setMinPrice] = useState<number | "">(
+    savedState?.minPrice ?? ""
+  );
+  const [maxPrice, setMaxPrice] = useState<number | "">(
+    savedState?.maxPrice ?? ""
+  );
+  const [sortOrder, setSortOrder] = useState<OrderOption>(
+    savedState?.sortOrder ?? "name-asc"
+  );
+
+  // Persistir cambios en Session Storage
+  useEffect(() => {
+    const stateToSave: FilterValues = {
+      category: selectedCategory,
+      productCode: selectedProductCode,
+      minPrice,
+      maxPrice,
+      sortOrder,
+    };
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
+  }, [selectedCategory, selectedProductCode, minPrice, maxPrice, sortOrder]);
+
+  // Sincronizar URL cuando cambia la categoría (Opcional pero buena UX)
+  useEffect(() => {
+    if (selectedCategory) {
+      setSearchParams((prev) => {
+        prev.set("categoryId", String(selectedCategory));
+        return prev;
+      });
+    } else {
+      setSearchParams((prev) => {
+        prev.delete("categoryId");
+        return prev;
+      });
+    }
+  }, [selectedCategory, setSearchParams]);
 
   // Errores de validación
   const [errors, setErrors] = useState<FilterErrors>({});

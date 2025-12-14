@@ -1,165 +1,129 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/common";
 import { useHomePage } from "./useHomePage";
+import { logoPastelito, videoInicio } from "@/assets"; // Added import
 
 const HomePage = () => {
-  const { carouselId, carouselData, featuredCategories } = useHomePage();
+  const { featuredCategories } = useHomePage();
+
+  /* Animation Observer */
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            observer.unobserve(entry.target); // Trigger once
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+    );
+
+    const elements = document.querySelectorAll(
+      ".category-circle-wrapper, .animate-on-scroll, .section-gold-divider"
+    );
+    elements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [featuredCategories]); // Re-run if categories load
 
   return (
     <>
       {/* =============================== */}
-      {/*      SECCIÓN DEL CARRUSEL      */}
+      {/*      HERO SECTION (REBRAND)    */}
       {/* =============================== */}
-      <section aria-label="Carrusel principal" className="hero-carousel">
-        <div
-          id={carouselId}
-          className="carousel slide"
-          data-bs-ride="carousel"
-          data-bs-interval="5000"
-          data-bs-pause="hover"
-          aria-live="polite"
-        >
-          <div className="carousel-indicators">
-            {carouselData.map((item, index) => (
-              <button
-                key={item.id}
-                type="button"
-                data-bs-target={`#${carouselId}`}
-                data-bs-slide-to={index}
-                className={index === 0 ? "active" : ""}
-                aria-current={index === 0 ? "true" : undefined}
-                aria-label={`Slide ${index + 1}`}
-              />
-            ))}
-          </div>
-
-          <div className="carousel-inner">
-            {carouselData.map((item, index) => (
-              <div
-                key={item.id}
-                className={`carousel-item ${index === 0 ? "active" : ""}`}
-                role="group"
-                aria-roledescription="slide"
-                aria-label={`${index + 1} de ${carouselData.length}`}
-              >
-                <img src={item.image} alt={item.alt} className="d-block w-100" />
-
-                {item.overlay && (
-                  <div className="position-absolute top-50 start-50 translate-middle text-center w-100 px-3">
-                    <div className="promo-overlay mx-auto">
-                      <p className="promo-title mb-2">{item.overlay.title}</p>
-                      <p className="promo-subtitle mb-2">{item.overlay.subtitle}</p>
-                      <p className="promo-highlight mb-0">{item.overlay.highlight}</p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Caption */}
-                {item.caption && (
-                  <div className="carousel-caption">
-                    {item.caption.type === "external" ? (
-                      <Button
-                        as="a"
-                        href={item.caption.to}
-                        size="lg"
-                        variant="strawberry"
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        {item.caption.ctaLabel}
-                      </Button>
-                    ) : (
-                      <Button
-                        as="link"
-                        to={item.caption.to}
-                        size="lg"
-                        variant="strawberry"
-                      >
-                        {item.caption.ctaLabel}
-                      </Button>
-                    )}
-                  </div>
-                )}
+      <section aria-label="Hero Principal" className="hero-container">
+        
+        {/* STATIC OVERLAY */}
+        <div className="hero-static-overlay">
+           <div className="hero-content">
+              {/* Optional: Add Logo if desired, or just big text */}
+              <img src={logoPastelito} alt="Mil Sabores Logo" className="hero-brand-logo mx-auto d-block" />
+              
+              <h1 className="hero-title">Pastelería Mil Sabores</h1>
+              <p className="hero-subtitle">El Cielo de los Pasteles Espera</p>
+              
+              <div className="hero-buttons">
+                 <Link to="/menu" className="btn btn-hero btn-hero-primary">
+                    Ver Carta
+                 </Link>
+                 <Link to="/contact" className="btn btn-hero btn-hero-secondary">
+                    Contáctanos
+                 </Link>
               </div>
-            ))}
-          </div>
-
-          <button
-            className="carousel-control-prev"
-            type="button"
-            data-bs-target={`#${carouselId}`}
-            data-bs-slide="prev"
-          >
-            <span className="carousel-control-prev-icon" aria-hidden="true" />
-            <span className="visually-hidden">Anterior</span>
-          </button>
-
-          <button
-            className="carousel-control-next"
-            type="button"
-            data-bs-target={`#${carouselId}`}
-            data-bs-slide="next"
-          >
-            <span className="carousel-control-next-icon" aria-hidden="true" />
-            <span className="visually-hidden">Siguiente</span>
-          </button>
+           </div>
         </div>
+
+        {/* BACKGROUND VIDEO */}
+        <video
+          className="hero-video"
+          src={videoInicio}
+          autoPlay
+          loop
+          muted
+          playsInline
+        />
       </section>
 
       {/* =============================== */}
-      {/*     SECCIÓN CATEGORÍAS         */}
+      {/*     HALL OF FAME (CATEGORIES)  */}
       {/* =============================== */}
-      <section className="py-5">
-        <div className="container">
-          <h2 className="mb-4 text-center section-title">Nuestra carta</h2>
+      <section className="bg-cocoa-dark py-5">
+        <div className="container py-4">
+          <div className="text-center mb-5">
+            <h2 className="category-hall-of-fame-title animate-on-scroll">Nuestra Selección</h2>
+            <div className="section-gold-divider"></div>
+            <p 
+                className="text-white-50 lead animate-on-scroll" 
+                style={{ transitionDelay: '200ms' }}
+            >
+                Descubre los sabores que nos hacen únicos
+            </p>
+          </div>
 
           {featuredCategories.length === 0 ? (
-            <p className="text-center mb-0">
-              Pronto compartiremos nuestra selección de productos.
+            <p className="text-center text-white-50">
+              Cargando delicias...
             </p>
           ) : (
             <>
-              <div className="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
-                {featuredCategories.map((categoria) => (
+              <div className="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4 g-lg-5 justify-content-center">
+                {featuredCategories.map((categoria, index) => (
                   <div className="col" key={categoria.id}>
-                    <div className="card card-soft shadow-soft h-100 product-card">
-                      <Link to="/menu" className="ratio ratio-4x3">
-                        <img
-                          src={categoria.image}
-                          alt={`Categoría ${categoria.name}`}
-                          className="w-100 h-100 object-fit-cover"
-                          loading="lazy"
-                        />
-                      </Link>
-
-                      <div className="card-body text-center d-flex flex-column gap-2">
-                        <h3 className="h5 mb-1">{categoria.name}</h3>
-
-                        <p className="mb-0 text-muted small">
-                          {categoria.productCount}{" "}
-                          {categoria.productCount === 1
-                            ? "producto disponible"
-                            : "productos disponibles"}
-                        </p>
-
-                        <Button
-                          as="link"
-                          to="/menu"
-                          variant="strawberry"
-                          size="sm"
-                          className="mt-2"
-                        >
-                          Explorar
-                        </Button>
-                      </div>
-                    </div>
+                    <Link 
+                        to={`/menu?categoryId=${categoria.categoryId}`}
+                        className="category-circle-wrapper"
+                        style={{ animationDelay: `${index * 150}ms` }}
+                    >
+                        <div className="category-circle-img-container">
+                            <img
+                              src={categoria.image}
+                              alt={categoria.name}
+                              loading="lazy"
+                            />
+                        </div>
+                        <div className="text-center mt-3">
+                            <h3 className="category-circle-label">{categoria.name}</h3>
+                            <span className="category-count">
+                                {categoria.productCount} {categoria.productCount === 1 ? 'Opción' : 'Opciones'}
+                            </span>
+                        </div>
+                    </Link>
                   </div>
                 ))}
               </div>
 
-              <div className="text-center mt-4">
-                <Button as="link" to="/menu" size="lg" variant="strawberry">
-                  Ver carta completa
+              <div className="text-center mt-5 pt-3">
+                <Button 
+                    as="link" 
+                    to="/menu" 
+                    size="lg" 
+                    className="btn-hero-primary px-5 rounded-pill shadow-lg"
+                    style={{ fontSize: '1.2rem', padding: '15px 40px' }}
+                >
+                  Ver Carta Completa
                 </Button>
               </div>
             </>

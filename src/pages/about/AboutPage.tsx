@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from 'react'
+
 const ABOUT_IMAGES = {
 	about: 'https://res.cloudinary.com/dx83p4455/image/upload/v1762263485/vista_pasteleria_mil_sabores_vi5hwh.jpg',
 	mission: 'https://res.cloudinary.com/dx83p4455/image/upload/v1762263484/diversos_productos_cautgn.jpg',
@@ -59,36 +61,111 @@ const storyBlocks: StoryBlock[] = [
 	},
 ]
 
-const About = () => (
-	<main className="mt-0">
-		<section>
-			{storyBlocks.map((block) => (
-				<div className="container py-5" key={block.id}>
-					<div className={`row align-items-center ${block.invert ? 'flex-md-row-reverse' : ''}`}>
-						<div className="col-md-6 mb-4 mb-md-0">
-							<img src={block.image} alt={block.imageAlt} className="img-fluid rounded shadow-soft" />
-						</div>
-						<div className="col-md-6">
-							<h1 className="section-title mb-3">{block.title}</h1>
-							{block.description.map((paragraph) => (
-								<p key={paragraph}>
-									{paragraph}
-								</p>
-							))}
-						</div>
-					</div>
+const StoryBlockRow = ({ block }: { block: StoryBlock }) => {
+	const ref = useRef<HTMLDivElement>(null)
+	const [isVisible, setIsVisible] = useState(false)
+
+	useEffect(() => {
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				if (entry.isIntersecting) {
+					setIsVisible(true)
+					observer.disconnect()
+				}
+			},
+			{ threshold: 0.25 },
+		)
+
+		if (ref.current) observer.observe(ref.current)
+		return () => observer.disconnect()
+	}, [])
+
+	return (
+		<div ref={ref} className="container py-5 overflow-hidden">
+			<div className={`row align-items-center ${block.invert ? 'flex-md-row-reverse' : ''}`}>
+				<div
+					className={`col-md-6 mb-4 mb-md-0 reveal-hidden ${
+						isVisible
+							? 'reveal-visible'
+							: block.invert
+							? 'slide-from-right'
+							: 'slide-from-left'
+					}`}
+					style={{ transitionDelay: block.invert ? '300ms' : '0ms' }}
+				>
+					<img
+						src={block.image}
+						alt={block.imageAlt}
+						className="img-fluid rounded shadow-soft hover-scale"
+                        style={{ border: '2px solid var(--title-tertiary)' }} /* Added Gold Border for premium loop */
+					/>
 				</div>
+				<div
+					className={`col-md-6 reveal-hidden ${
+						isVisible
+							? 'reveal-visible'
+							: block.invert
+							? 'slide-from-left'
+							: 'slide-from-right'
+					}`}
+					style={{ transitionDelay: block.invert ? '0ms' : '300ms' }}
+				>
+					<h1 className="section-title mb-4 text-gold">{block.title}</h1>
+					{block.description.map((paragraph) => (
+						<p key={paragraph} className="text-premium-body fs-5 lh-lg">
+							{paragraph}
+						</p>
+					))}
+				</div>
+			</div>
+		</div>
+	)
+}
+
+const About = () => (
+	<main className="p-0">
+		{/* Hero Section */}
+		<div className="about-hero" style={{ backgroundImage: `url(${ABOUT_IMAGES.about})` }}>
+			<div className="about-hero-content">
+				<h1 className="about-hero-title">Nosotros</h1>
+			</div>
+
+			<div className="about-sidebar-decoration">
+				<a
+					href="https://www.instagram.com/pasteleria1000sabores"
+					target="_blank"
+					rel="noreferrer"
+					className="about-sidebar-link"
+				>
+					<i className="bi bi-instagram"></i>
+					<span>Síguenos</span>
+				</a>
+				<div className="about-sidebar-line"></div>
+			</div>
+		</div>
+
+		{/* Content Section */}
+		<section className="bg-cocoa-dark py-5 position-relative">
+			{storyBlocks.map((block) => (
+				<StoryBlockRow key={block.id} block={block} />
 			))}
 
-			<div className="container">
-				<div className="mt-4 p-5 card-soft text-center">
-					<h3 className="mb-3">Celebra la dulzura de la vida con Pastelería Mil Sabores</h3>
-					<h5 className="mb-1">Estamos emocionados de compartir nuestras delicias contigo.</h5>
-					<h5>Descubre, saborea y crea momentos inolvidables con nosotros.</h5>
+			<div className="container pb-5">
+				<div className="mt-4 p-5 text-center bg-cocoa-glass rounded-4 shadow-lg">
+					<h3 className="mb-3 font-pacifico text-gold">
+						Celebra la dulzura de la vida con Pastelería Mil Sabores
+					</h3>
+					<h5 className="mb-1 text-white-50">
+						Estamos emocionados de compartir nuestras delicias contigo.
+					</h5>
+					<h5 className="text-white-50">
+						Descubre, saborea y crea momentos inolvidables con nosotros.
+					</h5>
 				</div>
 			</div>
 		</section>
 	</main>
 )
+
 
 export default About
