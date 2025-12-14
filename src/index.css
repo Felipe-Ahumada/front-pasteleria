@@ -482,6 +482,20 @@ small,
   --btn-bg: var(--pastel-mint);
 }
 
+.btn-gold {
+  --btn-bg: var(--title-tertiary);
+  --bs-btn-color: #fff;
+  --bs-btn-hover-color: var(--title-tertiary);
+  --bs-btn-hover-bg: rgba(196, 163, 90, 0.1);
+  border: 2px solid var(--title-tertiary);
+  background-color: var(--btn-bg);
+  color: #fff;
+}
+.btn-gold:hover {
+  background-color: transparent;
+  color: var(--title-tertiary);
+}
+
 .btn-secondary {
   --btn-bg: #e2e8f0;
   --bs-btn-color: #475569;

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import useAuth from "@/hooks/useAuth";
 import { useBlogs } from "@/context/blog/useBlogs";
 import { Button, Input } from "@/components/common";
@@ -25,15 +25,54 @@ const BlogCreatePage = () => {
     );
   }
 
-  const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const compressImage = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const MAX_WIDTH = 1200;
+          const MAX_HEIGHT = 1200;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx?.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL("image/jpeg", 0.7)); // Compress to 70% quality
+        };
+        img.onerror = (error) => reject(error);
+      };
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === "string") setPortada(reader.result);
-    };
-    reader.readAsDataURL(file);
+    try {
+        const compressedImage = await compressImage(file);
+        setPortada(compressedImage);
+    } catch (error) {
+        console.error("Error compressing image:", error);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -62,6 +101,12 @@ const BlogCreatePage = () => {
     <main className="bg-cocoa-dark min-vh-100 py-5">
       <div className="container">
         <div className="card-cocoa p-4 p-lg-5 shadow-lg" style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <div className="mb-4">
+            <Link to="/blog" className="text-white text-decoration-none hover-gold d-inline-flex align-items-center">
+              <i className="bi bi-arrow-left me-2"></i>
+              Volver a Blogs
+            </Link>
+          </div>
           <h1 className="section-title text-gold text-center mb-4">Crear nuevo blog</h1>
 
           <form className="mt-4" onSubmit={handleSubmit}>

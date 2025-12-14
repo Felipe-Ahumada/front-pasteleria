@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useBlogDetails } from "@/hooks/blog/useBlogDetails";
 import useAuth from "@/hooks/useAuth";
 import { useState } from "react";
@@ -27,6 +27,12 @@ const BlogDetailPage = () => {
     <main className="bg-cocoa-dark min-vh-100 py-5">
       <div className="container" style={{ maxWidth: "900px" }}>
         {/* TÍTULO */}
+        <div className="mb-4">
+          <Link to="/blog" className="text-white text-decoration-none hover-gold d-inline-flex align-items-center">
+            <i className="bi bi-arrow-left me-2"></i>
+            Volver a Blogs
+          </Link>
+        </div>
         <h1
           className="mb-3 font-title text-gold"
           style={{

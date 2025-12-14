@@ -52,7 +52,7 @@ const BlogPage = () => {
             {user && (
               <Link
                 to="/blog/create"
-                className="btn btn-mint fw-bold shadow-soft"
+                className="btn btn-gold fw-bold shadow-soft"
               >
                 <i className="bi bi-pencil-square me-2"></i>
                 Crear Blog
