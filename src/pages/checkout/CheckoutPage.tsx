@@ -123,7 +123,7 @@ const CheckoutPage = () => {
   const today = new Date().toISOString().split("T")[0];
 
   return (
-    <section className="bg-cocoa-dark min-vh-100 py-5">
+    <section className="bg-cocoa-page min-vh-100 py-5">
       <div className="container">
       {/* ===========================
           TÍTULO

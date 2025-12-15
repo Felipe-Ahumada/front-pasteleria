@@ -75,6 +75,11 @@ const OrderDetailPage = () => {
                 <p className="mb-0 text-premium-body small">
                   {item.cantidad} × {formatPrice(item.precio)}
                 </p>
+                {item.mensaje && (
+                  <small className="d-block text-white-50 fst-italic mt-1">
+                    Msg: {item.mensaje}
+                  </small>
+                )}
               </div>
             </div>
           </div>

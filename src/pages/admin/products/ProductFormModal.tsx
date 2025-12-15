@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-import type { Producto } from "@/service/menuService";
+import { menuService, type Producto, type Categoria } from "@/service/menuService";
 import { Modal, Button, Input } from "@/components/common";
-import { CATEGORIAS } from "@/utils/categories";
 import { validateProduct } from "@/utils/validations/productValidations";
 import { generateProductCode } from "@/utils/code/generateProductCode";
 import { defaultProductImage } from "@/assets";
@@ -14,6 +13,9 @@ interface Props {
 }
 
 const ProductFormModal = ({ open, onClose, producto, onSaved }: Props) => {
+  const [allProducts, setAllProducts] = useState<Producto[]>([]);
+  const [categories, setCategories] = useState<Categoria[]>([]);
+
   const [form, setForm] = useState<Producto>({
     id: "",
     nombre: "",
@@ -35,28 +37,40 @@ const ProductFormModal = ({ open, onClose, producto, onSaved }: Props) => {
   useEffect(() => {
     if (!open) return;
 
-    if (producto) {
-      // Modo edición
-      setForm(JSON.parse(JSON.stringify(producto)));
-    } else {
-      // Modo nuevo
-      const categoriaInicial = CATEGORIAS[0] ?? "General";
+    const init = async () => {
+      let currentProducts = allProducts;
+      if (currentProducts.length === 0) {
+        currentProducts = await menuService.getAll();
+        setAllProducts(currentProducts);
+      }
+      
+      const fetchedCats = await menuService.getCategories();
+      setCategories(fetchedCats.sort((a, b) => a.nombre.localeCompare(b.nombre)));
 
-      setForm({
-        id: generateProductCode(categoriaInicial),
-        nombre: "",
-        descripcion: "",
-        precio: 0,
-        stock: 0,
-        categoria: categoriaInicial,
-        stock_critico: 3,
-        imagen: defaultProductImage,
-        imagenes_detalle: [],
-        activo: true,
-      });
-    }
+      if (producto) {
+        // Modo edición
+        setForm(JSON.parse(JSON.stringify(producto)));
+      } else {
+        // Modo nuevo
+        const defaultCat = fetchedCats.length > 0 ? fetchedCats[0].nombre : "General";
 
-    setErrors({});
+        setForm({
+          id: generateProductCode(defaultCat, currentProducts),
+          nombre: "",
+          descripcion: "",
+          precio: 0,
+          stock: 0,
+          categoria: defaultCat,
+          stock_critico: 3,
+          imagen: defaultProductImage,
+          imagenes_detalle: [],
+          activo: true,
+        });
+      }
+      setErrors({});
+    };
+
+    init();
   }, [open, producto]);
 
   const handleChange = <K extends keyof Producto>(
@@ -147,7 +161,7 @@ const ProductFormModal = ({ open, onClose, producto, onSaved }: Props) => {
 
               // Regenerar código solo en creación
               if (!producto) {
-                const newCode = generateProductCode(nuevaCat);
+                const newCode = generateProductCode(nuevaCat, allProducts);
                 setForm((prev) => ({
                   ...prev,
                   categoria: nuevaCat,
@@ -159,9 +173,9 @@ const ProductFormModal = ({ open, onClose, producto, onSaved }: Props) => {
             }}
           >
             <option value="">Seleccione categoría...</option>
-            {CATEGORIAS.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.nombre}>
+                {cat.nombre}
               </option>
             ))}
           </select>

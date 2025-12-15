@@ -1,10 +1,11 @@
 import type { ChangeEvent } from "react";
 import type { FilterValues } from "@/hooks/menu/useMenuFilters";
+import type { Categoria } from "@/service/menuService";
 
 export type OrderOption = "name-asc" | "name-desc" | "price-asc" | "price-desc";
 
 export interface MenuFiltersProps {
-  categories: { id_categoria: number; nombre_categoria: string }[];
+  categories: Categoria[];
   productOptions: { codigo_producto: string; nombre_producto: string }[];
 
   orderOptions: { value: OrderOption; label: string }[];
@@ -61,8 +62,8 @@ const MenuFilters = ({
           >
             <option value="">Todas</option>
             {categories.map((c) => (
-              <option key={c.id_categoria} value={c.id_categoria}>
-                {c.nombre_categoria}
+              <option key={c.id} value={c.id}>
+                {c.nombre}
               </option>
             ))}
           </select>

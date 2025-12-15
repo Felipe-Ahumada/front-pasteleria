@@ -112,6 +112,7 @@ const LoginOffcanvas = () => {
       aria-labelledby="offcanvasLoginLabel"
       data-bs-backdrop="true"
       data-bs-scroll="false"
+      style={{ zIndex: 1060 }}
     >
       <div className="offcanvas-header navbar-theme py-3" style={{ borderBottom: '4px solid var(--title-tertiary)' }}>
         <h5 

@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/common";
 
-import menuData from "@/data/menu_datos.json";
+import { menuService, type Producto, type Categoria } from "@/service/menuService";
 import MenuFilters from "@/components/menu/MenuFilters";
 
 import { useCart } from "@/hooks/useCart";
@@ -13,7 +13,6 @@ import {
 } from "@/hooks/menu/useMenuFilters";
 
 import { useMenuShare } from "@/hooks/menu/useMenuShare";
-import { menuService, type Producto } from "@/service/menuService";
 import { formatImagePath } from "@/utils/storage/imageHelpers";
 
 const formatPrice = (value: number) =>
@@ -59,10 +58,10 @@ const MENU_HERO_IMAGE = "https://res.cloudinary.com/dx83p4455/image/upload/v1762
    NORMALIZAR PRODUCTOS PARA FILTROS
 =========================================================== */
 
-const mapToEnrichedProducts = (productos: Producto[]): EnrichedProduct[] =>
+const mapToEnrichedProducts = (productos: Producto[], categories: Categoria[]): EnrichedProduct[] =>
   productos.map((p) => {
-    const categoriaOriginal = menuData.categorias.find(
-      (c) => c.nombre_categoria === p.categoria
+    const categoriaOriginal = categories.find(
+      (c) => c.nombre === p.categoria
     );
 
     return {
@@ -72,7 +71,7 @@ const mapToEnrichedProducts = (productos: Producto[]): EnrichedProduct[] =>
       imagen_producto: p.imagen,
       descripción_producto: p.descripcion,
 
-      categoriaId: categoriaOriginal?.id_categoria ?? 0,
+      categoriaId: categoriaOriginal?.id ?? 0,
       categoriaNombre: p.categoria,
 
       stock: p.stock,
@@ -85,10 +84,19 @@ const mapToEnrichedProducts = (productos: Producto[]): EnrichedProduct[] =>
 
 const MenuPage = () => {
   const [allProducts, setAllProducts] = useState<EnrichedProduct[]>([]);
+  const [categories, setCategories] = useState<Categoria[]>([]);
 
   const refreshProducts = useCallback(async () => {
-    const activos = await menuService.getActive();
-    setAllProducts(mapToEnrichedProducts(activos));
+    try {
+      const [activos, cats] = await Promise.all([
+        menuService.getActive(),
+        menuService.getCategories(),
+      ]);
+      setCategories(cats);
+      setAllProducts(mapToEnrichedProducts(activos, cats));
+    } catch (error) {
+       console.error("Error loading menu data:", error);
+    }
   }, []);
 
   useEffect(() => {
@@ -219,7 +227,7 @@ const MenuPage = () => {
 
             {/* FILTROS */}
             <MenuFilters
-              categories={menuData.categorias}
+              categories={categories}
               productOptions={productOptions}
               orderOptions={[
                 { value: "name-asc", label: "Nombre: A → Z" },

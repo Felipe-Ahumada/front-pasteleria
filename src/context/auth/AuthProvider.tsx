@@ -96,11 +96,18 @@ type AuthProviderProps = {
   children: ReactNode;
 };
 
+/*
+####################### ACÁ EMPIEZA TODO ################################
+*/
+
+
 export const AuthProvider = ({ children }: AuthProviderProps) => {
+  //Aca están los hooks que constantemente revisan la información del usuario
+  // Y también ven loading que revisa si el usuario está logueado
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // On mount, check if there's a token and fetch current user
+  // Este use effect revisa si el usuario está logueado al cargar la página
   useEffect(() => {
     const initializeAuth = async () => {
       if (authService.isAuthenticated()) {
@@ -127,7 +134,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     initializeAuth();
   }, []);
 
-  // Listen for storage events to sync logout across tabs
+  // Este use effect se encarga de que si un usuario cierra la sesión en otra pestaña, 
+  // se cierre en todas las pestañas
   useEffect(() => {
     const handleStorageChange = (event: StorageEvent) => {
       if (event.key === "jwt_token" && event.newValue === null) {

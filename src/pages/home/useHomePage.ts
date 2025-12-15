@@ -3,8 +3,8 @@ import { Carousel } from "bootstrap";
 import {
   menuService,
   type Producto,
+  type Categoria,
 } from "@/service/menuService";
-import menuData from "@/data/menu_datos.json";
 
 export interface CarouselItem {
   id: string;
@@ -80,6 +80,7 @@ const SafeCarousel = Carousel as unknown as CarouselStatic;
 
 export function useHomePage() {
   const [productos, setProductos] = useState<Producto[]>([]);
+  const [categories, setCategories] = useState<Categoria[]>([]);
 
   /** ===============================
    *  1) Cargar productos del service
@@ -89,8 +90,12 @@ export function useHomePage() {
    *  =============================== */
   const refreshProducts = useCallback(async () => {
     try {
-      const data = await menuService.getActive();
+      const [data, cats] = await Promise.all([
+        menuService.getActive(),
+        menuService.getCategories(),
+      ]);
       setProductos(data);
+      setCategories(cats);
     } catch (error) {
       console.error("Error loading home products:", error);
     }
@@ -138,8 +143,8 @@ export function useHomePage() {
       const categoria = producto.categoria;
 
       if (!map[categoria]) {
-        const catData = menuData.categorias.find((c) => c.nombre_categoria === categoria);
-        const realId = catData?.id_categoria ?? 0;
+        const catData = categories.find((c) => c.nombre === categoria);
+        const realId = catData?.id ?? 0;
 
         map[categoria] = {
           id: categoria,
@@ -154,7 +159,7 @@ export function useHomePage() {
     }
 
     return Object.values(map);
-  }, [productos]);
+  }, [productos, categories]);
 
   return {
     carouselId,

@@ -197,7 +197,11 @@ const ContactPage = () => {
                       placeholder="Escribe tu mensaje aquí (máximo 500 caracteres)..."
                       value={values.comentario}
                       onChange={handleInputChange}
+                      maxLength={500}
                     />
+                    <div className="text-end text-white-50 small mt-1">
+                      {values.comentario.length}/500
+                    </div>
                     {errors.comentario && (
                       <div className="invalid-feedback">
                         {errors.comentario}

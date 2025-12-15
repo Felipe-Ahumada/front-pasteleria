@@ -14,6 +14,7 @@ import {
   sanitizeNameField,
   validateUserForm,
 } from "@/utils/validations/userValidations";
+import { compressImage } from "@/utils/imageUtils";
 import { userService } from "@/service/userService";
 import { authService } from "@/service/authService";
 import type { UserFormValues } from "@/utils/validations/userValidations";
@@ -273,27 +274,87 @@ const ProfilePage = () => {
     fetchUserData();
   }, []);
 
-  const handleAvatarChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.currentTarget.files?.[0];
-    if (!file) {
+    if (!file || !currentUser) {
       return;
     }
 
-    const reader = new FileReader();
-    reader.addEventListener("load", () => {
-      if (typeof reader.result === "string") {
-        setAvatarUrl(reader.result);
-        setValues((prev) => ({ ...prev, avatarUrl: reader.result as string }));
-        setTouched((prev) => ({ ...prev, avatarUrl: true }));
-      }
-    });
-    reader.readAsDataURL(file);
+    try {
+      const compressedImage = await compressImage(file);
+      
+      // Update local state for preview
+      setAvatarUrl(compressedImage);
+      const nextValues = { ...values, avatarUrl: compressedImage };
+      setValues(nextValues);
+      setTouched((prev) => ({ ...prev, avatarUrl: true }));
+
+      // Auto-save to backend
+      const record = mapFormToStoredUser(
+        { ...nextValues, password: values.password || "" },
+        currentUser,
+        regions
+      );
+
+      const usuarioUpdate: any = {
+        ...record,
+      };
+
+      await userService.update(usuarioUpdate);
+
+      // Update local session
+      setLocalItem(LOCAL_STORAGE_KEYS.activeUser, record);
+      setCurrentUser(record);
+      refreshUser(record);
+      
+      setShowToast(true);
+      setFeedback({ type: "success", text: "Foto de perfil actualizada correctamente." });
+
+    } catch (error) {
+      console.error("Error updating avatar:", error);
+      setFeedback({
+        type: "danger",
+        text: "Error al guardar la foto. Inténtalo nuevamente.",
+      });
+    }
   };
 
-  const handleAvatarReset = () => {
-    setAvatarUrl(defaultProfileImage);
-    setValues((prev) => ({ ...prev, avatarUrl: defaultProfileImage }));
-    setTouched((prev) => ({ ...prev, avatarUrl: true }));
+  const handleAvatarReset = async () => {
+    if (!currentUser) return;
+
+    try {
+      setAvatarUrl(defaultProfileImage);
+      const nextValues = { ...values, avatarUrl: defaultProfileImage };
+      setValues(nextValues);
+      setTouched((prev) => ({ ...prev, avatarUrl: true }));
+
+      // Auto-save to backend
+      const record = mapFormToStoredUser(
+        { ...nextValues, password: values.password || "" },
+        currentUser,
+        regions
+      );
+
+      const usuarioUpdate: any = {
+        ...record,
+      };
+
+      await userService.update(usuarioUpdate);
+
+      // Update local session
+      setLocalItem(LOCAL_STORAGE_KEYS.activeUser, record);
+      setCurrentUser(record);
+      refreshUser(record);
+
+      setShowToast(true);
+      setFeedback({ type: "success", text: "Foto de perfil eliminada correctamente." });
+    } catch (error) {
+      console.error("Error removing avatar:", error);
+      setFeedback({
+        type: "danger",
+        text: "Error al eliminar la foto. Inténtalo nuevamente.",
+      });
+    }
   };
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {

@@ -1,4 +1,4 @@
-import { menuService } from "@/service/menuService";
+import type { Producto } from "@/service/menuService";
 
 /**
  * STOP WORDS → palabras que no aportan significado al prefijo.
@@ -38,9 +38,11 @@ export const getCategoryPrefix = (categoria: string): string => {
  * TC001, TC002, …
  * PG001, PG002, …
  */
-export const generateProductCode = (categoria: string): string => {
+export const generateProductCode = (
+  categoria: string,
+  productos: Producto[]
+): string => {
   const prefix = getCategoryPrefix(categoria);
-  const productos = menuService.getCached();
 
   const existentes = productos
     .filter((p) => p.id.startsWith(prefix))

@@ -48,13 +48,13 @@ const AppLayout = () => {
 		<>
 			<ScrollToTop />
 			<Navbar />
-			<LoginOffcanvas key={offcanvasKey} />
 			<div className="app-shell">
 				<main className="flex-grow-1">
 					<Outlet />
 				</main>
 			</div>
 			<Footer />
+			<LoginOffcanvas key={offcanvasKey} />
 		</>
 	)
 }

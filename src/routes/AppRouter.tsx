@@ -128,7 +128,7 @@ const router = createBrowserRouter(
         { path: "terms", element: <TermsPage /> },
 
         /* Auth */
-        { path: "reset-password", element: <ResetPasswordPage /> },
+
 
         /* Checkout */
         {
@@ -175,6 +175,7 @@ const router = createBrowserRouter(
          AUTH
     ============================= */
 
+    { path: "/reset-password", element: <ResetPasswordPage /> },
     { path: "/register", element: <RegisterUserPage /> },
 
     /* =============================

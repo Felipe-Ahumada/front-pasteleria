@@ -16,6 +16,7 @@ export interface Usuario {
   password: string;
   createdAt?: string;
   activo?: boolean;
+  avatarUrl?: string;
 }
 
 // Helper to map backend response to frontend Usuario model

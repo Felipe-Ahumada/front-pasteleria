@@ -10,7 +10,8 @@ import {
    TIPO NORMALIZADO (DOMINIO)
 =========================================================== */
 export interface Producto {
-  id: string;
+  id: string; // Maps to codigoProducto (e.g., TC001)
+  dbId?: number; // Maps to backend PK (e.g., 1)
   nombre: string;
   descripcion: string;
   precio: number;
@@ -20,6 +21,11 @@ export interface Producto {
   stock: number;
   stock_critico?: number;
   activo: boolean;
+}
+
+export interface Categoria {
+  id: number;
+  nombre: string;
 }
 
 const FALLBACK_IMAGE = fallbackProductImage;
@@ -56,15 +62,23 @@ export const menuService = {
     try {
       // Fetch categories to get products with their category name
       const { data: categories } = await apiClient.get<any[]>("/categorias");
+      console.log("[DEBUG] Categories fetched:", categories);
 
-      const allProducts: Producto[] = categories.flatMap((cat) =>
-        cat.productos.map((p: any) => {
+      const allProducts: Producto[] = categories.flatMap((cat) => {
+        if (!cat.productos) {
+             console.warn(`[DEBUG] Category ${cat.nombre} has no products array`, cat);
+             return [];
+        }
+        console.log(`[DEBUG] Processing category ${cat.nombre}, products: ${cat.productos.length}`);
+        
+        return cat.productos.map((p: any) => {
           const slug = toSlug(p.nombre);
           const imagenPrincipal = formatImagePath(p.imagenPrincipal);
           const imagenesDetalle = mergeDetailImages(slug, p.imagenesDetalle);
 
           return {
-            id: p.id.toString(),
+            id: p.codigoProducto || p.id.toString(), // Prefer code, fallback to ID if missing
+            dbId: p.id,
             nombre: p.nombre,
             descripcion: p.descripcion,
             precio: p.precio,
@@ -73,10 +87,11 @@ export const menuService = {
             categoria: cat.nombre,
             stock: p.stock,
             stock_critico: p.stockCritico,
-            activo: true, // Backend doesn't seem to have 'activo' flag exposed yet, assume true
+            activo: p.activo ?? true, // Default to true if missing temporarily
           };
-        })
-      );
+        });
+      });
+      console.log("[DEBUG] Total mapped products:", allProducts);
       return allProducts;
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -93,6 +108,19 @@ export const menuService = {
   async getActive(): Promise<Producto[]> {
     const products = await this.getAll();
     return products.filter((p) => p.activo !== false);
+  },
+
+  async getCategories(): Promise<Categoria[]> {
+    try {
+      const { data } = await apiClient.get<any[]>("/categorias");
+      return data.map((c) => ({
+        id: c.id,
+        nombre: c.nombre
+      }));
+    } catch (error) {
+     console.error("Error fetching categories:", error);
+     return [];
+    }
   },
 
   async getById(id: string): Promise<Producto | undefined> {
@@ -115,23 +143,106 @@ export const menuService = {
   },
 
   async create(producto: Producto): Promise<void> {
-    // This would require mapping frontend Producto to backend structure
-    // and calling POST /productos.
-    // For now, leaving as placeholder or implementing if needed for Admin.
-    console.warn(
-      "create product not fully implemented in frontend service yet"
-    );
+    try {
+      // 1. Obtener categorías para mapear nombre -> ID
+      const { data: categories } = await apiClient.get<any[]>("/categorias");
+      const catObj = categories.find((c) => c.nombre === producto.categoria);
+
+      if (!catObj) {
+        throw new Error(`Categoría no encontrada: ${producto.categoria}`);
+      }
+
+      // 2. Construir payload para backend
+      const payload = {
+        codigoProducto: producto.id, // Frontend usa id como código
+        nombre: producto.nombre,
+        descripcion: producto.descripcion,
+        precio: producto.precio,
+        imagenPrincipal: producto.imagen,
+        imagenesDetalle: JSON.stringify(producto.imagenes_detalle),
+        stock: producto.stock,
+        stockCritico: producto.stock_critico,
+        categoria: { id: catObj.id }, // Backend espera objeto con ID
+      };
+
+      await apiClient.post("/productos", payload);
+    } catch (error) {
+      console.error("Error creating product:", error);
+      throw error;
+    }
   },
 
   async update(id: string, data: Producto): Promise<void> {
-    // Placeholder
-    console.warn(
-      "update product not fully implemented in frontend service yet"
-    );
+    try {
+      // Necesitamos el ID numérico del backend.
+      // Si el producto viene con dbId, lo usamos. Si no, intentamos buscarlo.
+      let numericId = data.dbId;
+
+      if (!numericId) {
+        // Fallback: buscar por código (id actual del frontend)
+        // Esto asume que el backend tiene un endpoint de búsqueda o iteramos (ineficiente pero funcional por ahora)
+        // O mejor, asumimos que getAll ya populó dbId.
+        const all = await this.getAll();
+        const found = all.find((p) => p.id === id);
+        if (found && found.dbId) {
+          numericId = found.dbId;
+        }
+      }
+
+      console.log(`[DEBUG] Update product ${id}, resolved numericId: ${numericId}`);
+
+      if (!numericId) {
+        throw new Error("No se pudo determinar el ID interno del producto para actualizar");
+      }
+
+      // 1. Obtener categorías para mapear nombre -> ID
+      const { data: categories } = await apiClient.get<any[]>("/categorias");
+      const catObj = categories.find((c) => c.nombre === data.categoria);
+
+      if (!catObj) {
+        throw new Error(`Categoría no encontrada: ${data.categoria}`);
+      }
+
+      const payload = {
+        codigoProducto: data.id,
+        nombre: data.nombre,
+        descripcion: data.descripcion,
+        precio: data.precio,
+        imagenPrincipal: data.imagen,
+        imagenesDetalle: JSON.stringify(data.imagenes_detalle),
+        stock: data.stock,
+        stockCritico: data.stock_critico,
+        categoria: { id: catObj.id },
+        activo: data.activo,
+      };
+      
+      console.log(`[DEBUG] Sending payload to PUT /productos/${numericId}:`, payload);
+
+      await apiClient.put(`/productos/${numericId}`, payload);
+    } catch (error) {
+      console.error("Error updating product:", error);
+      throw error;
+    }
   },
 
   async setStatus(id: string, activo: boolean): Promise<void> {
-    // Placeholder
+     try {
+       console.log(`[DEBUG] setStatus called for id: ${id}, activo: ${activo}`);
+       const all = await this.getAll();
+       const product = all.find((p) => p.id === id);
+       
+       if (!product) {
+         console.error(`[DEBUG] Product not found in getAll for id: ${id}`);
+         throw new Error(`Producto no encontrado para cambio de estado: ${id}`);
+       }
+
+       console.log(`[DEBUG] Found product to update:`, product);
+       const updatedProduct = { ...product, activo };
+       await this.update(id, updatedProduct);
+     } catch (error) {
+       console.error("Error setting status:", error);
+       throw error;
+     }
   },
 
   async block(id: string): Promise<void> {

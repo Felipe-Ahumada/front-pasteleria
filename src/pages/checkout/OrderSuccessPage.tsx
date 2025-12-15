@@ -24,7 +24,7 @@ const OrderSuccessPage = () => {
 
   if (!order) {
     return (
-      <section className="bg-cocoa-dark min-vh-100 d-flex align-items-center justify-content-center">
+      <section className="bg-cocoa-page min-vh-100 d-flex align-items-center justify-content-center">
         <div className="text-center">
           <h1 className="text-gold font-title mb-4">Pedido no encontrado</h1>
           <Button variant="strawberry" as="link" to="/">
@@ -40,7 +40,7 @@ const OrderSuccessPage = () => {
   const discount = subtotal - order.total;
 
   return (
-    <section className="bg-cocoa-dark min-vh-100 py-5 d-flex align-items-center">
+    <section className="bg-cocoa-page min-vh-100 py-5 d-flex align-items-center">
       <div className="container">
         <div className="row justify-content-center">
           <div className="col-lg-6">
@@ -74,9 +74,9 @@ const OrderSuccessPage = () => {
               <h4 className="text-gold font-title mb-3">Resumen del pedido</h4>
               <div className="bg-cocoa-input border-gold rounded-3 p-3 mb-4">
                 <ul className="list-unstyled mb-0 text-start">
-                  {order.items.map((i) => (
+                  {order.items.map((i, index) => (
                     <li
-                      key={i.codigo}
+                      key={`${i.codigo}-${index}`}
                       className="d-flex justify-content-between align-items-center py-2 border-bottom border-gold border-opacity-25 last-border-0"
                     >
                       <span className="text-dark">

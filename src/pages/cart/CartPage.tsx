@@ -93,7 +93,7 @@ const CartPage = () => {
                             {hasMessage ? (
                                 <div className="p-2 rounded bg-cocoa-input border-gold-subtle d-inline-block d-md-block text-start">
                                     <small className="text-gold fw-bold d-block">Mensaje personalizado:</small>
-                                    <span className="text-white small fst-italic">"{item.mensaje}"</span>
+                                    <span className="text-dark small fst-italic">"{item.mensaje}"</span>
                                 </div>
                             ) : (
                                 <span className="text-white-50 small fst-italic">(Sin mensaje personalizado)</span>

@@ -1180,3 +1180,8 @@ small,
     border: 1px solid var(--title-tertiary) !important;
 }
 
+.bg-cocoa-page {
+  background-color: #3e2b26;
+  color: #fff;
+}
+
